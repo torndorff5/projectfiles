@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>HexChat Changelog</title>
+    <link>http://downloads.sourceforge.net/64bit/hexchat/appcast-x64.xml</link>
+    <description>Most recent changes with links to updates.</description>
+    <language>en</language>
+      <item>
+	<title>2.12.1</title>
+        <sparkle:releaseNotesLink>
+            https://raw.githubusercontent.com/hexchat/documentation/master/changelog.rst
+	</sparkle:releaseNotesLink>
+        <pubDate>Mon, 28 Jul 2014 15:20:11 +0000</pubDate>
+        <enclosure url="http://downloads.sourceforge.net/64bit/hexchat/setup.exe" sparkle:version="2.12.1" type="application/exe" />
+      </item>
+  </channel>
+</rss>

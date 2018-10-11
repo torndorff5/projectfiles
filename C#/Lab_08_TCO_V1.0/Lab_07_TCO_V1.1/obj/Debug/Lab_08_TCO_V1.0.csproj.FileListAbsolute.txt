@@ -1,0 +1,10 @@
+C:\Users\Tanner Orndorff\source\repos\Lab_07_TCO_V1.1\Lab_07_TCO_V1.1\obj\Debug\Lab_08_TCO_V1.0.csprojResolveAssemblyReference.cache
+C:\Users\Tanner Orndorff\source\repos\Lab_07_TCO_V1.1\Lab_07_TCO_V1.1\obj\Debug\Lab_03_TCO_V1._0.FrmMain.resources
+C:\Users\Tanner Orndorff\source\repos\Lab_07_TCO_V1.1\Lab_07_TCO_V1.1\obj\Debug\Lab_07_TCO_V1._0.Properties.Resources.resources
+C:\Users\Tanner Orndorff\source\repos\Lab_07_TCO_V1.1\Lab_07_TCO_V1.1\obj\Debug\Lab_08_TCO_V1.0.csproj.GenerateResource.Cache
+C:\Users\Tanner Orndorff\source\repos\Lab_07_TCO_V1.1\Lab_07_TCO_V1.1\obj\Debug\Lab_08_TCO_V1.0.csproj.CoreCompileInputs.cache
+C:\Users\Tanner Orndorff\source\repos\Lab_07_TCO_V1.1\Lab_07_TCO_V1.1\obj\Debug\Lab_07_TCO_V1.0.exe
+C:\Users\Tanner Orndorff\source\repos\Lab_07_TCO_V1.1\Lab_07_TCO_V1.1\obj\Debug\Lab_07_TCO_V1.0.pdb
+C:\Users\Tanner Orndorff\source\repos\Lab_07_TCO_V1.1\Lab_07_TCO_V1.1\bin\Debug\Lab_07_TCO_V1.0.exe.config
+C:\Users\Tanner Orndorff\source\repos\Lab_07_TCO_V1.1\Lab_07_TCO_V1.1\bin\Debug\Lab_07_TCO_V1.0.exe
+C:\Users\Tanner Orndorff\source\repos\Lab_07_TCO_V1.1\Lab_07_TCO_V1.1\bin\Debug\Lab_07_TCO_V1.0.pdb

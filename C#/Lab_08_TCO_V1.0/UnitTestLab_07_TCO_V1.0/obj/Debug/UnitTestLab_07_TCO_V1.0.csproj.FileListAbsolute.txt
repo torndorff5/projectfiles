@@ -1,0 +1,2 @@
+c:\users\tanner orndorff\source\repos\Lab_07_TCO_V1.0\UnitTestLab_07_TCO_V1.0\obj\Debug\UnitTestLab_07_TCO_V1.0.csprojResolveAssemblyReference.cache
+c:\users\tanner orndorff\source\repos\Lab_07_TCO_V1.0\UnitTestLab_07_TCO_V1.0\obj\Debug\UnitTestLab_07_TCO_V1.0.csproj.CoreCompileInputs.cache
