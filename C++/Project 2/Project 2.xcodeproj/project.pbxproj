@@ -26,6 +26,8 @@
 		52B4E10C217FA05E00659461 /* Project 2 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Project 2"; sourceTree = BUILT_PRODUCTS_DIR; };
 		52B4E10F217FA05E00659461 /* vm.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = vm.cpp; sourceTree = "<group>"; };
 		52B4E116217FA0A800659461 /* proj2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = proj2.txt; path = "Project 2/proj2.txt"; sourceTree = SOURCE_ROOT; };
+		52CEF8D4218374850085851D /* assembler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = assembler.h; sourceTree = "<group>"; };
+		52CEF8D52183756F0085851D /* vm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vm.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +61,8 @@
 			isa = PBXGroup;
 			children = (
 				52B4E10F217FA05E00659461 /* vm.cpp */,
+				52CEF8D52183756F0085851D /* vm.h */,
+				52CEF8D4218374850085851D /* assembler.h */,
 				52B4E116217FA0A800659461 /* proj2.txt */,
 			);
 			path = "Project 2";
