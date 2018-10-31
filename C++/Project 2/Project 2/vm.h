@@ -31,6 +31,11 @@ struct vm {
         ii = (int*)(machinecode + address);
         *ii = data;
     }
+    static void storeChar(int address, char byt){
+        char* cc;
+        cc = (char*)(machinecode + address);
+        *cc = byt;
+    }
     //execute function
     static void execute(char* machinecode, int start){//takes pointer to front of dynamic char array
         pc = start;
@@ -82,6 +87,16 @@ struct vm {
                     reg[ri] = (int)byt;
                     increment();
                     break;
+                case LDB1:
+                    increment();
+                    ri = fetch(pc);//get dst reg
+                    increment();
+                    data = fetch(pc);//get src reg
+                    data = reg[data];//get address in src reg
+                    byt = fetchChar(data);//get byte at address in src reg
+                    reg[ri] = (int)byt;
+                    increment();
+                    break;
                 case LDR://
                     increment();//instruction over
                     ri = fetch(pc);//fetch desired register
@@ -125,11 +140,28 @@ struct vm {
                     reg[ri] = reg[data];
                     increment();
                     break;
+                case STB:
+                    increment();
+                    ri = fetch(pc);//get src reg
+                    increment();
+                    data = fetch(pc);//get address of label
+                    storeChar(data, reg[ri]);
+                    increment();
+                    break;
+                case STB1:
+                    increment();
+                    ri = fetch(pc);//get src reg
+                    increment();
+                    data = fetch(pc);//get dst reg
+                    data = reg[data];//get address in dst reg
+                    storeChar(data, reg[ri]);//store byte at address
+                    increment();
+                    break;
                 case STR:
                     increment();
                     ri = fetch(pc);//get src reg
                     increment();
-                    data = fetch(pc);//get address
+                    data = fetch(pc);//get address of label
                     store(data, reg[ri]);
                     increment();
                     break;
@@ -176,7 +208,7 @@ struct vm {
                     ri = fetch(pc);
                     if(reg[data] == reg[ri])
                         reg[data] = 0;
-                    else if(data < ri)
+                    else if(reg[data] < reg[ri])
                         reg[data] = -1;
                     else
                         reg[data] = 1;
@@ -221,8 +253,19 @@ struct vm {
                     else
                         increment();
                     break;
-                default:
-                    pc += BYT_SIZE;
+                case BGT:
+                    increment();
+                    //get register
+                    ri = fetch(pc);
+                    increment();
+                    //get address
+                    data = fetch(pc);
+                    //if register value is greater than 0, branch to address
+                    if (reg[ri] > 0)
+                        pc = data;
+                    else
+                        increment();
+                    break;
             }
             
             //execute

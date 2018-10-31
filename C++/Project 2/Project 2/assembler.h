@@ -21,12 +21,13 @@
 using namespace std;
 
 //GLOBAL VARIABLES AND CONSTANTS
-const vector<string> OPS = {"JMP","JMR","BNZ","BLT","BRZ","MOV","LDA","STR","LDR","STB","LDB","ADD","ADI","SUB","MUL","DIV","CMP","TRP","STR1","LDR1","STB1","LDB1"};
-const vector<int> OPS_VALUE = {1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,20,21,22,23,24,25};//corresponds with OPS
+const vector<string> OPS = {"JMP","JMR","BNZ","BGT","BLT","BRZ","MOV","LDA","STR","LDR","STB","LDB","ADD","ADI","SUB","MUL","DIV","CMP","TRP","STR1","LDR1","STB1","LDB1"};
+const vector<int> OPS_VALUE = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,20,21,22,23,24,25};//corresponds with OPS
 const vector<string> DIR = {".INT",".BYT"};
 const int JMP = 1;
 const int JMR = 2;
 const int BNZ = 3;
+const int BGT = 4;
 const int BLT = 5;
 const int BRZ = 6;
 const int MOV = 7;
@@ -46,6 +47,7 @@ const int STR1 = 22;
 const int LDR1 = 23;
 const int STB1 = 24;
 const int LDB1 = 25;
+const int LABEL = 30; // LABEL CODE
 const int APO = 39;//apostraphe char
 const int ASCII_OFFSET = 48;
 vector<string> tokens;
@@ -169,7 +171,7 @@ struct assembler {
                     //increase pc by 4
                     increment();
                 }
-                else if (!(tokens[i].compare(DIR[1]))){ //byte
+                else if(!(tokens[i].compare(DIR[1]))){ //byte
                     i+=2;//skip the value and go to the next line
                     pc += BYT_SIZE;
                     while(!(tokens[i].compare(DIR[1]))){
@@ -178,8 +180,8 @@ struct assembler {
                     }
                         
                 }
-                else
-                    pc += BYT_SIZE;
+                else{
+                }
             }
         }
     }
@@ -265,10 +267,10 @@ struct assembler {
                     increment();
                     increment();
                 }
-                else if (op == LDA || op == BNZ || op == BLT || op == BRZ || op == LDB){//takes a register and a directive
+                else if (op == LDA || op == BNZ || op == BLT || op == BRZ || op == BGT){//takes a register and a directive
                     i = regAndDirData(i, op);
                 }
-                else if (op == LDR){//could be indirect or directive
+                else if (op == LDR || op == LDB){//could be indirect or directive
                     int temp = i;
                     temp++;
                     //move directly second parameter
@@ -277,13 +279,16 @@ struct assembler {
                     if (std::regex_search(tokens[temp], match, re)){//contains register?
                         //REGISTER INDIRECT
                         //Get new op code
-                        op = LDR1;
+                        if (op == LDR)
+                            op = LDR1;
+                        if (op == LDB)
+                            op = LDB1;
                         regAndReg(i, op);
                     }
                     else
                         i = regAndDirData(i, op);
                 }
-                else if (op == STR){
+                else if (op == STR || op == STB){
                     int temp = i;
                     temp++;
                     //move directly second parameter
@@ -292,7 +297,10 @@ struct assembler {
                     if (std::regex_search(tokens[temp], match, re)){//contains register?
                         //REGISTER INDIRECT store
                         //Get new op code
-                        op = STR1;
+                        if (op == STR)
+                            op = STR1;
+                        if (op == STB)
+                            op = STB1;
                         regAndReg(i, op);
                     }
                     else
@@ -363,8 +371,10 @@ struct assembler {
                         i++;
                     }
                 }
-                else
-                    pc += BYT_SIZE;
+                else{
+                    //is label, do nothing
+                }
+                
             }
         }
     }
