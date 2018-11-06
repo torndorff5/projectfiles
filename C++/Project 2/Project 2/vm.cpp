@@ -22,7 +22,7 @@ int main(int argc, const char * argv[]) {
     else{
         string filename = argv[1];
         fstream in;
-        in.open("/Users/codeslinger/Desktop/C++/Project 2/Project 2/proj2.txt", ios::in);
+        in.open(filename, ios::in);
         string input;
         char c;
         if (in.is_open()){
