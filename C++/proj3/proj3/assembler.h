@@ -49,14 +49,25 @@ const int STB1 = 24;
 const int LDB1 = 25;
 const int LABEL = 30; // LABEL CODE
 const int APO = 39;//apostraphe char
+const int SL = 9;
+const int SP = 10;
+const int FP = 11;
+const int SB = 12;
+const int PC = 13;
 const int ASCII_OFFSET = 48;
+const int STACK_SIZE = 1200;
 vector<string> tokens;
-int reg[13];
+int reg[14];
 const int INT_SIZE = 4;
 const int BYT_SIZE = 1;
 const int INSTRUCT_SIZE = 12;
 static int p_start = -1;
 static int p_end = -1;
+static int sl = 0;
+static int sp = 0;
+static int fp = 0;
+static int sb = 0;
+static int pfp = 0;
 map<string,int> symboltable;
 static int pc = 0;
 char* machinecode;
@@ -64,6 +75,7 @@ char* machinecode;
 //increments the PC for a program size
 static void increment(){
     pc += INT_SIZE;
+    reg[PC] = pc;
 }
 
 struct assembler {
@@ -74,7 +86,7 @@ struct assembler {
         int* ii;
         //register
         //get second char of R
-        reg = (int)tokens[i].at(1) - ASCII_OFFSET;
+        reg = getReg(i, op);
         i++;
         //followed by directive
         address = symboltable.find(tokens[i])->second;
@@ -94,7 +106,23 @@ struct assembler {
     static int getReg(int i, int op){///get register in R# format or FP, SB, SL, SP
         //if
         int r = 0;
-        return r = (int)tokens[i].at(1)-ASCII_OFFSET;
+        if(tokens[i].at(0) == 'R'){//R#{
+            return r = (int)tokens[i].at(1)-ASCII_OFFSET;
+            }
+        else if (tokens[i].find("SL") != string::npos){
+            return r = SL;
+        }
+        else if (tokens[i].find("SP") != string::npos){
+            return r = SP;
+        }
+        else if (tokens[i].find("FP") != string::npos){
+            return r = FP;
+        }
+        else if (tokens[i].find("SB") != string::npos){
+            return r = SB;
+        }
+        else
+            return r = PC;
     }
     static int regAndReg(int i, int op){
         int r = 0;
@@ -259,7 +287,7 @@ struct assembler {
                 }
                 else if (op == JMR){
                     //get reg argument
-                    reg = (int)tokens[i].at(1)-ASCII_OFFSET;
+                    reg = getReg(i, op);
                     //store op code, reg, and padding
                     ii = (int*)(machinecode + pc);
                     *ii = op;
@@ -275,8 +303,8 @@ struct assembler {
                 else if (op == LDR || op == LDB){//could be indirect or directive
                     int temp = i;
                     temp++;
-                    //move directly second parameter
-                    std::regex re("[R][0-9]");
+                    //move directly to second parameter
+                    std::regex re("[R][0-9]|SP|SL|FP|SB");
                     std::smatch match;
                     if (std::regex_search(tokens[temp], match, re)){//contains register?
                         //REGISTER INDIRECT
@@ -294,7 +322,7 @@ struct assembler {
                     int temp = i;
                     temp++;
                     //move directly second parameter
-                    std::regex re("[R][0-9]");
+                    std::regex re("[R][0-9]|SP|SL|FP|SB");
                     std::smatch match;
                     if (std::regex_search(tokens[temp], match, re)){//contains register?
                         //REGISTER INDIRECT store
@@ -310,7 +338,7 @@ struct assembler {
                 }
                 else if (op == ADI){
                     //get register
-                    reg = (int)tokens[i].at(1) - ASCII_OFFSET;
+                    reg = getReg(i, op);
                     i++;
                     //get imediate value
                     val = stoi(tokens[i]);
