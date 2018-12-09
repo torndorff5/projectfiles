@@ -1,8 +1,8 @@
 //
 //  main.cpp
-//  proj3
+//  proj4
 //
-//  Created by codeslinger on 11/6/18.
+//  Created by codeslinger on 12/4/18.
 //  Copyright © 2018 codeslinger. All rights reserved.
 //
 
@@ -15,7 +15,7 @@ int main(int argc, const char * argv[]) {
     else{
         string filename = argv[1];
         fstream in;
-        in.open(filename, ios::in);
+        in.open("/Users/codeslinger/Desktop/C++/proj4/proj4/proj4.txt", ios::in);
         string input;
         char c;
         if (in.is_open()){
