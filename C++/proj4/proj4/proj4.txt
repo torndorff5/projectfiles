@@ -1,24 +1,71 @@
+A .BYT 'A'
+B .BYT 'B'
+C .BYT 'C'
+E .BYT 'E'
+F .BYT 'F'
+H .BYT 'H'
+I .BYT 'I'
+K .BYT 'K'
+L .BYT 'L'
+N .BYT 'N'
+O .BYT 'O'
+R .BYT 'R'
 S .BYT 'S'
 T .BYT 'T'
-A .BYT 'A'
-c .BYT 'C'
-K .BYT 'K'
-O .BYT 'O'
 V .BYT 'V'
-E .BYT 'E'
-R .BYT 'R'
-F .BYT 'F'
-L .BYT 'L'
 W .BYT 'W'
+X .BYT 'X'
+Y .BYT 'Y'
 NL .BYT 10
+SACE .BYT 32
 INPUT .INT 0
 ONE .INT 1
-TEMP .INT 0
+ZERO .INT 0
 
 
-START       ; GET INPUT FROM USER 
+START       ; GET INPUT FROM USER
             TRP 5
             STR R3, INPUT
+            LDR R4, ZERO
+            CMP R3, R4
+            BRZ R3, ENDWHILE
+            LDB R3, NL
+            TRP 3
+            LDB R3, F
+            TRP 3
+            LDB R3, I
+            TRP 3
+            LDB R3, B
+            TRP 3
+            LDB R3, O
+            TRP 3
+            LDB R3, N
+            TRP 3
+            LDB R3, A
+            TRP 3
+            LDB R3, C
+            TRP 3
+            TRP 3
+            LDB R3, I
+            TRP 3
+            LDB R3, SACE
+            TRP 3
+            LDB R3, O
+            TRP 3
+            LDB R3, F
+            TRP 3
+            LDB R3, SACE
+            TRP 3
+            LDB R3, INPUT
+            TRP 1
+            LDB R3, SACE
+            TRP 3
+            LDB R3, I
+            TRP 3
+            LDB R3, S
+            TRP 3
+            LDB R3, SACE
+            TRP 3
             ; TEST FOR OVERFLOW
             MOV R5, SP      ; Test for overflow
             ADI R5, -12     ; Allocate for 1 int parameters plus RA and PFP AND RV
@@ -39,7 +86,10 @@ START       ; GET INPUT FROM USER
             JMP FIB   ; JUMP TO FIB
             LDR R3, SP
             TRP 1
-            JMP END
+            LDB R3, NL
+            TRP 3
+            JMP START
+ENDWHILE    JMP END
 
 ; int fib(int n)
 ; {
@@ -143,7 +193,7 @@ OVERFLOW    LDB R3, S
             TRP 3
             LDB R3, A
             TRP 3
-            LDB R3, c
+            LDB R3, C
             TRP 3
             LDB R3, K
             TRP 3
