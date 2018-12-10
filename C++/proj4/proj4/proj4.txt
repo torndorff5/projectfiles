@@ -17,11 +17,15 @@ W .BYT 'W'
 X .BYT 'X'
 Y .BYT 'Y'
 NL .BYT 10
+COM .BYT ','
 SACE .BYT 32
 INPUT .INT 0
 ONE .INT 1
 ZERO .INT 0
-
+ARRAY .INT 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+SIZE .INT 120
+CNT .INT 0
+ITER .INT 0
 
 START       ; GET INPUT FROM USER
             TRP 5
@@ -29,6 +33,19 @@ START       ; GET INPUT FROM USER
             LDR R4, ZERO
             CMP R3, R4
             BRZ R3, ENDWHILE
+            LDR R3, SIZE
+            LDR R4, CNT
+            CMP R3, R4
+            BRZ R3, ENDWHILE
+            ; PUT INPUT INTO ARRAY AT [CNT]
+            LDA R1, ARRAY   ; LOAD ARRAY ADDRESS INTO R1
+            LDR R2, CNT     ; ADD CNT TO ADDRESS
+            ADD R1, R2
+            LDR R3, INPUT   ; STORE INPUT INTO ARRAY+CNT
+            STR R3, R1
+            LDR R1, CNT     ; INCREMENT CNT BY INT SIZE
+            ADI R1, 4
+            STR R1, CNT
             LDB R3, NL
             TRP 3
             LDB R3, F
@@ -86,16 +103,60 @@ START       ; GET INPUT FROM USER
             JMP FIB   ; JUMP TO FIB
             LDR R3, SP
             TRP 1
+            ; PUT RESULT INTO ARRAY AT ARRAY + CNT
+            LDA R1, ARRAY   ; LOAD ARRAY ADDRESS INTO R1
+            LDR R2, CNT     ; ADD CNT TO ADDRESS
+            ADD R1, R2
+            STR R3, R1   ; STORE RESULT(R3) INTO ARRAY+CNT
+            LDR R1, CNT     ; INCREMENT CNT BY INT SIZE
+            ADI R1, 4
+            STR R1, CNT
             LDB R3, NL
             TRP 3
             JMP START
-ENDWHILE    JMP END
+            ;   PRINT OUT ARRAY FRONT AND BACK UNTIL THE MIDDLE TWO VALUES
+ENDWHILE    LDB R3, NL
+            TRP 3
+            ; SUB 1 INT SIZE FROM CNT
+            LDR R1, CNT
+            ADI R1, -4
+            STR R1, CNT
+PRINT       ;   WHILE CNT > ITER
+            LDR R4, CNT
+            LDR R5, ITER
+            CMP R4, R5
+            BLT R4, ENDPRINT
+            LDA R4, ARRAY   ; ARRAY ADDRESS TO R4
+            LDR R5, ITER    ; ITER INTO R5
+            ADD R4, R5  ; ADD ITER TO ARRAY ADDRESS
+            LDR R3, R4  ; LOAD ARRAY[ITER] INTO R3
+            TRP 1
+            LDB R3, COM
+            TRP 3
+            LDB R3, SACE
+            TRP 3
+            LDA R4, ARRAY   ; ARRAY ADDRESS TO R4
+            LDR R5, CNT
+            ADD R4, R5  ; ADD CNT TO ARRAY ADDRESS
+            LDR R3, R4  ; LOAD ARRAY[CNT] INTO R3
+            TRP 1
+            LDB R3, COM
+            TRP 3
+            LDB R3, SACE
+            TRP 3
+            ; INCREMETN ITER INT SIZE
+            LDR R1, ITER
+            ADI R1, 4
+            STR R1, ITER
+            ; DECREMENT CNT INT SIZE
+            LDR R1, CNT
+            ADI R1, -4
+            STR R1, CNT
+            JMP PRINT
+ENDPRINT    JMP END
 
-; int fib(int n)
-; {
-;    if (n <= 1) return n;
-;    else return fib(n-1) + fib(n-2);
-; }
+
+
 
 
 FIB         MOV R3, FP
@@ -234,4 +295,3 @@ UNDERFLOW   LDB R3, F
 END         LDB R3, NL
             TRP 3
             TRP 3
-
