@@ -29,6 +29,7 @@
 		52BD782C21B75AD1006FBBAE /* vm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vm.h; sourceTree = "<group>"; };
 		52BD782D21B75AD1006FBBAE /* assembler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = assembler.h; sourceTree = "<group>"; };
 		52BD782F21B75B42006FBBAE /* proj4.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = proj4.txt; sourceTree = "<group>"; };
+		52E0C38F21BF01EC001AAA7A /* extra.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = extra.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +66,7 @@
 				52BD782C21B75AD1006FBBAE /* vm.h */,
 				52BD782D21B75AD1006FBBAE /* assembler.h */,
 				52BD782F21B75B42006FBBAE /* proj4.txt */,
+				52E0C38F21BF01EC001AAA7A /* extra.txt */,
 			);
 			path = proj4;
 			sourceTree = "<group>";
