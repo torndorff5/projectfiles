@@ -43,22 +43,45 @@ struct vm {
         cc = (char*)(machinecode + address);
         *cc = byt;
     }
+    static void loadThread(int thread_id){
+        //fetch and update pc, sl, sp, fp, sb, and all registers off of current thread stack
+        
+        
+    }
+    static void saveThread(){
+        //save current pc, sl, sp, fp, sb, and all registers to thread stack of thread_id
+        int j = 0;
+        for(int i =0; i<=THREAD_STATE_SIZE;i+=INT_SIZE){
+            store(sb+i,reg[j]);
+            j++;
+        }
+        
+        
+    }
     //execute function
     static void execute(char* machinecode, int start){//takes pointer to front of dynamic char array
+        int data = 0;
+        int ri = 0;
+        char byt;
+        //fire up main thread
         pc = start;
         reg[PC] = pc;
         sl = p_end;
         sb = sl + STACK_SIZE;
-        fp = sb;
-        sp = sb;//initialize runtime stack of size stack size
+        fp = sb + THREAD_STATE_SIZE;
+        sp = fp;//initialize runtime stack of size stack size
         reg[SL] = sl;
         reg[SP] = sp;
         reg[FP] = fp;
         reg[SB] = sb;
-        int data = 0;
-        int ri = 0;
-        char byt;
+        t1 = sb - TS;
+        t2 = sb - (TS * 2);
+        threads.push(MAIN);//0 = main id
+        saveThread();
+        int current_thread;
         while (pc < p_end){
+            current_thread = threads.front();
+            loadThread(current_thread);
             //fetch
             data = fetch(pc);
             //decode
@@ -309,8 +332,29 @@ struct vm {
                     else
                         vincrement();
                     break;
+                case RUN:
+                    vincrement();
+                    //get register
+                    ri = fetch(pc);
+                    vincrement();
+                    //get address to start thread at
+                    data = fetch(pc);
+                    vincrement();
+                    //start thread at location and place identifier in reg[ri]
+                    //if not one available,
+                        //throw exception
+                    //initialize new thread if available on its stack
+                    //push thread onto queue
+                
+                    break;
+            
             }
-            //execute
+            //save thread state
+            saveThread();
+            //pop thread
+            threads.pop();
+            //push thread
+            threads.push(current_thread);
         }
         cout << "END" << endl;
     }

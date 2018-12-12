@@ -17,6 +17,9 @@
 #include <sstream>
 #include <map>
 #include <regex>
+#include <thread>
+#include <mutex>
+#include <queue>
 
 using namespace std;
 
@@ -58,12 +61,15 @@ const int FP = 11;
 const int SB = 12;
 const int PC = 13;
 const int ASCII_OFFSET = 48;
-const int STACK_SIZE = 1200;
+const int STACK_SIZE = 3600;
+const int TS = 1200;
 vector<string> tokens;
 int reg[14];
+queue<int> threads; //all active threads will be in this queue 
 const int INT_SIZE = 4;
 const int BYT_SIZE = 1;
 const int INSTRUCT_SIZE = 12;
+const int THREAD_STATE_SIZE = 52;
 static int p_start = -1;
 static int p_end = -1;
 static int sl = 0;
@@ -71,6 +77,12 @@ static int sp = 0;
 static int fp = 0;
 static int sb = 0;
 static int pfp = 0;
+static int t1 = 0;
+static int t2 = 0;
+static int t1sl = 0;
+static int t2sl = 0;
+const int MAIN = 0;
+
 map<string,int> symboltable;
 static int pc = 0;
 char* machinecode;
@@ -358,7 +370,13 @@ struct assembler {
                 }
                 else if (op == END || op == BLK){
                     //store op code
+                    ii = (int*)(machinecode + pc);
+                    *ii = op;
                     //increment by 12
+                    increment();
+                    increment();
+                    increment();
+                    i--;//negate the i increment that follows
                 }
                 else {//takes two registers
                     i = regAndReg(i, op);
