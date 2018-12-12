@@ -45,7 +45,18 @@ struct vm {
     }
     static void loadThread(int thread_id){
         //fetch and update pc, sl, sp, fp, sb, and all registers off of current thread stack
-        
+        int ts_address = 0;
+        if(thread_id == MAIN)
+            ts_address = p_end + STACK_SIZE;
+        else if(thread_id == t1)
+            ts_address = t1;
+        else if (thread_id == t2)
+            ts_address = t2;
+        int j = 0;
+        for(int i =0; i<=THREAD_STATE_SIZE;i+=INT_SIZE){
+            reg[j] = fetch(ts_address+i);
+            j++;
+        }
         
     }
     static void saveThread(){
@@ -77,6 +88,7 @@ struct vm {
         t1 = sb - TS;
         t2 = sb - (TS * 2);
         threads.push(MAIN);//0 = main id
+        thr[MAIN] = true;
         saveThread();
         int current_thread;
         while (pc < p_end){
@@ -340,9 +352,13 @@ struct vm {
                     //get address to start thread at
                     data = fetch(pc);
                     vincrement();
-                    //start thread at location and place identifier in reg[ri]
                     //if not one available,
-                        //throw exception
+                    bool available = false;
+                    for(int i = 0; i < NUM_THREADS; i++)
+                        if(!thr[i])
+                            available = true;
+                    if(!available)
+                        reg[ri] = -1;//exception location.
                     //initialize new thread if available on its stack
                     //push thread onto queue
                 

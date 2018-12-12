@@ -63,8 +63,10 @@ const int PC = 13;
 const int ASCII_OFFSET = 48;
 const int STACK_SIZE = 3600;
 const int TS = 1200;
+const int NUM_THREADS = 3;
 vector<string> tokens;
 int reg[14];
+bool thr[] = {false,false,false};
 queue<int> threads; //all active threads will be in this queue 
 const int INT_SIZE = 4;
 const int BYT_SIZE = 1;
