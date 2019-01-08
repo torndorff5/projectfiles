@@ -1,30 +1,21 @@
 #include <iostream>
-
 using namespace std;
-
-int fib(int n)
-{
-    if (n <= 1) return n;
-    else return fib(n-1) + fib(n-2);
-}
-
-
-
-int main () {
-    int a[30];
-    int cnt = 0;
-    int x = -1;
-    int y = 0;
-    while (x != 0){
-        cin >> x;
-        a[cnt++] = x;
-        y = fib(x);
-        a[cnt++] = y;
-        cout << "The fib of " << x << " is " << y << endl;
+long long a[10];
+int main() {
+    int n, m;
+    cin >> n >> m;
+    for (int i = 0; i < m; i++) {
+        int s, e, k;
+        cin >> s >> e >> k;
+        a[s] += k;
+        a[e + 1] -= k;
     }
-    int i = 0;
-    cnt--;
-    while (cnt > i){
-        cout << a[i++]<< " " << a[cnt--] << " ";
+    long long now = 0;
+    long long best = 0;
+    for (int i = 1; i <= n; i++) {
+        now += a[i];
+        if (now > best)
+            best = now;
     }
+    cout << best << endl;
 }

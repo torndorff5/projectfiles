@@ -13,7 +13,7 @@ int main(int argc, const char * argv[]) {
         cout << "No file argument passed" << endl;
     }
     else{
-        string filename = "/Users/codeslinger/Desktop/C++/proj4/proj4/proj4.txt";
+        string filename = argv[1];
         fstream in;
         in.open(filename, ios::in);
         string input;
@@ -38,6 +38,7 @@ int main(int argc, const char * argv[]) {
     }
     return 0;
 }
+
 
 
 

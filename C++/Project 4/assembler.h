@@ -69,7 +69,7 @@ vector<string> tokens;
 int reg[14];
 bool thr[] = {false,false,false};
 map<int,bool> thre;
-queue<int> threads; //all active threads will be in this queue 
+queue<int> threads; //all active threads will be in this queue
 const int INT_SIZE = 4;
 const int BYT_SIZE = 1;
 const int INSTRUCT_SIZE = 12;
@@ -433,4 +433,5 @@ struct assembler {
 };
 
 #endif /* assembler_h */
+
 

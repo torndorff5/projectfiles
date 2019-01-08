@@ -415,7 +415,7 @@ struct vm {
                             available = true;
                             break;
                         }
-                            
+                        
                     }
                     if(!available)
                         reg[ri] = -1;//exception location.
@@ -437,7 +437,7 @@ struct vm {
                     threads.push(ts_loc);
                     reg[ri] = ts_loc;
                     break;
-            
+                    
             }
             //save thread state
             updateReg();
@@ -453,4 +453,5 @@ struct vm {
 };
 
 #endif /* vm_h */
+
 
