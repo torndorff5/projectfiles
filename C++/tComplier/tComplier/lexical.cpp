@@ -12,6 +12,7 @@
 #include <string>
 #include <fstream>
 #include <regex>
+#include <cstdlib>
 
 using namespace std;
 
@@ -21,6 +22,8 @@ using namespace std;
 //
 struct lexical {
     
+    
+    
     //type enumeration
     enum Type {numb, charact, id, punct, keyw, symb, uk, eof};
     //token class that has a lexeme, line# and type
@@ -29,6 +32,24 @@ struct lexical {
         int line_num;
         Type t;
     };
+    
+    //checks type of token and sets its type value
+    static void checkType(token &t){
+        //Reg expressions
+        std::regex reg_num("[0-9]");
+        std::smatch match;
+        
+        if (std::regex_search(t.lexeme,match, reg_num)){//istoken a number?
+            cout << "curr is number" << endl; //debug output
+            t.t = numb;
+        }
+    }
+    
+    //gets token from front char of string, places char in token, and pops front char
+    static void getChar(string& s, token& t){
+        t.lexeme = s.front();
+        s.erase(s.begin());//assign next token to front of line
+    }
     
     //token interface
     struct tokenface {
@@ -42,11 +63,14 @@ struct lexical {
             return next;
         }
         void nextToken(){
+            //check to see if end of line
+            //if end of line, get next line.
             curr = next;
-            next.lexeme = buffer.front();
-            buffer.erase(buffer.begin());
+            getChar(buffer, next);//get char for lexeme
+            checkType(next);//check type
         }
     };
+    
     
     static void execute(std::string filename){
         //*************************Open file***************************
@@ -60,11 +84,12 @@ struct lexical {
             cout << "File opened successfully." << endl;//debug output
             std::getline(in,tf.buffer);//read in first line
             cout << tf.buffer << endl;//debug output
-            tf.next.lexeme = tf.buffer.front();
-            tf.buffer.erase(tf.buffer.begin());
             
-            tf.nextToken();
-            if (tf.peekToken() == tanner orndorff : i was just checking to see if the next char in my test sequence was a number. We need to use regex to get a number. 
+            getChar(tf.buffer, tf.next);//place first char of first line into next
+            checkType(tf.next);//check type of next token
+            tf.nextToken();//move to next token
+            tanner orndorff : i am about to test my code to see if it has successfully scanned the first two chars and set their token data to the right values. 
+
             
         }
         else{
