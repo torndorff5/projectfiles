@@ -78,9 +78,12 @@ struct lexical {
         std::regex reg_pchar("[']");
         std::smatch match;
         
+        if(next.lexeme == "\\"){
+            addnextToken();
+        }
         if (std::regex_search(next.lexeme,match, reg_charact)){//if next is anything but new line or eof
             addnextToken();
-            if (std::regex_search(next.lexeme,match, reg_pchar)){//if next is a '
+            if (std::regex_search(next.lexeme,match, reg_pchar)){
                 addnextToken();
                 curr.type = charact;
             }
@@ -196,16 +199,47 @@ struct lexical {
                     //check to see if next is a letter
                     charCheck();
                 }
-                    
-                tokens.push_back(curr);//debug
-                cout << curr.lexeme << "\t\t" << curr.type << endl;//debug 
+                printToken(curr);
             }
         }
         else{
             cout << "Error opening file." << endl;
         }
     }
-    
+    void printToken(token t){
+        switch(t.type){
+            case space:
+                cout << t.lexeme << "\t\t" << "space" << endl;
+                break;
+            case numb:
+                cout << t.lexeme << "\t\t" << "number" << endl;
+                break;
+            case pchar:
+                cout << t.lexeme << "\t\t" << "potential character" << endl;
+                break;
+            case charact:
+                cout << t.lexeme << "\t\t" << "character" << endl;
+                break;
+            case id:
+                cout << t.lexeme << "\t\t" << "identifier" << endl;
+                break;
+            case punct:
+                cout << t.lexeme << "\t\t" << "punctuation" << endl;
+                break;
+            case keyw:
+                cout << t.lexeme << "\t\t" << "keyword" << endl;
+                break;
+            case symb:
+                cout << t.lexeme << "\t\t" << "symbol" << endl;
+                break;
+            case uk:
+                cout << t.lexeme << "\t\t" << "unknown" << endl;
+                break;
+            case eof:
+                cout << t.lexeme << "\t\t" << "eof" << endl;
+                break;
+        }
+    }
     
     
 };
