@@ -16,7 +16,8 @@ int main(int argc, const char * argv[]) {
     else{
         string filename = "/Users/codeslinger/Desktop/C++/tComplier/tComplier/test.kxi";
         //Call Lexical analysis on file read in.
-        lexical::execute(filename);
+        lexical l;
+        l.execute(filename);
         //pass one
         //assembler::passOne(input);
         //pass two

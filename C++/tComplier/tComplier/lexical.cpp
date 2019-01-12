@@ -22,113 +22,190 @@ using namespace std;
 //
 struct lexical {
     
-    
+    const vector<string> KEYWORDS = { "atoi" , "and" , "bool" , "block" , "break", "case" , "class" , "char" , "cin" , "cout" , "default" , "else" , "false" , "if" , "int" , "itoa" , "kxi2019" , "lock" , "main", "new" , "null" , "object" , "or" , "public" , "private" , "protected" , "return" , "release" , "string" , "spawn" , "sym" , "set", "switch" , "this" , "true" , "thread" , "unprotected" , "unlock" , "void" , "while" , "wait" };
     
     //type enumeration
-    enum Type {space, numb, charact, id, punct, keyw, symb, uk, eof};
+    //space, number, potential character literal, character literal, identifier, punctuation, keyword, symbol, unknown, end of file
+    enum Type {space, numb, pchar, charact, id, punct, keyw, symb, uk, eof};
     
     //token class that has a lexeme, line# and type
     struct token {
         string lexeme;
-        int line_num;
+        size_t line_num;
         Type type;
     };
     
+    //struct level variables
+    size_t line_number;
+    fstream in;
+    string buffer;
+    token curr;
+    token next;
     
+
     
     //checks type of token and sets its type value
-    static void checkType(token &t){
+    void checkType(token &t){
         //Reg expressions
         std::regex reg_space("[ ]");
         std::regex reg_numb("[0-9]");
-        std::regex reg_charact("[^0-9]");
-        
+        std::regex reg_id("[a-zA-Z]|_");
+        std::regex reg_symb("[+-/*<>!=&]");//
+        std::regex reg_punct("[:,;]");
+        std::regex reg_pchar("[']");
         std::smatch match;
         
-        if (std::regex_search(t.lexeme,match, reg_space)){//is token a space
-            cout << "curr is space" << endl;//debug output
+        if (std::regex_search(t.lexeme,match, reg_space))//is token a space
             t.type = space;
-        }
-        else if (std::regex_search(t.lexeme,match, reg_numb)){//istoken a number?
-            cout << "curr is number" << endl; //debug output
+        else if (std::regex_search(t.lexeme,match, reg_pchar))//istoken a number?
+            t.type = pchar;
+        else if((std::regex_search(t.lexeme,match, reg_symb) || t.lexeme == "[" ||t.lexeme == "]" ||t.lexeme == "{" ||t.lexeme == "}" ||t.lexeme == "(" ||t.lexeme == ")") && t.lexeme != "," && t.lexeme != ".")
+            t.type = symb;
+        else if (std::regex_search(t.lexeme,match, reg_numb))//istoken a number?
             t.type = numb;
+        else if(std::regex_search(t.lexeme,match, reg_id))
+            t.type = id;
+        else if(std::regex_search(t.lexeme,match, reg_punct))
+            t.type = punct;
+        else
+            t.type = uk;
+        
+    }
+    
+    //check to see if current is charact
+    void charCheck(){
+        std::regex reg_charact(".");
+        std::regex reg_pchar("[']");
+        std::smatch match;
+        
+        if (std::regex_search(next.lexeme,match, reg_charact)){//if next is anything but new line or eof
+            addnextToken();
+            if (std::regex_search(next.lexeme,match, reg_pchar)){//if next is a '
+                addnextToken();
+                curr.type = charact;
+            }
         }
-        else if(std::regex_search(t.lexeme,match, reg_charact)){
-            cout << "curr is char" << endl; //debug output
-            t.type = charact;
-        }
+    }
+    
+    //checks to see if a string is a keyw
+    void checkKeyW(token& t){
+        if(find(KEYWORDS.begin(), KEYWORDS.end(), t.lexeme) != KEYWORDS.end())
+            t.type = keyw;
     }
     
     //gets token from front char of string, places char in token, and pops front char
-    static void getChar(string& s, token& t){
+    void getChar(string& s, token& t){
         t.lexeme = s.front();
         s.erase(s.begin());//assign next token to front of line
     }
-    
-    //token interface
-    struct tokenface {
-        string buffer;
-        token curr;
-        token next;
-        token getToken(){
-            return curr;
-        }
-        token peekToken(){
-            return next;
-        }
-        void nextToken(){
-            //check to see if end of line
-            tanner orndorff : i was just about to write the code that would check for end of line and fetch another line into the buffer. 
+
+    token getToken(){
+        return curr;
+    }
+    token peekToken(){
+        return next;
+    }
+    void nextToken(){
+        //check to see if end of line
+        if(!buffer.empty()){
             //if end of line, get next line.
             curr = next;
-            getChar(buffer, next);//get char for lexeme
-            checkType(next);//check type
+            updateNext();
         }
-        void addnextToken(){
-            //test to see if end of line
-            //add lexeme of next to that of current and fetch the following char
-            curr.lexeme += next.lexeme;
-            getChar(buffer, next);
-            checkType(next);
+        //get new line
+        else{
+            getLine();
+            if(in.eof())
+            {
+                curr = next;
+                tokenEOF(next);
+            }
+            else if (buffer.empty()){
+                curr = next;
+                updateNext();
+            }
+            else{
+                curr = next;
+                updateNext();
+            }
         }
-    };
+    }
+    void addnextToken(){
+        //add lexeme of next to that of current and fetch the following char
+        curr.lexeme += next.lexeme;
+        updateNext();
+    }
+    //gets next line of file and puts in buffer, updates line number
+    void getLine(){
+        std::getline(in,buffer);
+        line_number++;
+    }
+    //updates next token with next char, checks type, and the right line number
+    void updateNext(){
+        getChar(buffer, next);
+        checkType(next);
+        next.line_num = line_number;
+    }
+    //sets token to eof
+    void tokenEOF(token& t){
+        t.lexeme = "eof";
+        t.line_num = line_number;
+        t.type = eof;
+    }
     
-    
-    static void execute(std::string filename){
+    void execute(std::string filename){
         //*************************Open file***************************
         //2.    Tokenize the input of the source file by grouping individual characters together to form tokens by scanning the input from LEFT-TO-RIGHT. Don't try to build a context into your scanner that is part of parsing this is just lexical analysis just work LEFT-TO-RIGHT.
         //3.    For each token created output the token type , line number and the lexeme associated with the token. This is debug code that you should make easy to turn off and on.
         //4.    Discard all comments until the end of a line is reached.
         //vector of tokens
         vector<token> tokens;
-        fstream in;
         in.open(filename, ios::in);
-        tokenface tf;
         if (in.is_open()){
             cout << "File opened successfully." << endl;//debug output
-            std::getline(in,tf.buffer);//read in first line
-            cout << tf.buffer << endl;//debug output
-            getChar(tf.buffer, tf.next);//place first char of first line into next
-            checkType(tf.next);//check type of next token
-            while(tf.curr.type != eof){
-                tf.nextToken();//move to next token, set current to next
-                if(tf.curr.type == space){//if the current token is a space
-                    //discard and go to next
-                    continue;
+            std::getline(in,buffer);//read in first line
+            line_number = 1;
+            cout << buffer << endl;//debug output
+            updateNext();
+            while(curr.type != eof){
+                nextToken();//move to next token, set current to next
+                if(curr.type == eof){
+                    tokens.push_back(curr);//debug output
+                    cout << curr.lexeme << "\t\t" << curr.type << endl;//debug output
+                    break;
                 }
-                else if(tf.curr.type == numb){//if current is a number
+                
+                else if(curr.type == space)//if the current token is a space
+                    continue;//discard and go to next
+                else if(curr.type == numb){//if current is a number
                     //check to see if next is a number
-                    while(tf.next.type == numb){
+                    while(next.type == numb){
                         //add next to current and fetch next
-                        tf.addnextToken();
+                        addnextToken();
                     }
                 }
-                tokens.push_back(tf.curr);
+                else if (curr.type == id){
+                    //check to see if next is a number or id
+                    while(next.type == numb || next.type == id){
+                        //add next to current and fetch next
+                        addnextToken();
+                    }
+                    checkKeyW(curr);
+                }
+                else if (curr.type == pchar){
+                    //check to see if next is a letter
+                    charCheck();
+                }
+                    
+                tokens.push_back(curr);//debug
+                cout << curr.lexeme << "\t\t" << curr.type << endl;//debug 
             }
-            
         }
         else{
             cout << "Error opening file." << endl;
         }
     }
+    
+    
+    
 };
