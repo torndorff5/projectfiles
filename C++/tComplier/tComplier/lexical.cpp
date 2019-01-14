@@ -26,7 +26,7 @@ struct lexical {
     
     //type enumeration
     //space, number, potential character literal, character literal, identifier, punctuation, keyword, symbol, unknown, end of file
-    enum Type {space, nl, numb, pchar, charact, id, punct, keyw, symb, uk, eof};
+    enum Type {space, nl, numb, pchar, charact, id, punct, keyw, mathop,logicop,relop,assop,arrayb,arraye,blockb,blocke,parentho,parenthc, uk, eof};
     
     //token class that has a lexeme, line# and type
     struct token {
@@ -50,23 +50,42 @@ struct lexical {
         std::regex reg_space("[ ]");
         std::regex reg_numb("[0-9]");
         std::regex reg_id("[a-zA-Z]|_");
-        std::regex reg_symb("[+-*/<>!=&]");//
-        std::regex reg_punct("[:,;]");
+        std::regex reg_mathop("[+*/]");//
+        std::regex reg_relop("[<>!]");
+        std::regex reg_punct("[:,;.]");
         std::regex reg_pchar("[']");
         std::smatch match;
         
         if (std::regex_search(t.lexeme,match, reg_space))//is token a space
             t.type = space;
+        else if (std::regex_search(t.lexeme,match, reg_relop))//istoken a number?
+            t.type = relop;
+        else if (t.lexeme == "=")
+            t.type = assop;
         else if (std::regex_search(t.lexeme,match, reg_pchar))//istoken a number?
             t.type = pchar;
-        else if((std::regex_search(t.lexeme,match, reg_symb) || t.lexeme == "[" ||t.lexeme == "]" ||t.lexeme == "{" ||t.lexeme == "}" ||t.lexeme == "(" ||t.lexeme == ")") && t.lexeme != "," && t.lexeme != ".")
-            t.type = symb;
+        else if(std::regex_search(t.lexeme,match, reg_mathop) || t.lexeme == "-")
+            t.type = mathop;
+        else if(t.lexeme == "&" || t.lexeme == "|")
+            t.type = logicop;
         else if (std::regex_search(t.lexeme,match, reg_numb))//istoken a number?
             t.type = numb;
         else if(std::regex_search(t.lexeme,match, reg_id))
             t.type = id;
         else if(std::regex_search(t.lexeme,match, reg_punct))
             t.type = punct;
+        else if(t.lexeme == "(")
+            t.type = parentho;
+        else if(t.lexeme == ")")
+            t.type = parenthc;
+        else if(t.lexeme == "[")
+            t.type = arrayb;
+        else if(t.lexeme == "]")
+            t.type = arraye;
+        else if(t.lexeme == "{")
+            t.type = blockb;
+        else if(t.lexeme == "}")
+            t.type = blocke;
         else
             t.type = uk;
         
@@ -189,24 +208,37 @@ struct lexical {
                             nextToken();
                     }
                 }
-                else if(curr.type == numb){//if current is a number
-                    //check to see if next is a number
-                    while(next.type == numb){
-                        //add next to current and fetch next
-                        addnextToken();
-                    }
-                }
+                else if(curr.type == numb)//if current is a number
+                    while(next.type == numb)//check to see if next is a number
+                        addnextToken();//add next to current and fetch next
                 else if (curr.type == id){
-                    //check to see if next is a number or id
-                    while(next.type == numb || next.type == id){
-                        //add next to current and fetch next
-                        addnextToken();
-                    }
+                    while(next.type == numb || next.type == id)//check to see if next is a number or id
+                        addnextToken();//add next to current and fetch next
                     checkKeyW(curr);
                 }
-                else if (curr.type == pchar){
-                    //check to see if next is a letter
-                    charCheck();
+                else if (curr.type == pchar)
+                    charCheck();//check to see if next is a letter
+                else if (curr.type == logicop){
+                    if(curr.lexeme == "&" && next.lexeme == "&")
+                        addnextToken();
+                    else if(curr.lexeme == "|" && next.lexeme == "|")
+                        addnextToken();
+                    else
+                        curr.type = uk;
+                }
+                else if(curr.type == assop){
+                    if(next.type == assop){
+                        addnextToken();
+                        curr.type = relop;
+                    }
+                }
+                else if(curr.type == relop){
+                    if(curr.lexeme == "<" || curr.lexeme == ">" || curr.lexeme == "!"){
+                        if(next.type == assop)
+                            addnextToken();
+                        else if (curr.lexeme == "!")
+                            curr.type = uk;
+                    }
                 }
                 printToken(curr);
             }
@@ -241,8 +273,35 @@ struct lexical {
             case keyw:
                 cout << t.lexeme << "\t\t" << "keyword" << endl;
                 break;
-            case symb:
-                cout << t.lexeme << "\t\t" << "symbol" << endl;
+            case mathop:
+                cout << t.lexeme << "\t\t" << "math operation" << endl;
+                break;
+            case logicop:
+                cout << t.lexeme << "\t\t" << "logic operator" << endl;
+                break;
+            case relop:
+                cout << t.lexeme << "\t\t" << "relational operator" << endl;
+                break;
+            case assop:
+                cout << t.lexeme << "\t\t" << "assignment operation" << endl;
+                break;
+            case arrayb:
+                cout << t.lexeme << "\t\t" << "array begin" << endl;
+                break;
+            case arraye:
+                cout << t.lexeme << "\t\t" << "array end" << endl;
+                break;
+            case blockb:
+                cout << t.lexeme << "\t\t" << "block begin" << endl;
+                break;
+            case blocke:
+                cout << t.lexeme << "\t\t" << "block end" << endl;
+                break;
+            case parentho:
+                cout << t.lexeme << "\t\t" << "parenthesis open" << endl;
+                break;
+            case parenthc:
+                cout << t.lexeme << "\t\t" << "parenthesis close" << endl;
                 break;
             case uk:
                 cout << t.lexeme << "\t\t" << "unknown" << endl;
