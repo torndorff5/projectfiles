@@ -26,7 +26,7 @@ struct lexical {
     
     //type enumeration
     //space, number, potential character literal, character literal, identifier, punctuation, keyword, symbol, unknown, end of file
-    enum Type {space, numb, pchar, charact, id, punct, keyw, symb, uk, eof};
+    enum Type {space, nl, numb, pchar, charact, id, punct, keyw, symb, uk, eof};
     
     //token class that has a lexeme, line# and type
     struct token {
@@ -50,7 +50,7 @@ struct lexical {
         std::regex reg_space("[ ]");
         std::regex reg_numb("[0-9]");
         std::regex reg_id("[a-zA-Z]|_");
-        std::regex reg_symb("[+-/*<>!=&]");//
+        std::regex reg_symb("[+-*/<>!=&]");//
         std::regex reg_punct("[:,;]");
         std::regex reg_pchar("[']");
         std::smatch match;
@@ -129,7 +129,10 @@ struct lexical {
             }
             else{
                 curr = next;
-                updateNext();
+                //set next to new line
+                next.lexeme = "\n";
+                next.type = nl;
+                next.line_num = line_number;
             }
         }
     }
@@ -177,9 +180,15 @@ struct lexical {
                     cout << curr.lexeme << "\t\t" << curr.type << endl;//debug output
                     break;
                 }
-                
                 else if(curr.type == space)//if the current token is a space
                     continue;//discard and go to next
+                else if(curr.lexeme == "/"){//catch the comments
+                    if(next.lexeme == "/"){
+                        addnextToken();
+                        while(curr.type != nl)
+                            nextToken();
+                    }
+                }
                 else if(curr.type == numb){//if current is a number
                     //check to see if next is a number
                     while(next.type == numb){
@@ -210,6 +219,9 @@ struct lexical {
         switch(t.type){
             case space:
                 cout << t.lexeme << "\t\t" << "space" << endl;
+                break;
+            case nl:
+                cout << "nl\t\tnewLine" << endl;
                 break;
             case numb:
                 cout << t.lexeme << "\t\t" << "number" << endl;
