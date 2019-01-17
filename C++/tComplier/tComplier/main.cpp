@@ -14,7 +14,7 @@ int main(int argc, const char * argv[]) {
         cout << "No file argument passed" << endl;
     }
     else{
-        string filename = argv[1];
+        string filename = "/Users/codeslinger/Desktop/C++/tComplier/tComplier/test.kxi";
         //Call Lexical analysis on file read in.
         compiler c;
         c.passOne(filename);

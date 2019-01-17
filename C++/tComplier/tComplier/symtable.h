@@ -41,8 +41,19 @@ class symboltable {
         return s;
     }
     //add symbol to table
-    //
-    
+    void addSymbol(const sym s){
+        symtab.insert(std::pair<string,sym>(s.symid,s));
+    }
+    //fecth symbol
+    sym fetchSymbol(string s){
+        try{
+            sym r = symtab.at(s);
+            return r;
+        }
+        catch (std::out_of_range e){
+            throw e;
+        }
+    }
 };
 
 #endif /* symtable_h */

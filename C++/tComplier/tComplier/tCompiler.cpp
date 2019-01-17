@@ -24,7 +24,7 @@ using namespace std;
 //
 struct compiler {
     
-    const vector<string> KEYWORDS = { "atoi" , "and" , "bool" , "block" , "break", "case" , "class" , "char" , "cin" , "cout" , "default" , "else" , "false" , "if" , "int" , "itoa" , "kxi2019" , "lock" , "main", "new" , "null" , "object" , "or" , "public" , "private" , "protected" , "return" , "release" , "string" , "spawn" , "sym" , "set", "switch" , "this" , "true" , "thread" , "unprotected" , "unlock" , "void" , "while" , "wait" };
+    map<int,string> KEYWORDS = { std::pair<int,string>(0,"atoi")};about to maybe change this vector to a map so i can find keywords later  // , "and" , "bool" , "block" , "break", "case" , "class" , "char" , "cin" , "cout" , "default" , "else" , "false" , "if" , "int" , "itoa" , "kxi2019" , "lock" , "main", "new" , "null" , "object" , "or" , "public" , "private" , "protected" , "return" , "release" , "string" , "spawn" , "sym" , "set", "switch" , "this" , "true" , "thread" , "unprotected" , "unlock" , "void" , "while" , "wait" };
     
     //type enumeration
     //space, number, potential character literal, character literal, identifier, punctuation, keyword, symbol, unknown, end of file
@@ -308,13 +308,15 @@ struct compiler {
                 }
                 else if(curr.type == nl)
                     continue;//discard newline and go to start
-                //Here I would pass off my tokens to the syntax analysis
+                //Here my syntax analysis occurs on current and next
                 printToken(curr);
+                if(curr.type == keyw){
+                    
+                }
             }
         }
         else{
             cout << "Error opening file." << endl;
         }
     }
-    
 };
