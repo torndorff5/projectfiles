@@ -1,15 +1,2 @@
-class Cat {
-    public int age;
-    private int weight;
-    public void run(int x, int y) {
-        int speed;
-        int arr[];
-        speed = 7;
-    }
-    Cat() {}
-}
-void kxi2017 main() {
-    char c
-    c = 's';
+x = y;
 
-}

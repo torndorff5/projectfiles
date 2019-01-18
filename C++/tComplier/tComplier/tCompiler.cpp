@@ -24,7 +24,7 @@ using namespace std;
 //
 struct compiler {
     
-    map<int,string> KEYWORDS = { std::pair<int,string>(0,"atoi")};about to maybe change this vector to a map so i can find keywords later  // , "and" , "bool" , "block" , "break", "case" , "class" , "char" , "cin" , "cout" , "default" , "else" , "false" , "if" , "int" , "itoa" , "kxi2019" , "lock" , "main", "new" , "null" , "object" , "or" , "public" , "private" , "protected" , "return" , "release" , "string" , "spawn" , "sym" , "set", "switch" , "this" , "true" , "thread" , "unprotected" , "unlock" , "void" , "while" , "wait" };
+    map<string,int> KEYWORDS = { std::pair<string,int>("atoi",0), std::pair<string,int>("and",1), std::pair<string,int>("bool",2), std::pair<string,int>("block",3) , std::pair<string,int>("break",4) , std::pair<string,int>("case",5) , std::pair<string,int>("class",6) , std::pair<string,int>("char",7), std::pair<string,int>("cin",8), std::pair<string,int>("cout",9), std::pair<string,int>("default",10), std::pair<string,int>("else",11), std::pair<string,int>("false",12), std::pair<string,int>("if",13) , std::pair<string,int>("int",14) , std::pair<string,int>("itoa",15), std::pair<string,int>("kxi2019",16), std::pair<string,int>("lock",17), std::pair<string,int>("main",18), std::pair<string,int>("new",19), std::pair<string,int>("null",20), std::pair<string,int>("object",21), std::pair<string,int>("or",22), std::pair<string,int>("public",23) , std::pair<string,int>("private",24), std::pair<string,int>("protected",25), std::pair<string,int>("return",26), std::pair<string,int>("release",27), std::pair<string,int>("string",28), std::pair<string,int>("spawn",29), std::pair<string,int>("sym",30), std::pair<string,int>("set",31), std::pair<string,int>("switch",32), std::pair<string,int>("this",33), std::pair<string,int>("true",34), std::pair<string,int>("thread",35), std::pair<string,int>("unprotected",36), std::pair<string,int>("unlock",37), std::pair<string,int>("void",38), std::pair<string,int>("while",39), std::pair<string,int>("wait",40)};
     
     //type enumeration
     //space, number, potential character literal, character literal, identifier, punctuation, keyword, symbol, unknown, end of file
@@ -43,6 +43,8 @@ struct compiler {
     string buffer;
     token curr;
     token next;
+    token one;
+    token two;
     
 
     
@@ -96,26 +98,26 @@ struct compiler {
     }
     
     //check to see if current is charact
-    void charCheck(){
+    void charCheck(token& c, token& n){
         std::regex reg_charact(".");
         std::regex reg_pchar("[']");
         std::smatch match;
         
-        if(next.lexeme == "\\"){
-            addnextToken();
+        if(n.lexeme == "\\"){
+            addnextToken(c,n);
         }
-        if (std::regex_search(next.lexeme,match, reg_charact)){//if next is anything but new line or eof
-            addnextToken();
-            if (std::regex_search(next.lexeme,match, reg_pchar)){
-                addnextToken();
-                curr.type = charact;
+        if (std::regex_search(n.lexeme,match, reg_charact)){//if next is anything but new line or eof
+            addnextToken(c,n);
+            if (std::regex_search(n.lexeme,match, reg_pchar)){
+                addnextToken(c,n);
+                c.type = charact;
             }
         }
     }
     
     //checks to see if a string is a keyw
     void checkKeyW(token& t){
-        if(find(KEYWORDS.begin(), KEYWORDS.end(), t.lexeme) != KEYWORDS.end())
+        if(KEYWORDS.end() != KEYWORDS.find(t.lexeme))
             t.type = keyw;
     }
     
@@ -131,36 +133,44 @@ struct compiler {
     token peekToken(){
         return next;
     }
-    void nextToken(){
+    void getNextToken(){
+        nextToken(one, two);
+        lexicalAnalysis(one, two);
+        curr = next;
+        next = one;
+        printToken(curr);
+    }
+    void nextToken(token& c, token& n){
         //check to see if end of line
         if(!buffer.empty()){
             //if end of line, get next line.
-            curr = next;
-            updateNext();
+            c = n;
+            updateNext(c,n);
         }
         //get new line
         else{
             getLine();
             if(in.eof())
             {
-                curr = next;
-                tokenEOF(next);//set next to EOF
+                c = n;
+                tokenEOF(n);//set next to EOF
             }
             else if (buffer.empty()){
-                curr = next;
-                updateNext();
+                c = n;
+                updateNext(c,n);
             }
             else{
-                curr = next;
+                c = n;
                 //set next to first of new line
-                updateNext();
+                updateNext(c,n);
             }
         }
+        
     }
-    void addnextToken(){
+    void addnextToken(token& c, token& n){
         //add lexeme of next to that of current and fetch the following char
-        curr.lexeme += next.lexeme;
-        updateNext();
+        c.lexeme += n.lexeme;
+        updateNext(c,n);
     }
     //gets next line of file and puts in buffer, updates line number
     void getLine(){
@@ -168,10 +178,10 @@ struct compiler {
         line_number++;
     }
     //updates next token with next char, checks type, and the right line number
-    void updateNext(){
-        getChar(buffer, next);
-        checkType(next);
-        next.line_num = line_number;
+    void updateNext(token& c, token& n){
+        getChar(buffer, n);
+        checkType(n);
+        n.line_num = line_number;
     }
     //sets token to eof
     void tokenEOF(token& t){
@@ -180,6 +190,54 @@ struct compiler {
         t.type = eof;
     }
     
+    void lexicalAnalysis(token& c, token& n){
+        if(c.type == eof){
+            return;
+        }
+        while (c.type == space)
+            nextToken(c,n);//disregard and get next token
+        while(c.type == nl)
+            nextToken(c,n);
+        if(c.lexeme == "/"){//catch the comments
+            if(n.lexeme == "/"){
+                addnextToken(c,n);
+                while(c.type != nl)
+                    nextToken(c,n);
+            }
+        }
+        else if(c.type == numb)//if current is a number
+            while(n.type == numb)//check to see if next is a number
+                addnextToken(c,n);//add next to current and fetch next
+        else if (c.type == id){
+            while(n.type == numb || n.type == id)//check to see if next is a number or id
+                addnextToken(c,n);//add next to current and fetch next
+            checkKeyW(c);
+        }
+        else if (c.type == pchar)
+            charCheck(c,n);//check to see if next is a letter
+        else if (c.type == logicop){
+            if(c.lexeme == "&" && n.lexeme == "&")
+                addnextToken(c,n);
+            else if(c.lexeme == "|" && n.lexeme == "|")
+                addnextToken(c,n);
+            else
+                c.type = uk;
+        }
+        else if(c.type == assop){
+            if(n.type == assop){
+                addnextToken(c,n);
+                c.type = relop;
+            }
+        }
+        else if(c.type == relop){
+            if(c.lexeme == "<" || c.lexeme == ">" || c.lexeme == "!"){
+                if(n.type == assop)
+                    addnextToken(c,n);
+                else if (c.lexeme == "!")
+                    c.type = uk;
+            }
+        }
+    }
     void printToken(token t){
         cout << t.lexeme << "\t\t";
         switch(t.type){
@@ -247,6 +305,32 @@ struct compiler {
         cout << "\t\t" << t.line_num << endl;
         
     }
+    
+    //SYTNAX FUNCTIONS AND DATA
+    void genSynError(token& c, string expected){
+        cout << c.line_num << ": Found \"" << c.lexeme << "\" expecting \""<< expected << "\"" << endl;
+        //exit program
+        exit(1);
+    }
+    //checks syntax for an expression
+    void expression(token& c, token& n){
+        if(c.type == parentho){
+            getNextToken();//consume
+            expression(c, n);
+            if(c.type == parenthc){
+                getNextToken();
+            }
+            else
+                genSynError(c, ")");
+        }
+        else if(c.type == id)
+            getNextToken();
+        i was about to get this to work with x = y; 
+        else
+            genSynError(c, "valid expression");
+            
+    }
+    
     void passOne(std::string filename){
         //Lexical Analysis
         //*************************Open file***************************
@@ -258,62 +342,13 @@ struct compiler {
             cout << "File opened successfully." << endl;//debug output
             std::getline(in,buffer);//read in first line
             line_number = 1;
-            updateNext();
-            while(curr.type != eof){
-                nextToken();//move to next token, set current to next
-                if(curr.type == eof){
-                    printToken(curr);//debug output
-                    break;
-                }
-                else if(curr.type == space)//if the current token is a space
-                    continue;//discard and go to next
-                else if(curr.lexeme == "/"){//catch the comments
-                    if(next.lexeme == "/"){
-                        addnextToken();
-                        while(curr.type != nl)
-                            nextToken();
-                    }
-                }
-                else if(curr.type == numb)//if current is a number
-                    while(next.type == numb)//check to see if next is a number
-                        addnextToken();//add next to current and fetch next
-                else if (curr.type == id){
-                    while(next.type == numb || next.type == id)//check to see if next is a number or id
-                        addnextToken();//add next to current and fetch next
-                    checkKeyW(curr);
-                }
-                else if (curr.type == pchar)
-                    charCheck();//check to see if next is a letter
-                else if (curr.type == logicop){
-                    if(curr.lexeme == "&" && next.lexeme == "&")
-                        addnextToken();
-                    else if(curr.lexeme == "|" && next.lexeme == "|")
-                        addnextToken();
-                    else
-                        curr.type = uk;
-                }
-                else if(curr.type == assop){
-                    if(next.type == assop){
-                        addnextToken();
-                        curr.type = relop;
-                    }
-                }
-                else if(curr.type == relop){
-                    if(curr.lexeme == "<" || curr.lexeme == ">" || curr.lexeme == "!"){
-                        if(next.type == assop)
-                            addnextToken();
-                        else if (curr.lexeme == "!")
-                            curr.type = uk;
-                    }
-                }
-                else if(curr.type == nl)
-                    continue;//discard newline and go to start
-                //Here my syntax analysis occurs on current and next
-                printToken(curr);
-                if(curr.type == keyw){
-                    
-                }
-            }
+            updateNext(one,two);
+            nextToken(one, two);
+            lexicalAnalysis(one, two);
+            next = one;
+            getNextToken();
+            //Here my syntax analysis occurs on current and next
+            expression(curr,next);
         }
         else{
             cout << "Error opening file." << endl;
