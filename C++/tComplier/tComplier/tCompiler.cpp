@@ -312,25 +312,105 @@ struct compiler {
         //exit program
         exit(1);
     }
+    void statement(token&c, token& n){
+        expression(c, n);
+        if(c.lexeme != ";")
+            genSynError(c, ";");
+    }
     //checks syntax for an expression
     void expression(token& c, token& n){
-        if(c.type == parentho){
-            getNextToken();//consume
+        if(c.type == parentho){//************** "(" expression ")" [ expressionz ]
+            getNextToken();
             expression(c, n);
             if(c.type == parenthc){
                 getNextToken();
             }
             else
                 genSynError(c, ")");
+            if(c.type == mathop || c.type == relop ||c.type == assop || c.type == logicop )
+                expressionz(c,n);
         }
-        else if(c.type == id)
+        else if(c.lexeme == "true" || c.lexeme == "false" || c.lexeme == "null" || c.type == charact || c.type == numb){//**************| "true" [expressionz] | "false" [expressionz] | "null" [expressionz] | char_literal [expressionz] | number literal [expressionz]
             getNextToken();
-        i was about to get this to work with x = y; 
+            if (c.type == mathop || c.type == relop ||c.type == assop || c.type == logicop)
+                expressionz(c, n);
+        }
+        else if(c.lexeme == "this"){
+            
+        }
+        else if(c.type == id){//************* | identifier [fn_arr_member] [member_refz] [expressionz]
+            getNextToken();
+            if(c.type == parentho)
+                fn_arr_member(c,n);
+            if(c.lexeme == ".")
+                member_refz(c,n);
+            if(c.type == mathop || c.type == relop ||c.type == assop || c.type == logicop )
+                expressionz(c,n);
+        }
         else
             genSynError(c, "valid expression");
             
     }
-    
+    void expressionz(token& c, token& n){
+        if(c.type == mathop || c.type == relop || c.type == logicop ){//************** "+" expression | "-" expression | "*" expression | "&&" expression | "||" expression | "==" expression | "!=" expression | "<=" expression | ">=" expression | "<" expression | ">" expression
+            getNextToken();
+            expression(c, n);
+        }
+        
+        else if (c.type == assop ){// | "=" assignment_expression
+            getNextToken();
+            assignment_expression(c,n);
+        }
+        else
+            genSynError(c, "binary expression operator");
+    }
+    void assignment_expression(token& c, token& n){
+        if(c.lexeme == "new"){//*************** "new" type new_declaration
+            getNextToken();
+            if(c.lexeme != "int" && c.lexeme != "char" && c.lexeme != "void" && c.lexeme != "bool" && c.lexeme != "sym" && c.type != id )
+                genSynError(c, "type or class name");
+            getNextToken();
+            new_declaration(c,n);
+            
+        }
+        else if (c.lexeme == "atoi" || c.lexeme == "itoa"){//*********** | "atoi" "(" expression ")" | "itoa" "(" expression ")"
+            getNextToken();
+            if(c.type != parentho)
+                genSynError(c, "(");
+            getNextToken();
+            expression(c, n);
+            if(c.type != parenthc)
+                genSynError(c, ")");
+            getNextToken();
+        }
+        else
+            expression(c, n);
+    }
+    void new_declaration(token& c, token& n){
+        if(c.type == parentho){//************* "(" [ argument_list ] ")"
+            getNextToken();
+            argument_list(c,n);
+            if(c.type != parenthc)
+                genSynError(c, ")");
+            getNextToken();
+        }
+        else if (c.type == arrayb){//************| "[" expression "]"
+            getNextToken();
+            expression(c, n);
+            if(c.type != arraye)
+                genSynError(c, "]");
+            getNextToken();
+        }
+        else
+            genSynError(c, "(\" or \"[");
+    }
+    void argument_list(token& c, token& n){
+        expression(c, n);//**************** expression { "," expression }
+        while(c.lexeme == ","){
+            getNextToken();
+            expression(c, n);
+        }
+    }
     void passOne(std::string filename){
         //Lexical Analysis
         //*************************Open file***************************
@@ -342,13 +422,13 @@ struct compiler {
             cout << "File opened successfully." << endl;//debug output
             std::getline(in,buffer);//read in first line
             line_number = 1;
-            updateNext(one,two);
-            nextToken(one, two);
-            lexicalAnalysis(one, two);
-            next = one;
-            getNextToken();
-            //Here my syntax analysis occurs on current and next
-            expression(curr,next);
+            updateNext(one,two);//sets the first token read in to token "two"
+            nextToken(one, two);//gets the next token and puts it in "two", sets one to two
+            lexicalAnalysis(one, two);//repeats process to get the first whole token
+            next = one;//saves first whole token to next
+                getNextToken();//sets curr to next, gets next whole token
+                //Here my syntax analysis occurs on current and next
+                statement(curr,next);
         }
         else{
             cout << "Error opening file." << endl;
