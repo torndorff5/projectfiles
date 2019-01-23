@@ -28,7 +28,7 @@ struct compiler {
     
     //type enumeration
     //space, number, potential character literal, character literal, identifier, punctuation, keyword, symbol, unknown, end of file
-    enum Type {space, nl, numb, pchar, charact, id, punct, keyw, mathop,logicop,relop,assop,arrayb,arraye,blockb,blocke,parentho,parenthc, uk, eof};
+    enum Type {space, nl, numb, pchar, charact, id, punct, keyw, mathop,logicop,relop,assop,arrayb,arraye,blockb,blocke,parentho,parenthc,streamop, uk, eof};
     
     //token class that has a lexeme, line# and type
     struct token {
@@ -235,6 +235,14 @@ struct compiler {
                     addnextToken(c,n);
                 else if (c.lexeme == "!")
                     c.type = uk;
+                else if (c.lexeme == "<" && n.lexeme == "<"){
+                    addnextToken(c, n);
+                    c.type = streamop;
+                }
+                else if (c.lexeme == ">" && n.lexeme == ">"){
+                    addnextToken(c, n);
+                    c.type = streamop;
+                }
             }
         }
     }
@@ -295,6 +303,9 @@ struct compiler {
             case parenthc:
                 cout << "parenthesis close";
                 break;
+            case streamop:
+                cout << "stream operator";
+                break;
             case uk:
                 cout << "unknown";
                 break;
@@ -313,9 +324,58 @@ struct compiler {
         exit(1);
     }
     void statement(token&c, token& n){
-        expression(c, n);
-        if(c.lexeme != ";")
-            genSynError(c, ";");
+        if(c.type == blockb){//************* "{" {statement} "}"
+            getNextToken();
+            while(c.type != blocke)
+                statement(c, n);
+            getNextToken();
+        }
+        else if(c.lexeme == "if"){
+            getNextToken();//************** "(" expression ")" statement [ "else" statement ]
+            if(c.type != parentho)
+                genSynError(c, "(");
+            getNextToken();
+            expression(c, n);
+            if(c.type != parenthc)
+                genSynError(c, ")");
+            getNextToken();
+            statement(c, n);
+            if(c.lexeme == "else"){
+                getNextToken();
+                statement(c, n);
+            }
+            
+        }
+        else if(c.lexeme == "while"){
+            getNextToken();//***************** "while" "(" expression ")" statement
+            if(c.type != parentho)
+                genSynError(c, "(");
+            getNextToken();
+            expression(c, n);
+            if(c.type != parenthc)
+                genSynError(c, ")");
+            getNextToken();
+            statement(c, n);
+        }
+        else if (c.lexeme == "return"){//************* "return" [ expression ] ";"
+            getNextToken();
+            if(c.lexeme != ";"){
+                expression(c, n);
+            }
+            if(c.lexeme != ";")
+                genSynError(c, ";");
+            getNextToken();
+        }
+        else if (c.lexeme == "cout"){
+            getNextToken();//******************
+            i am about to do the cout case for the statement grammar 
+        }
+        else{//***************** expression ";"
+            expression(c, n);
+            if(c.lexeme != ";")
+                genSynError(c, ";");
+            getNextToken();
+        }
     }
     //checks syntax for an expression
     void expression(token& c, token& n){
@@ -336,12 +396,16 @@ struct compiler {
                 expressionz(c, n);
         }
         else if(c.lexeme == "this"){
-            
+            getNextToken();
+            if(c.lexeme == ".")//************ [member_refz]
+                member_refz(c,n);
+            if(c.type == mathop || c.type == relop ||c.type == assop || c.type == logicop )//************** [expressionz]
+                expressionz(c,n);
         }
         else if(c.type == id){//************* | identifier [fn_arr_member] [member_refz] [expressionz]
             getNextToken();
             if(c.type == parentho)
-                fn_arr_member(c,n);
+                fn_arr_memberORnew_declaration(c, n);
             if(c.lexeme == ".")
                 member_refz(c,n);
             if(c.type == mathop || c.type == relop ||c.type == assop || c.type == logicop )
@@ -370,8 +434,7 @@ struct compiler {
             if(c.lexeme != "int" && c.lexeme != "char" && c.lexeme != "void" && c.lexeme != "bool" && c.lexeme != "sym" && c.type != id )
                 genSynError(c, "type or class name");
             getNextToken();
-            new_declaration(c,n);
-            
+            fn_arr_memberORnew_declaration(c, n);
         }
         else if (c.lexeme == "atoi" || c.lexeme == "itoa"){//*********** | "atoi" "(" expression ")" | "itoa" "(" expression ")"
             getNextToken();
@@ -386,7 +449,7 @@ struct compiler {
         else
             expression(c, n);
     }
-    void new_declaration(token& c, token& n){
+    void fn_arr_memberORnew_declaration(token& c, token& n){
         if(c.type == parentho){//************* "(" [ argument_list ] ")"
             getNextToken();
             argument_list(c,n);
@@ -403,6 +466,18 @@ struct compiler {
         }
         else
             genSynError(c, "(\" or \"[");
+    }
+    void member_refz(token& c, token& n){
+        if(c.lexeme != ".")
+            genSynError(c, ".");
+        getNextToken();
+        if(c.type != id)
+            genSynError(c, "identifier");
+        getNextToken();
+        if(c.type == parentho)
+            fn_arr_memberORnew_declaration(c, n);
+        if(c.lexeme == ".")
+            member_refz(c, n);
     }
     void argument_list(token& c, token& n){
         expression(c, n);//**************** expression { "," expression }
