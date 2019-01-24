@@ -323,6 +323,25 @@ struct compiler {
         //exit program
         exit(1);
     }
+    void checkSemiColon(token& c){
+        if(c.lexeme != ";")
+            genSynError(c, ";");
+    }
+    void parameter(token&c, token&n){
+        //************** type identifier ["[" "]"] ;
+        type(c, n);
+        getNextToken();
+        if(c.type != id)
+            genSynError(c, "identifier");
+        getNextToken();
+        if(c.type == arrayb){
+            getNextToken();
+            if(c.type != arraye)
+                genSynError(c, "]");
+            getNextToken();
+        }
+            
+    }
     void statement(token&c, token& n){
         if(c.type == blockb){//************* "{" {statement} "}"
             getNextToken();
@@ -362,18 +381,46 @@ struct compiler {
             if(c.lexeme != ";"){
                 expression(c, n);
             }
-            if(c.lexeme != ";")
-                genSynError(c, ";");
+            checkSemiColon(c);
             getNextToken();
         }
         else if (c.lexeme == "cout"){
-            getNextToken();//******************
-            i am about to do the cout case for the statement grammar 
+            getNextToken();//****************** "cout" "<<" expression ";"
+            if(c.lexeme != "<<")
+                genSynError(c, "<<");
+            getNextToken();
+            expression(c, n);
+            checkSemiColon(c);
+            getNextToken();
+        }
+        else if(c.lexeme == "cin"){
+            getNextToken();//****************** "cin" ">>" expression ";"
+            if(c.lexeme != ">>")
+                genSynError(c, ">>");
+            getNextToken();
+            expression(c, n);
+            checkSemiColon(c);
+            getNextToken();
+        }
+        else if(c.lexeme == "switch"){
+            getNextToken();//*********************"switch" "(" expression ")" case_block
+            if(c.type != parentho)
+                genSynError(c, "(");
+            getNextToken();
+            expression(c, n);
+            if(c.type != parenthc)
+                genSynError(c, ")");
+            getNextToken();
+            case_block(c, n);
+        }
+        else if(c.lexeme == "break"){
+            getNextToken();
+            checkSemiColon(c);
+            getNextToken();
         }
         else{//***************** expression ";"
             expression(c, n);
-            if(c.lexeme != ";")
-                genSynError(c, ";");
+            checkSemiColon(c);
             getNextToken();
         }
     }
@@ -431,8 +478,7 @@ struct compiler {
     void assignment_expression(token& c, token& n){
         if(c.lexeme == "new"){//*************** "new" type new_declaration
             getNextToken();
-            if(c.lexeme != "int" && c.lexeme != "char" && c.lexeme != "void" && c.lexeme != "bool" && c.lexeme != "sym" && c.type != id )
-                genSynError(c, "type or class name");
+            type(c,n);
             getNextToken();
             fn_arr_memberORnew_declaration(c, n);
         }
@@ -486,6 +532,40 @@ struct compiler {
             expression(c, n);
         }
     }
+    void case_block(token&c, token&n){
+        //*************** "{" {case_label} "}"
+        if(c.type != blockb)
+            genSynError(c, "{");
+        getNextToken();
+        while(c.lexeme == "case")
+            case_label(c, n);
+        if(c.type != blocke)
+            genSynError(c, "}");
+        getNextToken();
+    }
+    void case_label(token&c,token&n){
+        if(c.lexeme != "case")//*************** "case" literal ":" statement
+            genSynError(c, "case");
+        getNextToken();
+        literal(c);
+        if(c.lexeme != ":")
+            genSynError(c, ":");
+        getNextToken();
+        statement(c, n);
+    }
+    void literal(token&c){
+        //************** charact | numb
+        if(c.type == charact)
+            getNextToken();
+        else if(c.type == numb)
+            getNextToken();
+        else
+            genSynError(c, "character or number literal");
+    }
+    void type(token&c,token&n){
+        if(c.lexeme != "int" && c.lexeme != "char" && c.lexeme != "void" && c.lexeme != "bool" && c.lexeme != "sym" && c.type != id )
+            genSynError(c, "type or class name");
+    }
     void passOne(std::string filename){
         //Lexical Analysis
         //*************************Open file***************************
@@ -503,7 +583,9 @@ struct compiler {
             next = one;//saves first whole token to next
                 getNextToken();//sets curr to next, gets next whole token
                 //Here my syntax analysis occurs on current and next
-                statement(curr,next);
+                //statement(curr,next);
+            parameter(curr, next);
+            i was jsut about to add the parameter list grammar
         }
         else{
             cout << "Error opening file." << endl;
