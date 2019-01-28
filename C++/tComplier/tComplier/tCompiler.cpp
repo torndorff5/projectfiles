@@ -316,8 +316,65 @@ struct compiler {
         cout << "\t\t" << t.line_num << endl;
         
     }
+    //symbol table functions and data
+    
+    //sym struct to place in map
+    struct sym{
+        string scope;
+        string symid;
+        string value;
+        string kind;
+        string data;
+    };
+    
+    class symboltable {
+        //know
+        //symbol counter
+        int count;
+        //key - > values table
+        map<string, sym> symtab;
+        //do
+        //construct itself
+    public:
+        symboltable(){
+            count = 1;
+        };
+        //generate symid
+        //takes a char and adds the symbol counter to it to create a unique symbol id
+        string genSymID(char c){
+            string s = "";
+            s+=c;
+            s+=(to_string(count++));
+            return s;
+        }
+        //add symbol to table
+        void addSymbol(const sym s){
+            symtab.insert(std::pair<string,sym>(s.symid,s));
+        }
+        //fecth symbol
+        sym fetchSymbol(string s){
+            try{
+                sym r = symtab.at(s);
+                return r;
+            }
+            catch (std::out_of_range e){
+                throw e;
+            }
+        }
+    };
+    symboltable* st = new symboltable();
+    
+    void addClass(token& c){
+        sym s;
+        s.scope = "g";
+        s.symid = st->genSymID(c.lexeme.at(0));
+        s.kind = "class";
+        s.value = c.lexeme;
+        st->addSymbol(s);
+    }
     
     //SYTNAX FUNCTIONS AND DATA
+    
     void genSynError(token& c, string expected){
         cout << c.line_num << ": Found \"" << c.lexeme << "\" expecting \""<< expected << "\"" << endl;
         //exit program
@@ -326,6 +383,96 @@ struct compiler {
     void checkSemiColon(token& c){
         if(c.lexeme != ";")
             genSynError(c, ";");
+    }
+    void class_declaration(token&c, token&n){
+        //********************** "class" class_name "{" {class_member_declaration} "}"
+        if(c.lexeme != "class")
+            genSynError(c, "class");
+        getNextToken();
+        addClass(c);
+        getNextToken();
+        if(c.type != blockb)
+            genSynError(c, "{");
+        getNextToken();
+        while(c.lexeme == "private" || c.lexeme == "public")
+            class_member_declaration(c, n);
+        if(c.type != blocke)
+            genSynError(c, "}");
+        getNextToken();
+    }
+    void class_member_declaration(token& c, token& n){
+        //************** modifier type identifier field_declaration | constructor declaration
+        i am aobut to figure out how to uniquely identify the class names 
+    }
+    void field_declaration(token& c, token& n){
+        //************* ["[" "]"] ["=" assignment_expression ] ";" | "(" [parameter_list] ")" method_body
+        if(c.type == parentho){
+            getNextToken();
+            if(c.type != parenthc)
+                parameter_list(c, n);
+            if(c.type != parenthc)
+                genSynError(c, ")");
+            getNextToken();
+            method_body(c, n);
+        }
+        else{
+            if(c.type == arrayb){
+                getNextToken();
+                if(c.type != arraye)
+                    genSynError(c, "]");
+                getNextToken();
+            }
+            if(c.type == assop){
+                getNextToken();
+                assignment_expression(c, n);
+            }
+            checkSemiColon(c);
+            getNextToken();
+        }
+        
+    }
+    void constructor_declaration(token& c, token& n){
+        // *************** class_name
+        
+    }
+    void method_body(token& c, token& n){
+        //******************** "{" {variable_declaration} {statement} "}"
+        if(c.type != blockb)
+            genSynError(c, "{");
+        getNextToken();
+        while(c.type != blocke)
+            if(c.lexeme == "int" || c.lexeme == "char" || c.lexeme == "void" || c.lexeme == "bool" || c.lexeme == "sym" )//|| c.type == id) class_name   %%%%%%%%%%%%%%%%%%%%%%%
+                variable_declaration(c, n);
+            else
+                statement(c, n);
+        getNextToken();
+    }
+    void variable_declaration(token& c, token& n){
+        type(c, n);//***************** type identifier ["[" "]"] ["=" assignment_expression ] ";"
+        getNextToken();
+        if(c.type != id)
+            genSynError(c, "identifier");
+        getNextToken();
+        if(c.type == arrayb){
+            getNextToken();
+            if(c.type != arraye)
+                genSynError(c, "]");
+            getNextToken();
+        }
+        if(c.type == assop){
+            getNextToken();
+            assignment_expression(c, n);
+        }
+        checkSemiColon(c);
+        getNextToken();
+    }
+    void parameter_list(token& c, token& n){
+        //*********** parameter { "," parameter }
+        parameter(c, n);
+        while(c.lexeme == ","){
+            getNextToken();
+            parameter(c, n);
+        }
     }
     void parameter(token&c, token&n){
         //************** type identifier ["[" "]"] ;
@@ -584,11 +731,14 @@ struct compiler {
                 getNextToken();//sets curr to next, gets next whole token
                 //Here my syntax analysis occurs on current and next
                 //statement(curr,next);
-            parameter(curr, next);
-            i was jsut about to add the parameter list grammar
+            class_declaration(curr, next);
         }
         else{
             cout << "Error opening file." << endl;
         }
+    }
+    //Semantic Pass
+    void passTwo(){
+        
     }
 };

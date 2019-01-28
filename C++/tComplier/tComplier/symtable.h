@@ -29,6 +29,7 @@ class symboltable {
     map<string, sym> symtab;
     //do
     //construct itself
+public:
     symboltable(){
         count = 1;
     };
