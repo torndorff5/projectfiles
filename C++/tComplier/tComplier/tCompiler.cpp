@@ -384,17 +384,39 @@ struct compiler {
         if(c.lexeme != ";")
             genSynError(c, ";");
     }
+    void compilation_unit(token&c, token&n){
+        //********************* {class_declaration} "void" "kxi2019" "main" "(" ")" method_body
+        while(c.lexeme != "void")
+            class_declaration(c, n);
+        if(c.lexeme != "void")
+            genSynError(c, "void");
+        getNextToken();
+        if(c.lexeme != "kxi2019")
+            genSynError(c, "kxi2019");
+        getNextToken();
+        if(c.lexeme != "main")
+            genSynError(c, "main");
+        getNextToken();
+        if(c.type != parentho)
+            genSynError(c, "(");
+        getNextToken();
+        if(c.type != parenthc)
+            genSynError(c, ")");
+        getNextToken();
+        method_body(c, n);
+    }
     void class_declaration(token&c, token&n){
         //********************** "class" class_name "{" {class_member_declaration} "}"
         if(c.lexeme != "class")
             genSynError(c, "class");
         getNextToken();
-        addClass(c);
+        if(c.type != id)
+            genSynError(c, "class_name identifier");
         getNextToken();
         if(c.type != blockb)
             genSynError(c, "{");
         getNextToken();
-        while(c.lexeme == "private" || c.lexeme == "public")
+        while(c.type != blocke)
             class_member_declaration(c, n);
         if(c.type != blocke)
             genSynError(c, "}");
@@ -402,7 +424,23 @@ struct compiler {
     }
     void class_member_declaration(token& c, token& n){
         //************** modifier type identifier field_declaration | constructor declaration
-        i am aobut to figure out how to uniquely identify the class names 
+        if(c.lexeme == "private" || c.lexeme == "public"){
+            getNextToken();
+            if(!type(c,n))
+                if(c.type != id && n.type != id)
+                    genSynError(c, "type or class_name identifier");
+            getNextToken();
+            if(c.type != id)
+                genSynError(c, "identifier");
+            getNextToken();
+            field_declaration(c, n);
+        }
+        else if (c.type == id && n.type == parentho){
+            constructor_declaration(c, n);
+        }
+        else
+            genSynError(c, "access modifier or class_name indentifer ");
+        
     }
     void field_declaration(token& c, token& n){
         //************* ["[" "]"] ["=" assignment_expression ] ";" | "(" [parameter_list] ")" method_body
@@ -432,19 +470,33 @@ struct compiler {
         
     }
     void constructor_declaration(token& c, token& n){
-        // *************** class_name
-        
+        // *************** class_name "(" [parameter_list] ")" method_body
+        if(c.type != id)
+            genSynError(c, "class_name identifier");
+        getNextToken();
+        if(c.type != parentho)
+            genSynError(c, "(");
+        getNextToken();
+        if(c.type != parenthc)
+            parameter_list(c, n);
+        if(c.type != parenthc)
+            genSynError(c, ")");
+        getNextToken();
+        method_body(c, n);
     }
     void method_body(token& c, token& n){
         //******************** "{" {variable_declaration} {statement} "}"
         if(c.type != blockb)
             genSynError(c, "{");
         getNextToken();
-        while(c.type != blocke)
-            if(c.lexeme == "int" || c.lexeme == "char" || c.lexeme == "void" || c.lexeme == "bool" || c.lexeme == "sym" )//|| c.type == id) class_name   %%%%%%%%%%%%%%%%%%%%%%%
+        while(c.type != blocke){
+            if(c.lexeme == "int" || c.lexeme == "char" || c.lexeme == "void" || c.lexeme == "bool" || c.lexeme == "sym" )
+                variable_declaration(c, n);
+            else if(c.type == id && n.type == id)
                 variable_declaration(c, n);
             else
                 statement(c, n);
+        }
         getNextToken();
     }
     void variable_declaration(token& c, token& n){
@@ -476,7 +528,8 @@ struct compiler {
     }
     void parameter(token&c, token&n){
         //************** type identifier ["[" "]"] ;
-        type(c, n);
+        if(!type(c,n) && (c.type != id && n.type != id))
+            genSynError(c, "type or class_name");
         getNextToken();
         if(c.type != id)
             genSynError(c, "identifier");
@@ -625,7 +678,8 @@ struct compiler {
     void assignment_expression(token& c, token& n){
         if(c.lexeme == "new"){//*************** "new" type new_declaration
             getNextToken();
-            type(c,n);
+            if(type(c,n) || c.type != id)
+                genSynError(c, "type");
             getNextToken();
             fn_arr_memberORnew_declaration(c, n);
         }
@@ -645,7 +699,8 @@ struct compiler {
     void fn_arr_memberORnew_declaration(token& c, token& n){
         if(c.type == parentho){//************* "(" [ argument_list ] ")"
             getNextToken();
-            argument_list(c,n);
+            if(c.type != parenthc)
+                argument_list(c,n);
             if(c.type != parenthc)
                 genSynError(c, ")");
             getNextToken();
@@ -684,7 +739,7 @@ struct compiler {
         if(c.type != blockb)
             genSynError(c, "{");
         getNextToken();
-        while(c.lexeme == "case")
+        while(c.type != blocke)
             case_label(c, n);
         if(c.type != blocke)
             genSynError(c, "}");
@@ -709,9 +764,11 @@ struct compiler {
         else
             genSynError(c, "character or number literal");
     }
-    void type(token&c,token&n){
-        if(c.lexeme != "int" && c.lexeme != "char" && c.lexeme != "void" && c.lexeme != "bool" && c.lexeme != "sym" && c.type != id )
-            genSynError(c, "type or class name");
+    //checks only type keywords, not class_names
+    bool type(token&c,token&n){
+        if(c.lexeme != "int" && c.lexeme != "char" && c.lexeme != "void" && c.lexeme != "bool" && c.lexeme != "sym")
+                return false;
+        return true;
     }
     void passOne(std::string filename){
         //Lexical Analysis
@@ -731,7 +788,7 @@ struct compiler {
                 getNextToken();//sets curr to next, gets next whole token
                 //Here my syntax analysis occurs on current and next
                 //statement(curr,next);
-            class_declaration(curr, next);
+            compilation_unit(curr, next);
         }
         else{
             cout << "Error opening file." << endl;

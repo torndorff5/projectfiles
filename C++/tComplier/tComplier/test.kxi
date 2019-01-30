@@ -1,3 +1,23 @@
 class Cat {
+    private int x;
+    private int y;
+    private Sym s;
+    Cat(int x, int y, Sym s){
+        this.x = x;
+        this.y = y;
+        this.s = new Sym(s);
+    }
+    public int addUp(){
+        int z;
+        z = x + y;
+        return z;
+    }
+}
 
+void kxi2019 main(){
+    int a = 0;
+    int b = 3;
+    Sym s = new Sym();
+    Cat c = new Cat(a,b,s);
+    c.addUp();
 }
