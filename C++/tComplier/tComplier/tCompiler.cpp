@@ -150,6 +150,7 @@ struct compiler {
         //get new line
         else{
             getLine();
+            buffer.insert(buffer.begin(), '\0');
             if(in.eof())
             {
                 c = n;
@@ -194,15 +195,14 @@ struct compiler {
         if(c.type == eof){
             return;
         }
-        while (c.type == space)
+        while (c.type == space || c.type == nl)
             nextToken(c,n);//disregard and get next token
-        while(c.type == nl)
-            nextToken(c,n);
         if(c.lexeme == "/"){//catch the comments
             if(n.lexeme == "/"){
                 addnextToken(c,n);
                 while(c.type != nl)
                     nextToken(c,n);
+                return lexicalAnalysis(c, n);
             }
         }
         else if(c.type == numb)//if current is a number
@@ -678,7 +678,7 @@ struct compiler {
     void assignment_expression(token& c, token& n){
         if(c.lexeme == "new"){//*************** "new" type new_declaration
             getNextToken();
-            if(type(c,n) || c.type != id)
+            if(!type(c,n) && c.type != id)
                 genSynError(c, "type");
             getNextToken();
             fn_arr_memberORnew_declaration(c, n);
@@ -785,10 +785,9 @@ struct compiler {
             nextToken(one, two);//gets the next token and puts it in "two", sets one to two
             lexicalAnalysis(one, two);//repeats process to get the first whole token
             next = one;//saves first whole token to next
+            while(curr.type != eof){
                 getNextToken();//sets curr to next, gets next whole token
-                //Here my syntax analysis occurs on current and next
-                //statement(curr,next);
-            compilation_unit(curr, next);
+            }
         }
         else{
             cout << "Error opening file." << endl;
