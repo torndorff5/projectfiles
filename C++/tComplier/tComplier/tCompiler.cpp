@@ -156,10 +156,6 @@ struct compiler {
                 c = n;
                 tokenEOF(n);//set next to EOF
             }
-            else if (buffer.empty()){
-                c = n;
-                updateNext(c,n);
-            }
             else{
                 c = n;
                 //set next to first of new line
@@ -200,7 +196,7 @@ struct compiler {
         if(c.lexeme == "/"){//catch the comments
             if(n.lexeme == "/"){
                 addnextToken(c,n);
-                while(c.type != nl)
+                while(c.type != nl)//find end of line
                     nextToken(c,n);
                 return lexicalAnalysis(c, n);
             }
@@ -319,12 +315,30 @@ struct compiler {
     //symbol table functions and data
     
     //sym struct to place in map
+    //Data struct to hold symbol specific data
+    struct Data{
+        string type;
+        string accessMod;
+        vector<string> param;
+        void clear(){
+            type="";
+            accessMod="";
+            param.clear();
+        }
+    };
     struct sym{
         string scope;
         string symid;
         string value;
         string kind;
-        string data;
+        Data data;
+        void clear(){
+            scope = "";
+            symid = "";
+            value = "";
+            kind = "";
+            data.clear();
+        }
     };
     
     class symboltable {
@@ -348,8 +362,14 @@ struct compiler {
             return s;
         }
         //add symbol to table
-        void addSymbol(const sym s){
-            symtab.insert(std::pair<string,sym>(s.symid,s));
+        void addSymbol(sym& s, string scope){
+            //change scope to whatever it is currently
+            s.scope = scope;
+            //generate symid
+            s.symid = genSymID(s.value.at(0));
+            sym* temp = new sym(s);
+            symtab.insert(std::pair<string,sym>(s.symid,*temp));
+            s.clear();//resets s
         }
         //fecth symbol
         sym fetchSymbol(string s){
@@ -363,14 +383,23 @@ struct compiler {
         }
     };
     symboltable* st = new symboltable();
+    sym s;
+    string scope;
+    const string IVAR = "ivar";
+    
+    void push_scope(string temp){
+        scope += "." + temp;
+    }
+    string pop_scope(){
+        size_t pos = scope.find_last_of('.');
+        scope.erase(pos, scope.length());
+        return scope;
+    }
     
     void addClass(token& c){
-        sym s;
-        s.scope = "g";
-        s.symid = st->genSymID(c.lexeme.at(0));
         s.kind = "class";
         s.value = c.lexeme;
-        st->addSymbol(s);
+        st->addSymbol(s,scope);
     }
     
     //SYTNAX FUNCTIONS AND DATA
@@ -386,6 +415,7 @@ struct compiler {
     }
     void compilation_unit(token&c, token&n){
         //********************* {class_declaration} "void" "kxi2019" "main" "(" ")" method_body
+        scope = "g";
         while(c.lexeme != "void")
             class_declaration(c, n);
         if(c.lexeme != "void")
@@ -410,6 +440,8 @@ struct compiler {
         if(c.lexeme != "class")
             genSynError(c, "class");
         getNextToken();
+        addClass(c);
+        push_scope(c.lexeme);
         if(c.type != id)
             genSynError(c, "class_name identifier");
         getNextToken();
@@ -421,17 +453,21 @@ struct compiler {
         if(c.type != blocke)
             genSynError(c, "}");
         getNextToken();
+        pop_scope();
     }
     void class_member_declaration(token& c, token& n){
         //************** modifier type identifier field_declaration | constructor declaration
         if(c.lexeme == "private" || c.lexeme == "public"){
+            s.data.accessMod = c.lexeme;
             getNextToken();
             if(!type(c,n))
                 if(c.type != id && n.type != id)
                     genSynError(c, "type or class_name identifier");
+            s.data.type = c.lexeme;
             getNextToken();
             if(c.type != id)
                 genSynError(c, "identifier");
+            s.value = c.lexeme;
             getNextToken();
             field_declaration(c, n);
         }
@@ -440,7 +476,6 @@ struct compiler {
         }
         else
             genSynError(c, "access modifier or class_name indentifer ");
-        
     }
     void field_declaration(token& c, token& n){
         //************* ["[" "]"] ["=" assignment_expression ] ";" | "(" [parameter_list] ")" method_body
@@ -459,6 +494,8 @@ struct compiler {
                 if(c.type != arraye)
                     genSynError(c, "]");
                 getNextToken();
+                s.data.type += ":@";
+                s.kind = IVAR;
             }
             if(c.type == assop){
                 getNextToken();
@@ -467,7 +504,7 @@ struct compiler {
             checkSemiColon(c);
             getNextToken();
         }
-        
+        st->addSymbol(s, scope);
     }
     void constructor_declaration(token& c, token& n){
         // *************** class_name "(" [parameter_list] ")" method_body
@@ -785,9 +822,9 @@ struct compiler {
             nextToken(one, two);//gets the next token and puts it in "two", sets one to two
             lexicalAnalysis(one, two);//repeats process to get the first whole token
             next = one;//saves first whole token to next
-            while(curr.type != eof){
-                getNextToken();//sets curr to next, gets next whole token
-            }
+            getNextToken();//sets curr to next, gets next whole token
+            compilation_unit(curr, next); //Calls syntax analysis
+
         }
         else{
             cout << "Error opening file." << endl;
