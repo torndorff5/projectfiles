@@ -320,9 +320,11 @@ struct compiler {
         string type;
         string accessMod;
         vector<string> param;
+        int size;
         void clear(){
             type="";
             accessMod="";
+            size = 0;
             param.clear();
         }
     };
@@ -361,15 +363,17 @@ struct compiler {
             s+=(to_string(count++));
             return s;
         }
-        //add symbol to table
-        void addSymbol(sym& s, string scope){
-            //change scope to whatever it is currently
-            s.scope = scope;
+        //add global s variable to the table. also gen symid and clears s after
+        void addBaseSymbol(sym& s){
             //generate symid
             s.symid = genSymID(s.value.at(0));
             sym* temp = new sym(s);
             symtab.insert(std::pair<string,sym>(s.symid,*temp));
             s.clear();//resets s
+        }
+        //add any symbol to the table
+        void addSymbol(sym& s){
+            symtab.insert(std::pair<string,sym>(s.symid,s));
         }
         //fecth symbol
         sym fetchSymbol(string s){
@@ -386,6 +390,17 @@ struct compiler {
     sym s;
     string scope;
     const string IVAR = "ivar";
+    const string LVAR = "lvar";
+    const string LITERAL = "lit";
+    const string CHAR = "char";
+    const string INT = "int";
+    const string BOOL = "bool";
+    const string nul = "null";
+    const string GLOBAL = "g";
+    const string ARRAY = ":@";
+    const string PARAM = "param";
+    const string METHOD = "method";
+    const string CONSTR = "constructor";
     
     void push_scope(string temp){
         scope += "." + temp;
@@ -395,11 +410,31 @@ struct compiler {
         scope.erase(pos, scope.length());
         return scope;
     }
-    
+    void addLit(token& c){
+        s.clear();
+        s.value = c.lexeme;
+        s.kind = LITERAL;
+        synType(c);
+        s.scope = GLOBAL;
+        s.data.accessMod = "public";
+        st->addBaseSymbol(s);
+    }
+    void synType(token& c){
+        if(c.type == charact)
+            s.data.type = CHAR;
+        if(c.type == numb)
+            s.data.type = INT;
+        if(c.lexeme == "true" || c.lexeme == "false")
+            s.data.type = BOOL;
+        if(c.lexeme == "null")
+            s.data.type = nul;
+    }
     void addClass(token& c){
         s.kind = "class";
         s.value = c.lexeme;
-        st->addSymbol(s,scope);
+        //change scope to whatever it is currently
+        s.scope = scope;
+        st->addBaseSymbol(s);
     }
     
     //SYTNAX FUNCTIONS AND DATA
@@ -426,6 +461,7 @@ struct compiler {
         getNextToken();
         if(c.lexeme != "main")
             genSynError(c, "main");
+        push_scope(c.lexeme);
         getNextToken();
         if(c.type != parentho)
             genSynError(c, "(");
@@ -434,6 +470,7 @@ struct compiler {
             genSynError(c, ")");
         getNextToken();
         method_body(c, n);
+        pop_scope();
     }
     void class_declaration(token&c, token&n){
         //********************** "class" class_name "{" {class_member_declaration} "}"
@@ -480,23 +517,30 @@ struct compiler {
     void field_declaration(token& c, token& n){
         //************* ["[" "]"] ["=" assignment_expression ] ";" | "(" [parameter_list] ")" method_body
         if(c.type == parentho){
+            s.scope = scope;
+            push_scope(s.value);
             getNextToken();
             if(c.type != parenthc)
                 parameter_list(c, n);
             if(c.type != parenthc)
                 genSynError(c, ")");
             getNextToken();
+            s.kind = METHOD;
+            st->addBaseSymbol(s);
             method_body(c, n);
+            pop_scope();
         }
         else{
-            if(c.type == arrayb){
+            if(c.type == arrayb){//***********
                 getNextToken();
                 if(c.type != arraye)
                     genSynError(c, "]");
                 getNextToken();
-                s.data.type += ":@";
-                s.kind = IVAR;
+                s.data.type += ARRAY;
             }
+                s.kind = IVAR;
+                s.scope = scope;
+                st->addBaseSymbol(s);
             if(c.type == assop){
                 getNextToken();
                 assignment_expression(c, n);
@@ -504,12 +548,18 @@ struct compiler {
             checkSemiColon(c);
             getNextToken();
         }
-        st->addSymbol(s, scope);
+        
     }
     void constructor_declaration(token& c, token& n){
         // *************** class_name "(" [parameter_list] ")" method_body
         if(c.type != id)
             genSynError(c, "class_name identifier");
+        s.scope = scope;
+        s.kind = CONSTR;
+        s.value = c.lexeme;
+        s.data.type = c.lexeme;
+        s.data.accessMod = "public";
+        push_scope(c.lexeme);
         getNextToken();
         if(c.type != parentho)
             genSynError(c, "(");
@@ -519,7 +569,9 @@ struct compiler {
         if(c.type != parenthc)
             genSynError(c, ")");
         getNextToken();
+        st->addBaseSymbol(s);
         method_body(c, n);
+        pop_scope();
     }
     void method_body(token& c, token& n){
         //******************** "{" {variable_declaration} {statement} "}"
@@ -538,16 +590,24 @@ struct compiler {
     }
     void variable_declaration(token& c, token& n){
         type(c, n);//***************** type identifier ["[" "]"] ["=" assignment_expression ] ";"
+        //set s type, value, change to array if need be and push before assignment call
+        s.data.type = c.lexeme;
         getNextToken();
         if(c.type != id)
             genSynError(c, "identifier");
+        s.value = c.lexeme;
         getNextToken();
         if(c.type == arrayb){
+            s.data.type += ARRAY;
             getNextToken();
             if(c.type != arraye)
                 genSynError(c, "]");
             getNextToken();
         }
+        s.kind = LVAR;
+        s.data.accessMod = "private";
+        s.scope = scope;
+        st->addBaseSymbol(s);
         if(c.type == assop){
             getNextToken();
             assignment_expression(c, n);
@@ -565,19 +625,29 @@ struct compiler {
     }
     void parameter(token&c, token&n){
         //************** type identifier ["[" "]"] ;
+        sym temp;//add all info and add to st
+        //take symid and add to s.param
         if(!type(c,n) && (c.type != id && n.type != id))
             genSynError(c, "type or class_name");
+        temp.data.type = c.lexeme;
         getNextToken();
         if(c.type != id)
             genSynError(c, "identifier");
+        temp.value = c.lexeme;
         getNextToken();
         if(c.type == arrayb){
+            temp.data.type += ARRAY;
             getNextToken();
             if(c.type != arraye)
                 genSynError(c, "]");
             getNextToken();
         }
-            
+        temp.kind = PARAM;
+        temp.scope = scope;
+        temp.data.accessMod = "private";
+        temp.symid = st->genSymID(temp.value.at(0));
+        st->addSymbol(temp);
+        s.data.param.push_back(temp.symid);
     }
     void statement(token&c, token& n){
         if(c.type == blockb){//************* "{" {statement} "}"
@@ -675,6 +745,7 @@ struct compiler {
                 expressionz(c,n);
         }
         else if(c.lexeme == "true" || c.lexeme == "false" || c.lexeme == "null" || c.type == charact || c.type == numb){//**************| "true" [expressionz] | "false" [expressionz] | "null" [expressionz] | char_literal [expressionz] | number literal [expressionz]
+            addLit(c);
             getNextToken();
             if (c.type == mathop || c.type == relop ||c.type == assop || c.type == logicop)
                 expressionz(c, n);
@@ -713,10 +784,12 @@ struct compiler {
             genSynError(c, "binary expression operator");
     }
     void assignment_expression(token& c, token& n){
+        s.clear();//start new for the right side of assop
         if(c.lexeme == "new"){//*************** "new" type new_declaration
             getNextToken();
             if(!type(c,n) && c.type != id)
                 genSynError(c, "type");
+            s.value = c.lexeme + LITERAL;
             getNextToken();
             fn_arr_memberORnew_declaration(c, n);
         }
