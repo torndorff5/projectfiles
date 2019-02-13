@@ -24,6 +24,8 @@ using namespace std;
 //
 struct compiler {
     
+    //Lexical ************************************************************************************************************************************
+    
     map<string,int> KEYWORDS = { std::pair<string,int>("atoi",0), std::pair<string,int>("and",1), std::pair<string,int>("bool",2), std::pair<string,int>("block",3) , std::pair<string,int>("break",4) , std::pair<string,int>("case",5) , std::pair<string,int>("class",6) , std::pair<string,int>("char",7), std::pair<string,int>("cin",8), std::pair<string,int>("cout",9), std::pair<string,int>("default",10), std::pair<string,int>("else",11), std::pair<string,int>("false",12), std::pair<string,int>("if",13) , std::pair<string,int>("int",14) , std::pair<string,int>("itoa",15), std::pair<string,int>("kxi2019",16), std::pair<string,int>("lock",17), std::pair<string,int>("main",18), std::pair<string,int>("new",19), std::pair<string,int>("null",20), std::pair<string,int>("object",21), std::pair<string,int>("or",22), std::pair<string,int>("public",23) , std::pair<string,int>("private",24), std::pair<string,int>("protected",25), std::pair<string,int>("return",26), std::pair<string,int>("release",27), std::pair<string,int>("string",28), std::pair<string,int>("spawn",29), std::pair<string,int>("sym",30), std::pair<string,int>("set",31), std::pair<string,int>("switch",32), std::pair<string,int>("this",33), std::pair<string,int>("true",34), std::pair<string,int>("thread",35), std::pair<string,int>("unprotected",36), std::pair<string,int>("unlock",37), std::pair<string,int>("void",38), std::pair<string,int>("while",39), std::pair<string,int>("wait",40)};
     
     //type enumeration
@@ -312,8 +314,8 @@ struct compiler {
         cout << "\t\t" << t.line_num << endl;
         
     }
-    //symbol table functions and data
     
+    //symbol table functions and data ****************************************************************************************************************************************
     //sym struct to place in map
     //Data struct to hold symbol specific data
     struct Data{
@@ -375,7 +377,7 @@ struct compiler {
         void addSymbol(sym& s){
             symtab.insert(std::pair<string,sym>(s.symid,s));
         }
-        //fecth symbol
+        //fecth symbol with symid
         sym fetchSymbol(string s){
             try{
                 sym r = symtab.at(s);
@@ -385,10 +387,52 @@ struct compiler {
                 throw e;
             }
         }
+        //check to see if lexeme exists in current scope, returns symid
+        string containsLexeme(string l, string currscope){
+            for(auto x: symtab){
+                if(x.second.value == l)
+                    if( currscope == x.second.scope)
+                        l = x.second.symid;
+            }
+            return l;
+        }
     };
+    
+    //Semantic Functions and Data ******************************************************************************************************************
+    bool semantic;
+    //Semantic Action Stack
+    vector<string> SAS;
+    string popSAS(){
+        string s = SAS.back();
+        SAS.pop_back();
+        return s;
+    }
+    //Operator Stack
+    vector<string> OS;
+    //iPush - push SAR
+    void iPush(token& c){
+        SAS.push_back(c.lexeme);
+    }
+    //iExist
+    void iExist(){
+        //pop the top SAR off the SAS
+        string top_sar = popSAS();
+        //test if the SAR exists in the current scope.
+        string temp = st->containsLexeme(top_sar, scope);
+        if(top_sar != temp){
+        //if exists, push id_sar onto the SAS
+            SAS.push_back(temp);
+        }
+        else{
+        //if does not exist, throw semantic errors
+            i am about to continue working on throwing semantic errors
+        }
+    }
+    //SYTNAX FUNCTIONS AND DATA******************************************************************************************************************
     symboltable* st = new symboltable();
     sym s;
     string scope;
+    bool syntax;
     const string IVAR = "ivar";
     const string LVAR = "lvar";
     const string LITERAL = "lit";
@@ -436,9 +480,6 @@ struct compiler {
         s.scope = scope;
         st->addBaseSymbol(s);
     }
-    
-    //SYTNAX FUNCTIONS AND DATA
-    
     void genSynError(token& c, string expected){
         cout << c.line_num << ": Found \"" << c.lexeme << "\" expecting \""<< expected << "\"" << endl;
         //exit program
@@ -477,7 +518,8 @@ struct compiler {
         if(c.lexeme != "class")
             genSynError(c, "class");
         getNextToken();
-        addClass(c);
+        if(syntax)
+            addClass(c);
         push_scope(c.lexeme);
         if(c.type != id)
             genSynError(c, "class_name identifier");
@@ -495,16 +537,20 @@ struct compiler {
     void class_member_declaration(token& c, token& n){
         //************** modifier type identifier field_declaration | constructor declaration
         if(c.lexeme == "private" || c.lexeme == "public"){
-            s.data.accessMod = c.lexeme;
+            if(syntax)
+                s.data.accessMod = c.lexeme;
             getNextToken();
             if(!type(c,n))
                 if(c.type != id && n.type != id)
                     genSynError(c, "type or class_name identifier");
-            s.data.type = c.lexeme;
+            if(syntax)
+                s.data.type = c.lexeme;
             getNextToken();
             if(c.type != id)
                 genSynError(c, "identifier");
-            s.value = c.lexeme;
+            if(syntax)
+                s.value = c.lexeme;
+            push_scope(c.lexeme);
             getNextToken();
             field_declaration(c, n);
         }
@@ -517,30 +563,36 @@ struct compiler {
     void field_declaration(token& c, token& n){
         //************* ["[" "]"] ["=" assignment_expression ] ";" | "(" [parameter_list] ")" method_body
         if(c.type == parentho){
-            s.scope = scope;
-            push_scope(s.value);
+            if(syntax)
+                s.scope = scope;
             getNextToken();
             if(c.type != parenthc)
                 parameter_list(c, n);
             if(c.type != parenthc)
                 genSynError(c, ")");
             getNextToken();
-            s.kind = METHOD;
-            st->addBaseSymbol(s);
+            if(syntax){
+                s.kind = METHOD;
+                st->addBaseSymbol(s);
+            }
             method_body(c, n);
             pop_scope();
         }
         else{
+            pop_scope();
             if(c.type == arrayb){//***********
                 getNextToken();
                 if(c.type != arraye)
                     genSynError(c, "]");
                 getNextToken();
-                s.data.type += ARRAY;
+                if(syntax)
+                    s.data.type += ARRAY;
             }
+            if(syntax){
                 s.kind = IVAR;
                 s.scope = scope;
                 st->addBaseSymbol(s);
+            }
             if(c.type == assop){
                 getNextToken();
                 assignment_expression(c, n);
@@ -554,11 +606,13 @@ struct compiler {
         // *************** class_name "(" [parameter_list] ")" method_body
         if(c.type != id)
             genSynError(c, "class_name identifier");
-        s.scope = scope;
-        s.kind = CONSTR;
-        s.value = c.lexeme;
-        s.data.type = c.lexeme;
-        s.data.accessMod = "public";
+        if(syntax){
+            s.scope = scope;
+            s.kind = CONSTR;
+            s.value = c.lexeme;
+            s.data.type = c.lexeme;
+            s.data.accessMod = "public";
+        }
         push_scope(c.lexeme);
         getNextToken();
         if(c.type != parentho)
@@ -569,7 +623,8 @@ struct compiler {
         if(c.type != parenthc)
             genSynError(c, ")");
         getNextToken();
-        st->addBaseSymbol(s);
+        if(syntax)
+            st->addBaseSymbol(s);
         method_body(c, n);
         pop_scope();
     }
@@ -591,23 +646,28 @@ struct compiler {
     void variable_declaration(token& c, token& n){
         type(c, n);//***************** type identifier ["[" "]"] ["=" assignment_expression ] ";"
         //set s type, value, change to array if need be and push before assignment call
-        s.data.type = c.lexeme;
+        if(syntax)
+            s.data.type = c.lexeme;
         getNextToken();
         if(c.type != id)
             genSynError(c, "identifier");
-        s.value = c.lexeme;
+        if(syntax)
+            s.value = c.lexeme;
         getNextToken();
         if(c.type == arrayb){
-            s.data.type += ARRAY;
+            if(syntax)
+                s.data.type += ARRAY;
             getNextToken();
             if(c.type != arraye)
                 genSynError(c, "]");
             getNextToken();
         }
-        s.kind = LVAR;
-        s.data.accessMod = "private";
-        s.scope = scope;
-        st->addBaseSymbol(s);
+        if(syntax){
+            s.kind = LVAR;
+            s.data.accessMod = "private";
+            s.scope = scope;
+            st->addBaseSymbol(s);
+        }
         if(c.type == assop){
             getNextToken();
             assignment_expression(c, n);
@@ -629,25 +689,30 @@ struct compiler {
         //take symid and add to s.param
         if(!type(c,n) && (c.type != id && n.type != id))
             genSynError(c, "type or class_name");
-        temp.data.type = c.lexeme;
+        if(syntax)
+            temp.data.type = c.lexeme;
         getNextToken();
         if(c.type != id)
             genSynError(c, "identifier");
-        temp.value = c.lexeme;
+        if(syntax)
+            temp.value = c.lexeme;
         getNextToken();
         if(c.type == arrayb){
-            temp.data.type += ARRAY;
+            if(syntax)
+                temp.data.type += ARRAY;
             getNextToken();
             if(c.type != arraye)
                 genSynError(c, "]");
             getNextToken();
         }
-        temp.kind = PARAM;
-        temp.scope = scope;
-        temp.data.accessMod = "private";
-        temp.symid = st->genSymID(temp.value.at(0));
-        st->addSymbol(temp);
-        s.data.param.push_back(temp.symid);
+        if(syntax){
+            temp.kind = PARAM;
+            temp.scope = scope;
+            temp.data.accessMod = "private";
+            temp.symid = st->genSymID(temp.value.at(0));
+            st->addSymbol(temp);
+            s.data.param.push_back(temp.symid);
+        }
     }
     void statement(token&c, token& n){
         if(c.type == blockb){//************* "{" {statement} "}"
@@ -745,7 +810,8 @@ struct compiler {
                 expressionz(c,n);
         }
         else if(c.lexeme == "true" || c.lexeme == "false" || c.lexeme == "null" || c.type == charact || c.type == numb){//**************| "true" [expressionz] | "false" [expressionz] | "null" [expressionz] | char_literal [expressionz] | number literal [expressionz]
-            addLit(c);
+            if(syntax)
+                addLit(c);
             getNextToken();
             if (c.type == mathop || c.type == relop ||c.type == assop || c.type == logicop)
                 expressionz(c, n);
@@ -757,10 +823,18 @@ struct compiler {
             if(c.type == mathop || c.type == relop ||c.type == assop || c.type == logicop )//************** [expressionz]
                 expressionz(c,n);
         }
-        else if(c.type == id){//************* | identifier [fn_arr_member] [member_refz] [expressionz]
+        else if(c.type == id){//************* | identifier #iPush [fn_arr_member] #iExist [member_refz] [expressionz]
+            if(semantic){
+                //iPush
+                iPush(c);
+            }
             getNextToken();
             if(c.type == parentho)
                 fn_arr_memberORnew_declaration(c, n);
+            if(semantic){
+                //iExist
+                iExist();
+            }
             if(c.lexeme == ".")
                 member_refz(c,n);
             if(c.type == mathop || c.type == relop ||c.type == assop || c.type == logicop )
@@ -784,12 +858,14 @@ struct compiler {
             genSynError(c, "binary expression operator");
     }
     void assignment_expression(token& c, token& n){
-        s.clear();//start new for the right side of assop
+        if(syntax)
+            s.clear();//start new for the right side of assop
         if(c.lexeme == "new"){//*************** "new" type new_declaration
             getNextToken();
             if(!type(c,n) && c.type != id)
                 genSynError(c, "type");
-            s.value = c.lexeme + LITERAL;
+            if(syntax)
+                s.value = c.lexeme + LITERAL;
             getNextToken();
             fn_arr_memberORnew_declaration(c, n);
         }
@@ -882,13 +958,8 @@ struct compiler {
     }
     void passOne(std::string filename){
         //Lexical Analysis
-        //*************************Open file***************************
-        //2.    Tokenize the input of the source file by grouping individual characters together to form tokens by scanning the input from LEFT-TO-RIGHT. Don't try to build a context into your scanner that is part of parsing this is just lexical analysis just work LEFT-TO-RIGHT.
-        //3.    For each token created output the token type , line number and the lexeme associated with the token. This is debug code that you should make easy to turn off and on.
-        //4.    Discard all comments until the end of a line is reached.
         in.open(filename, ios::in);
         if (in.is_open()){
-            cout << "File opened successfully." << endl;//debug output
             std::getline(in,buffer);//read in first line
             line_number = 1;
             updateNext(one,two);//sets the first token read in to token "two"
@@ -896,15 +967,34 @@ struct compiler {
             lexicalAnalysis(one, two);//repeats process to get the first whole token
             next = one;//saves first whole token to next
             getNextToken();//sets curr to next, gets next whole token
-            compilation_unit(curr, next); //Calls syntax analysis
-
+            semantic = false;
+            syntax = true;
+            compilation_unit(curr, next);//Calls syntax analysis
+            in.close();
         }
         else{
             cout << "Error opening file." << endl;
         }
     }
     //Semantic Pass
-    void passTwo(){
+    void passTwo(std::string filename){
+        in.open(filename,ios::in);
+        if(in.is_open()){
+            //read in first line
+            std::getline(in,buffer);//read in first line
+            line_number = 1;
+            updateNext(one,two);//sets the first token read in to token "two"
+            nextToken(one, two);//gets the next token and puts it in "two", sets one to two
+            lexicalAnalysis(one, two);//repeats process to get the first whole token
+            next = one;//saves first whole token to next
+            getNextToken();//sets curr to next, gets next whole token
+            semantic = true;//do semantic operations on next pass through
+            syntax = false;
+            compilation_unit(curr, next);
+        }
+        else{
+            cout << "Error opening file." << endl;
+        }
         
     }
 };

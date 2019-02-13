@@ -18,6 +18,8 @@ int main(int argc, const char * argv[]) {
         //Call Lexical analysis on file read in.
         compiler c;
         c.passOne(filename);
+        //call pass two for semantic 
+        c.passTwo(filename);
         //pass one
         //assembler::passOne(input);
         //pass two
