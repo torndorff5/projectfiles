@@ -400,6 +400,15 @@ struct compiler {
     
     //Semantic Functions and Data ******************************************************************************************************************
     bool semantic;
+    //precedence
+    int mult = 8;
+    int div = 8;
+    int add = 7;
+    int sub = 7;
+    void genSymError(){
+        cout << line_number <<  ": Semantic Error" << endl;
+        exit(1);
+    }
     //Semantic Action Stack
     vector<string> SAS;
     string popSAS(){
@@ -408,10 +417,21 @@ struct compiler {
         return s;
     }
     //Operator Stack
-    vector<string> OS;
+    vector<token> OS;
+    token popOS(){
+        token t = OS.back();
+        OS.pop_back();
+        return t;
+    }
     //iPush - push SAR
     void iPush(token& c){
         SAS.push_back(c.lexeme);
+    }
+    //oPush
+    void oPush(token& c){
+        //check precedence with curr and top of stack. If top of stack is high then run a "#op"
+        im trying to figure out how to do precedence
+        OS.push_back(c);
     }
     //iExist
     void iExist(){
@@ -425,8 +445,29 @@ struct compiler {
         }
         else{
         //if does not exist, throw semantic errors
-            i am about to continue working on throwing semantic errors
+            genSymError();
         }
+    }
+    //#EOE
+    void EOE(){
+        token t = popOS();
+        if(t.type == assop){//#=
+            passop();
+        }
+    }
+    //#*
+    void pmultop(){
+        
+    }
+    //#=
+    void passop(){//#=
+        sym y = st->fetchSymbol(popSAS());
+        sym x = st->fetchSymbol(popSAS());
+        //is x = y valid?
+        if(x.kind == LITERAL)//is x a valid lValue?
+            genSymError();
+        if(x.data.type != y.data.type)//do x and y share the same type
+            genSymError();
     }
     //SYTNAX FUNCTIONS AND DATA******************************************************************************************************************
     symboltable* st = new symboltable();
@@ -790,10 +831,12 @@ struct compiler {
             checkSemiColon(c);
             getNextToken();
         }
-        else{//***************** expression ";"
+        else{//***************** expression ";" #EOE
             expression(c, n);
             checkSemiColon(c);
             getNextToken();
+            if(semantic)
+                EOE();
         }
     }
     //checks syntax for an expression
@@ -846,11 +889,16 @@ struct compiler {
     }
     void expressionz(token& c, token& n){
         if(c.type == mathop || c.type == relop || c.type == logicop ){//************** "+" expression | "-" expression | "*" expression | "&&" expression | "||" expression | "==" expression | "!=" expression | "<=" expression | ">=" expression | "<" expression | ">" expression
+            //oPush
+            if(semantic)
+                oPush(c);
             getNextToken();
             expression(c, n);
         }
         
-        else if (c.type == assop ){// | "=" assignment_expression
+        else if (c.type == assop ){// | "=" #oPush assignment_expression
+            if(semantic)
+                oPush(c);
             getNextToken();
             assignment_expression(c,n);
         }
