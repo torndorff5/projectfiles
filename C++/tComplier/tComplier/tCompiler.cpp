@@ -140,7 +140,7 @@ struct compiler {
         lexicalAnalysis(one, two);
         curr = next;
         next = one;
-        printToken(curr);
+        //printToken(curr);
     }
     void nextToken(token& c, token& n){
         //check to see if end of line
@@ -373,6 +373,9 @@ struct compiler {
             symtab.insert(std::pair<string,sym>(s.symid,*temp));
             s.clear();//resets s
         }
+        void removeSymbol(sym s){
+            symtab.erase(s.symid);
+        }
         //add any symbol to the table
         void addSymbol(sym& s){
             symtab.insert(std::pair<string,sym>(s.symid,s));
@@ -395,6 +398,46 @@ struct compiler {
                         l = x.second.symid;
             }
             return l;
+        }
+        void printST(){
+            for(auto s:symtab){
+                cout << "Symid: " << s.second.symid << endl;
+                cout << "Scope: " << s.second.scope << endl;
+                cout << "Kind: " << s.second.kind << endl;
+                cout << "Value: " << s.second.value << endl;
+                cout << "\tType: " << s.second.data.type << endl;
+                cout << "\tAccessMod: " << s.second.data.accessMod << endl;
+                cout << "\tParam: ";
+                for(auto p: s.second.data.param){
+                    cout << p << " ";
+                }
+                cout << endl;
+                cout << "\tSize: " << s.second.data.size << endl;
+                cout << endl;
+            }
+        }
+        int removeDup(){
+            vector<string> global_values;
+            vector<string> removelist;
+            int c = 0;
+            for(auto s:symtab){
+                if(s.second.kind == "lit"){
+                    if(std::find(global_values.begin(), global_values.end(), s.second.value) != global_values.end()) {
+                        /* global_values contains second value */
+                        //delete symbol
+                        removelist.push_back(s.second.symid);
+                        c++;
+                    }
+                    else {
+                        /* does not contain */
+                        global_values.push_back(s.second.value);
+                    }
+                }
+            }
+            for(string s:removelist){
+                symtab.erase(s);
+            }
+            return c;
         }
     };
     
@@ -430,7 +473,7 @@ struct compiler {
     //oPush
     void oPush(token& c){
         //check precedence with curr and top of stack. If top of stack is high then run a "#op"
-        im trying to figure out how to do precedence
+        //im trying to figure out how to do precedence
         OS.push_back(c);
     }
     //iExist
@@ -872,7 +915,7 @@ struct compiler {
                 iPush(c);
             }
             getNextToken();
-            if(c.type == parentho)
+            if(c.type == parentho || c.type == arrayb)
                 fn_arr_memberORnew_declaration(c, n);
             if(semantic){
                 //iExist
@@ -956,7 +999,7 @@ struct compiler {
         if(c.type != id)
             genSynError(c, "identifier");
         getNextToken();
-        if(c.type == parentho)
+        if(c.type == parentho || c.type == arrayb)
             fn_arr_memberORnew_declaration(c, n);
         if(c.lexeme == ".")
             member_refz(c, n);
@@ -1018,6 +1061,8 @@ struct compiler {
             semantic = false;
             syntax = true;
             compilation_unit(curr, next);//Calls syntax analysis
+            st->removeDup();
+            st->printST();
             in.close();
         }
         else{

@@ -14,12 +14,12 @@ int main(int argc, const char * argv[]) {
         cout << "No file argument passed" << endl;
     }
     else{
-        string filename = "/Users/codeslinger/Desktop/C++/tComplier/tComplier/test.kxi";
+        string filename = argv[1];
         //Call Lexical analysis on file read in.
         compiler c;
         c.passOne(filename);
         //call pass two for semantic 
-        c.passTwo(filename);
+        //c.passTwo(filename);
         //pass one
         //assembler::passOne(input);
         //pass two
