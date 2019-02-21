@@ -21,7 +21,7 @@ char c = 'c' + i;
 int a = atoi(e);
 char b = itoa(1 + 2 - this.foo(what));
 bool c = new int(true + false - null + yo.i.a.e.e.q.af());
-arr arr = new int[1];
+arr arr = new int[-1];
 
 cout << 'w' + foo.i.w3.q11111_i.fjklaj('a', i2, what, f.i + wut);
 }
@@ -40,7 +40,7 @@ char c = 'c' + i;
 int a = atoi(i + 2);
 char b = itoa(1 + 2 - this.foo(what));
 bool c = new int(true + false - null + yo.i.a.e.e.q.af());
-arr arr = new int[1];
+arr arr = new int[-1];
 
 atype a_b2 = new btype[ex[ab.foooooo()]];
 
@@ -64,9 +64,9 @@ x = i + j - true;
 
 }
 }
-case 1234 :
+case -1234 :
 return x + 21 - null;
-case 21 : break;
+case +21 : break;
 }
 }
 
@@ -79,7 +79,7 @@ bool de = false + true -  null + 999;
 int x;
 bool i[];
 char f2 = new guy();
-char f2 = new someClass(true, 21, i, e3.ad.i.kfjl[23].xixjx(true));
+char f2 = new someClass(true, +21, i, e3.ad.i.kfjl[23].xixjx(true));
 
 cout << foo;
 cin >> yo;
@@ -100,8 +100,8 @@ x.foo(bar) = eeee.f + 2;
 else
 someStatement = i + foo(i);
 
-if (true >= false && i > b - 4 || foo2 <= blah != something == 'a' / 12 * 43 < asdf)
-nestedIf = true >= false && i > b - 4 || foo2 <= blah != something == 'a' / 12 * 43 < asdf;
+if (true >= false && i > b - 4 || foo2 <= blah != something == 'a' / 12 * -43 < asdf)
+nestedIf = true >= false && i > b - 4 || foo2 <= blah != something == 'a' / 12 * -43 < asdf;
 else {
 while (a.b.c.d.e.f.g.h.i.j.k.l(m.n.o.p(q.r + s.t(u + v.w.x.y(z)))) == true) {
 return x;
@@ -126,3 +126,13 @@ cout << hello + ' ' + world + nf;
 c = 2;
 
 }
+
+
+
+
+
+
+
+
+
+

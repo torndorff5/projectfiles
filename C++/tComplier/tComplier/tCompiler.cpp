@@ -13,8 +13,8 @@
 #include <fstream>
 #include <regex>
 #include <cstdlib>
-
-#include "symtable.h"
+#include <map>
+#include <algorithm>
 
 using namespace std;
 
@@ -22,7 +22,15 @@ using namespace std;
 //lexical struct
 //contains all functions and members necessary to run a lexical analysis on a .kxi file.
 //
-struct compiler {
+static bool semantic;
+static bool syntax;
+
+class compiler {
+public:
+    compiler(){
+        syntax = false;
+        semantic = true;
+    }
     
     //Lexical ************************************************************************************************************************************
     
@@ -350,7 +358,7 @@ struct compiler {
         //symbol counter
         int count;
         //key - > values table
-        map<string, sym> symtab;
+        map<string,sym> symtab;
         //do
         //construct itself
     public:
@@ -440,14 +448,28 @@ struct compiler {
             return c;
         }
     };
-    
     //Semantic Functions and Data ******************************************************************************************************************
-    bool semantic;
     //precedence
-    int mult = 8;
-    int div = 8;
-    int add = 7;
-    int sub = 7;
+    int precedence(token t){
+        if(t.lexeme == "*" || t.lexeme == "/")
+            return 8;
+        else if (t.lexeme == "+" || t.lexeme == "-")
+            return 7;
+        else if (t.lexeme == "<" || t.lexeme == "<=" || t.lexeme == ">" || t.lexeme == ">=")
+            return 6;
+        else if (t.lexeme == "==" || t.lexeme == "!=")
+            return 5;
+        else if (t.lexeme == "&&")
+            return 4;
+        else if (t.lexeme == "||")
+            return 3;
+        else if (t.lexeme == "=")
+            return 2;
+        else if (t.lexeme == "()" || t.lexeme == "[]")
+            return 1;
+        else
+            return 0;
+    }
     void genSymError(){
         cout << line_number <<  ": Semantic Error" << endl;
         exit(1);
@@ -466,6 +488,10 @@ struct compiler {
         OS.pop_back();
         return t;
     }
+    token peekOS(){
+        token t=OS.back();
+        return t;
+    }
     //iPush - push SAR
     void iPush(token& c){
         SAS.push_back(c.lexeme);
@@ -473,8 +499,14 @@ struct compiler {
     //oPush
     void oPush(token& c){
         //check precedence with curr and top of stack. If top of stack is high then run a "#op"
-        //im trying to figure out how to do precedence
-        OS.push_back(c);
+        if(!OS.empty()){//something on the stack
+            if(precedence(c)>precedence(peekOS()))
+               OS.push_back(c);
+            else
+                p_op();
+        }
+        else
+            OS.push_back(c);
     }
     //iExist
     void iExist(){
@@ -498,9 +530,20 @@ struct compiler {
             passop();
         }
     }
+    //#op
+    void p_op(){
+        token t = popOS();
+        if(t.lexeme == "*")
+            pmultop();
+    }
     //#*
     void pmultop(){
-        
+        sym y = st->fetchSymbol(popSAS());
+        sym x = st->fetchSymbol(popSAS());
+        //is x*y valid?
+        if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
+            genSymError();
+        t1 = y * g slide 25 is where i am at. am i attaching values to these variables? also need to test all the operators of precendence 
     }
     //#=
     void passop(){//#=
@@ -516,7 +559,6 @@ struct compiler {
     symboltable* st = new symboltable();
     sym s;
     string scope;
-    bool syntax;
     const string IVAR = "ivar";
     const string LVAR = "lvar";
     const string LITERAL = "lit";
@@ -759,6 +801,28 @@ struct compiler {
         checkSemiColon(c);
         getNextToken();
     }
+    void numeric_literal(token& c){
+        //************* ["+" | "-"]number ;
+        if(c.lexeme == "+"){
+            getNextToken();
+            if(c.type != numb)
+                genSynError(c, "number");
+        }
+        else if (c.lexeme == "-"){
+            getNextToken();
+            if(c.type != numb)
+                genSynError(c, "number");
+            //add negative to number
+            c.lexeme = "-"+c.lexeme;
+        }
+        else{
+            if(c.type != numb)
+                genSynError(c, "number");
+        }
+        if(syntax)
+            addLit(c);
+        getNextToken();
+    }
     void parameter_list(token& c, token& n){
         //*********** parameter { "," parameter }
         parameter(c, n);
@@ -895,7 +959,7 @@ struct compiler {
             if(c.type == mathop || c.type == relop ||c.type == assop || c.type == logicop )
                 expressionz(c,n);
         }
-        else if(c.lexeme == "true" || c.lexeme == "false" || c.lexeme == "null" || c.type == charact || c.type == numb){//**************| "true" [expressionz] | "false" [expressionz] | "null" [expressionz] | char_literal [expressionz] | number literal [expressionz]
+        else if(c.lexeme == "true" || c.lexeme == "false" || c.lexeme == "null" || c.type == charact){//**************| "true" [expressionz] | "false" [expressionz] | "null" [expressionz] | char_literal [expressionz]
             if(syntax)
                 addLit(c);
             getNextToken();
@@ -925,6 +989,12 @@ struct compiler {
                 member_refz(c,n);
             if(c.type == mathop || c.type == relop ||c.type == assop || c.type == logicop )
                 expressionz(c,n);
+        }
+        else if(c.type == numb || c.lexeme == "-" || c.lexeme == "+"){
+            //************** number literal [expressionz]
+            numeric_literal(c);
+            if (c.type == mathop || c.type == relop ||c.type == assop || c.type == logicop)
+                expressionz(c, n);
         }
         else
             genSynError(c, "valid expression");
@@ -1034,10 +1104,13 @@ struct compiler {
     }
     void literal(token&c){
         //************** charact | numb
-        if(c.type == charact)
+        if(c.type == charact){
+            if(syntax)
+                addLit(c);
             getNextToken();
-        else if(c.type == numb)
-            getNextToken();
+        }
+        else if(c.type == numb || c.lexeme == "+" || c.lexeme == "-")
+            numeric_literal(c);
         else
             genSynError(c, "character or number literal");
     }
@@ -1061,6 +1134,8 @@ struct compiler {
             semantic = false;
             syntax = true;
             compilation_unit(curr, next);//Calls syntax analysis
+            if(curr.type != eof)
+                genSynError(curr, "EOF");
             st->removeDup();
             st->printST();
             in.close();
@@ -1084,6 +1159,9 @@ struct compiler {
             semantic = true;//do semantic operations on next pass through
             syntax = false;
             compilation_unit(curr, next);
+            if(curr.type != eof)
+                genSynError(curr, "EOF");
+            
         }
         else{
             cout << "Error opening file." << endl;
