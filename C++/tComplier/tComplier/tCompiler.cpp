@@ -331,9 +331,11 @@ public:
         string accessMod;
         vector<string> param;
         int size;
+        string asslit;
         void clear(){
             type="";
             accessMod="";
+            asslit = "";
             size = 0;
             param.clear();
         }
@@ -502,8 +504,11 @@ public:
         if(!OS.empty()){//something on the stack
             if(precedence(c)>precedence(peekOS()))
                OS.push_back(c);
-            else
-                p_op();
+            else{
+                p_op();//pop back operator
+                //push current operator on the stack
+                OS.push_back(c);
+            }
         }
         else
             OS.push_back(c);
@@ -529,6 +534,10 @@ public:
         if(t.type == assop){//#=
             passop();
         }
+        //#/
+        else if(t.lexeme == "/"){
+            pdivop();
+        }
     }
     //#op
     void p_op(){
@@ -543,7 +552,14 @@ public:
         //is x*y valid?
         if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
             genSymError();
-        t1 = y * g slide 25 is where i am at. am i attaching values to these variables? also need to test all the operators of precendence 
+        //t1 = y * g
+        string t1 = INT;
+        //push t1 onto sas
+        SAS.push_back(t1);
+    }
+    //#/
+    void pdivop(){
+        about to write the divide slide 31 
     }
     //#=
     void passop(){//#=
