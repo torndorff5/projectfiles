@@ -530,20 +530,35 @@ public:
     }
     //#EOE
     void EOE(){
-        token t = popOS();
-        if(t.type == assop){//#=
-            passop();
-        }
-        //#/
-        else if(t.lexeme == "/"){
-            pdivop();
+        while (!OS.empty()){
+            p_op();//pop off operator stack until its empty
+            test current example with errors. see if they are caught. 
         }
     }
     //#op
     void p_op(){
         token t = popOS();
-        if(t.lexeme == "*")
+        if(t.type == assop){//#=
+            passop();
+        }
+        //#*
+        else if(t.lexeme == "*")
             pmultop();
+        //#/
+        else if(t.lexeme == "/")
+            pdivop();
+        else if (t.lexeme == "+")
+            paddop();
+    }
+    //#+
+    void paddop(){
+        sym y = st->fetchSymbol(popSAS());
+        sym x = st->fetchSymbol(popSAS());
+        //is x + y valid?
+        if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
+            genSymError();
+        //push x onto SAS to store type of answer
+        SAS.push_back(x.symid);
     }
     //#*
     void pmultop(){
@@ -552,14 +567,19 @@ public:
         //is x*y valid?
         if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
             genSymError();
-        //t1 = y * g
-        string t1 = INT;
-        //push t1 onto sas
-        SAS.push_back(t1);
+        //push x onto SAS
+        SAS.push_back(x.symid);
     }
     //#/
     void pdivop(){
-        about to write the divide slide 31 
+        //get y and x from the SAS
+        sym y = st->fetchSymbol(popSAS());
+        sym x = st->fetchSymbol(popSAS());
+        //is x / y valid?
+        if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
+            genSymError();
+        //push x onto SAS
+        SAS.push_back(x.symid);
     }
     //#=
     void passop(){//#=
