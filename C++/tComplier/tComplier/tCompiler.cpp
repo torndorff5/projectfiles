@@ -400,11 +400,11 @@ public:
                 throw e;
             }
         }
-        //check to see if lexeme exists in current scope, returns symid
+        //check to see if lexeme exists in current scope, or outer scope, returns symid
         string containsLexeme(string l, string currscope){
             for(auto x: symtab){
                 if(x.second.value == l)
-                    if( currscope == x.second.scope)
+                    if(currscope == x.second.scope)
                         l = x.second.symid;
             }
             return l;
@@ -467,7 +467,7 @@ public:
             return 3;
         else if (t.lexeme == "=")
             return 2;
-        else if (t.lexeme == "()" || t.lexeme == "[]")
+        else if (t.lexeme == "(" || t.lexeme == ")" || t.lexeme == "[" || t.lexeme == "]")
             return 1;
         else
             return 0;
@@ -479,6 +479,8 @@ public:
     //Semantic Action Stack
     vector<string> SAS;
     string popSAS(){
+        if(SAS.empty())
+            genSymError();
         string s = SAS.back();
         SAS.pop_back();
         return s;
@@ -503,7 +505,7 @@ public:
         //check precedence with curr and top of stack. If top of stack is high then run a "#op"
         if(!OS.empty()){//something on the stack
             if(precedence(c)>precedence(peekOS()))
-               OS.push_back(c);
+               OS.push_back(c);trying to figure out why a parenthesis would be considered lower precedence than a function
             else{
                 p_op();//pop back operator
                 //push current operator on the stack
@@ -528,11 +530,39 @@ public:
             genSymError();
         }
     }
+    //#rexist
+    void rExist(){
+        //pop top sar from sas
+        string top_sar = popSAS();
+        //pop next sar
+        string next_sar = popSAS();
+        //is top sar a public member of next sar?
+        sym t = st->fetchSymbol(next_sar);
+        string s = GLOBAL;
+        push_scope(s, t.data.type);
+        string temp = st->containsLexeme(top_sar, s);
+        if(top_sar != temp){
+        //if yes, push onto SAS
+            t = st->fetchSymbol(temp);
+            if(t.data.accessMod == PUBLIC){
+                SAS.push_back(temp);
+            }
+            else
+                genSymError();
+        }
+        else
+        //if no, throw sym error
+            genSymError();
+        
+    }
+    //#BAL
+    void BAL(){
+        SAS.push_back("(");
+    }
     //#EOE
     void EOE(){
         while (!OS.empty()){
             p_op();//pop off operator stack until its empty
-            test current example with errors. see if they are caught. 
         }
     }
     //#op
@@ -607,14 +637,16 @@ public:
     const string PARAM = "param";
     const string METHOD = "method";
     const string CONSTR = "constructor";
+    const string PUBLIC = "public";
+    const string PRIVATE = "private";
     
-    void push_scope(string temp){
-        scope += "." + temp;
+    void push_scope(string& s,string temp){
+        s += "." + temp;
     }
-    string pop_scope(){
-        size_t pos = scope.find_last_of('.');
-        scope.erase(pos, scope.length());
-        return scope;
+    static string pop_scope(string& s){
+        size_t pos = s.find_last_of('.');
+        s.erase(pos, s.length());
+        return s;
     }
     void addLit(token& c){
         s.clear();
@@ -622,7 +654,7 @@ public:
         s.kind = LITERAL;
         synType(c);
         s.scope = GLOBAL;
-        s.data.accessMod = "public";
+        s.data.accessMod = PUBLIC;
         st->addBaseSymbol(s);
     }
     void synType(token& c){
@@ -653,7 +685,7 @@ public:
     }
     void compilation_unit(token&c, token&n){
         //********************* {class_declaration} "void" "kxi2019" "main" "(" ")" method_body
-        scope = "g";
+        scope = GLOBAL;
         while(c.lexeme != "void")
             class_declaration(c, n);
         if(c.lexeme != "void")
@@ -664,7 +696,7 @@ public:
         getNextToken();
         if(c.lexeme != "main")
             genSynError(c, "main");
-        push_scope(c.lexeme);
+        push_scope(scope,c.lexeme);
         getNextToken();
         if(c.type != parentho)
             genSynError(c, "(");
@@ -673,7 +705,7 @@ public:
             genSynError(c, ")");
         getNextToken();
         method_body(c, n);
-        pop_scope();
+        pop_scope(scope);
     }
     void class_declaration(token&c, token&n){
         //********************** "class" class_name "{" {class_member_declaration} "}"
@@ -682,7 +714,7 @@ public:
         getNextToken();
         if(syntax)
             addClass(c);
-        push_scope(c.lexeme);
+        push_scope(scope,c.lexeme);
         if(c.type != id)
             genSynError(c, "class_name identifier");
         getNextToken();
@@ -694,11 +726,11 @@ public:
         if(c.type != blocke)
             genSynError(c, "}");
         getNextToken();
-        pop_scope();
+        pop_scope(scope);
     }
     void class_member_declaration(token& c, token& n){
         //************** modifier type identifier field_declaration | constructor declaration
-        if(c.lexeme == "private" || c.lexeme == "public"){
+        if(c.lexeme == PRIVATE || c.lexeme == PUBLIC){
             if(syntax)
                 s.data.accessMod = c.lexeme;
             getNextToken();
@@ -712,7 +744,7 @@ public:
                 genSynError(c, "identifier");
             if(syntax)
                 s.value = c.lexeme;
-            push_scope(c.lexeme);
+            push_scope(scope,c.lexeme);
             getNextToken();
             field_declaration(c, n);
         }
@@ -738,10 +770,10 @@ public:
                 st->addBaseSymbol(s);
             }
             method_body(c, n);
-            pop_scope();
+            pop_scope(scope);
         }
         else{
-            pop_scope();
+            pop_scope(scope);
             if(c.type == arrayb){//***********
                 getNextToken();
                 if(c.type != arraye)
@@ -773,9 +805,9 @@ public:
             s.kind = CONSTR;
             s.value = c.lexeme;
             s.data.type = c.lexeme;
-            s.data.accessMod = "public";
+            s.data.accessMod = PUBLIC;
         }
-        push_scope(c.lexeme);
+        push_scope(scope,c.lexeme);
         getNextToken();
         if(c.type != parentho)
             genSynError(c, "(");
@@ -788,7 +820,7 @@ public:
         if(syntax)
             st->addBaseSymbol(s);
         method_body(c, n);
-        pop_scope();
+        pop_scope(scope);
     }
     void method_body(token& c, token& n){
         //******************** "{" {variable_declaration} {statement} "}"
@@ -826,7 +858,7 @@ public:
         }
         if(syntax){
             s.kind = LVAR;
-            s.data.accessMod = "private";
+            s.data.accessMod = PRIVATE;
             s.scope = scope;
             st->addBaseSymbol(s);
         }
@@ -892,7 +924,7 @@ public:
         if(syntax){
             temp.kind = PARAM;
             temp.scope = scope;
-            temp.data.accessMod = "private";
+            temp.data.accessMod = PRIVATE;
             temp.symid = st->genSymID(temp.value.at(0));
             st->addSymbol(temp);
             s.data.param.push_back(temp.symid);
@@ -1016,7 +1048,7 @@ public:
             }
             getNextToken();
             if(c.type == parentho || c.type == arrayb)
-                fn_arr_memberORnew_declaration(c, n);
+                fn_arr_member(c, n);
             if(semantic){
                 //iExist
                 iExist();
@@ -1064,7 +1096,7 @@ public:
             if(syntax)
                 s.value = c.lexeme + LITERAL;
             getNextToken();
-            fn_arr_memberORnew_declaration(c, n);
+            new_declaration(c, n);
         }
         else if (c.lexeme == "atoi" || c.lexeme == "itoa"){//*********** | "atoi" "(" expression ")" | "itoa" "(" expression ")"
             getNextToken();
@@ -1079,7 +1111,7 @@ public:
         else
             expression(c, n);
     }
-    void fn_arr_memberORnew_declaration(token& c, token& n){
+    void new_declaration(token& c, token& n){
         if(c.type == parentho){//************* "(" [ argument_list ] ")"
             getNextToken();
             if(c.type != parenthc)
@@ -1098,15 +1130,42 @@ public:
         else
             genSynError(c, "(\" or \"[");
     }
+    void fn_arr_member(token& c, token& n){
+        if(c.type == parentho){//************* "(" #oPush #BAL [ argument_list ] ")" #) #EAL #func | "[" #oPush expression "]" #] #arr
+            if(semantic){
+                oPush(c);
+                BAL();
+            }
+            getNextToken();
+            if(c.type != parenthc)
+                argument_list(c,n);
+            if(c.type != parenthc)
+                genSynError(c, ")");
+            getNextToken();
+        }
+        else if (c.type == arrayb){//************| "[" expression "]"
+            getNextToken();
+            expression(c, n);
+            if(c.type != arraye)
+                genSynError(c, "]");
+            getNextToken();
+        }
+        else
+            genSynError(c, "(\" or \"[");
+    }
     void member_refz(token& c, token& n){
-        if(c.lexeme != ".")
+        if(c.lexeme != ".")//"." identifier #iPush [ fn_arr_member ] #rExist [ member_refz ] ;
             genSynError(c, ".");
         getNextToken();
         if(c.type != id)
             genSynError(c, "identifier");
+        if(semantic)
+            iPush(c);
         getNextToken();
         if(c.type == parentho || c.type == arrayb)
-            fn_arr_memberORnew_declaration(c, n);
+            fn_arr_member(c, n);
+        if(semantic)
+            rExist();
         if(c.lexeme == ".")
             member_refz(c, n);
     }
@@ -1195,9 +1254,6 @@ public:
             semantic = true;//do semantic operations on next pass through
             syntax = false;
             compilation_unit(curr, next);
-            if(curr.type != eof)
-                genSynError(curr, "EOF");
-            
         }
         else{
             cout << "Error opening file." << endl;

@@ -1,8 +1,13 @@
+class fapple {
+    public int f(int k, int g){
+        return k + g;
+    }
+}
 void kxi2019 main(){
-int x;
-int y = 3;
-int g = 4;
-int f = -3;
-int k = -3;
-x = y * g + f / k ;
+    int x;
+    yapple y;
+    int k = 5;
+    int g = 3;
+    int r = 0;
+    x = y.f(k , g) + g * r ;
 }
