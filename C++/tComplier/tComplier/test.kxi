@@ -1,4 +1,4 @@
-class fapple {
+class yapple {
     public int f(int k, int g){
         return k + g;
     }

@@ -451,24 +451,49 @@ public:
         }
     };
     //Semantic Functions and Data ******************************************************************************************************************
+    const string bal_sar = "BAL";
     //precedence
-    int precedence(token t){
+    int stackprecedence(token t){
         if(t.lexeme == "*" || t.lexeme == "/")
-            return 8;
+            return 13;
         else if (t.lexeme == "+" || t.lexeme == "-")
-            return 7;
+            return 11;
         else if (t.lexeme == "<" || t.lexeme == "<=" || t.lexeme == ">" || t.lexeme == ">=")
-            return 6;
+            return 9;
         else if (t.lexeme == "==" || t.lexeme == "!=")
-            return 5;
+            return 7;
         else if (t.lexeme == "&&")
-            return 4;
+            return 5;
         else if (t.lexeme == "||")
             return 3;
         else if (t.lexeme == "=")
-            return 2;
-        else if (t.lexeme == "(" || t.lexeme == ")" || t.lexeme == "[" || t.lexeme == "]")
             return 1;
+        else if (t.lexeme == "(" || t.lexeme == "." || t.lexeme == "[")
+            return -1;
+        else if (t.lexeme == ")" || t.lexeme == "]")
+            return 0;
+        else
+            return 0;
+    }
+    int inputprecedence(token t){
+        if(t.lexeme == "*" || t.lexeme == "/")
+            return 13;
+        else if (t.lexeme == "+" || t.lexeme == "-")
+            return 11;
+        else if (t.lexeme == "<" || t.lexeme == "<=" || t.lexeme == ">" || t.lexeme == ">=")
+            return 9;
+        else if (t.lexeme == "==" || t.lexeme == "!=")
+            return 7;
+        else if (t.lexeme == "&&")
+            return 5;
+        else if (t.lexeme == "||")
+            return 3;
+        else if (t.lexeme == "=")
+            return 1;
+        else if (t.lexeme == "(" || t.lexeme == "." || t.lexeme == "[")
+            return 15;
+        else if (t.lexeme == ")" || t.lexeme == "]")
+            return 0;
         else
             return 0;
     }
@@ -477,11 +502,15 @@ public:
         exit(1);
     }
     //Semantic Action Stack
-    vector<string> SAS;
-    string popSAS(){
+    struct SAR {
+        vector<string> arg_list;
+        string value;
+    };
+    vector<SAR> SAS;
+    SAR popSAS(){
         if(SAS.empty())
             genSymError();
-        string s = SAS.back();
+        SAR s = SAS.back();
         SAS.pop_back();
         return s;
     }
@@ -498,14 +527,16 @@ public:
     }
     //iPush - push SAR
     void iPush(token& c){
-        SAS.push_back(c.lexeme);
+        SAR s;
+        s.value = c.lexeme;
+        SAS.push_back(s);
     }
     //oPush
     void oPush(token& c){
         //check precedence with curr and top of stack. If top of stack is high then run a "#op"
         if(!OS.empty()){//something on the stack
-            if(precedence(c)>precedence(peekOS()))
-               OS.push_back(c);trying to figure out why a parenthesis would be considered lower precedence than a function
+            if(inputprecedence(c)>stackprecedence(peekOS()))
+               OS.push_back(c);
             else{
                 p_op();//pop back operator
                 //push current operator on the stack
@@ -518,12 +549,13 @@ public:
     //iExist
     void iExist(){
         //pop the top SAR off the SAS
-        string top_sar = popSAS();
+        SAR top_sar = popSAS();
         //test if the SAR exists in the current scope.
-        string temp = st->containsLexeme(top_sar, scope);
-        if(top_sar != temp){
+        string temp = st->containsLexeme(top_sar.value, scope);
+        if(top_sar.value != temp){
         //if exists, push id_sar onto the SAS
-            SAS.push_back(temp);
+            top_sar.value = temp;
+            SAS.push_back(top_sar);
         }
         else{
         //if does not exist, throw semantic errors
@@ -533,19 +565,20 @@ public:
     //#rexist
     void rExist(){
         //pop top sar from sas
-        string top_sar = popSAS();
+        SAR top_sar = popSAS();
         //pop next sar
-        string next_sar = popSAS();
+        SAR next_sar = popSAS();
         //is top sar a public member of next sar?
-        sym t = st->fetchSymbol(next_sar);
+        sym t = st->fetchSymbol(next_sar.value);
         string s = GLOBAL;
         push_scope(s, t.data.type);
-        string temp = st->containsLexeme(top_sar, s);
-        if(top_sar != temp){
+        string temp = st->containsLexeme(top_sar.value, s);
+        if(top_sar.value != temp){
         //if yes, push onto SAS
-            t = st->fetchSymbol(temp);
+            top_sar.value = temp;
+            t = st->fetchSymbol(top_sar.value);
             if(t.data.accessMod == PUBLIC){
-                SAS.push_back(temp);
+                SAS.push_back(top_sar);
             }
             else
                 genSymError();
@@ -557,7 +590,40 @@ public:
     }
     //#BAL
     void BAL(){
-        SAS.push_back("(");
+        SAR s;
+        s.value = bal_sar;
+        SAS.push_back(s);
+    }
+    //#EAL
+    void EAL(){
+        SAR s = popSAS();
+        SAR al_sar;
+        while( s.value != "BAL"){
+            al_sar.arg_list.push_back(s.value);
+            s = popSAS();
+        }
+        SAS.push_back(al_sar);
+    }
+    //#func
+    void func(){
+        SAR func_sar;
+        SAR al_sar = popSAS();
+        SAR f = popSAS();
+        func_sar.value = f.value;
+        func_sar.arg_list = al_sar.arg_list;
+        SAS.push_back(func_sar);
+    }
+    //#,
+    void pcomma(){
+        
+    }
+    //#)
+    void pparenc(){
+        token t = popOS();
+        while(t.lexeme != "("){
+            p_op();
+            t = popOS();
+        }
     }
     //#EOE
     void EOE(){
@@ -582,39 +648,45 @@ public:
     }
     //#+
     void paddop(){
-        sym y = st->fetchSymbol(popSAS());
-        sym x = st->fetchSymbol(popSAS());
+        sym y = st->fetchSymbol(popSAS().value);
+        sym x = st->fetchSymbol(popSAS().value);
         //is x + y valid?
         if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
             genSymError();
         //push x onto SAS to store type of answer
-        SAS.push_back(x.symid);
+        SAR s;
+        s.value = x.symid;
+        SAS.push_back(s);
     }
     //#*
     void pmultop(){
-        sym y = st->fetchSymbol(popSAS());
-        sym x = st->fetchSymbol(popSAS());
+        sym y = st->fetchSymbol(popSAS().value);
+        sym x = st->fetchSymbol(popSAS().value);
         //is x*y valid?
         if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
             genSymError();
         //push x onto SAS
-        SAS.push_back(x.symid);
+        SAR s;
+        s.value = x.symid;
+        SAS.push_back(s);
     }
     //#/
     void pdivop(){
         //get y and x from the SAS
-        sym y = st->fetchSymbol(popSAS());
-        sym x = st->fetchSymbol(popSAS());
+        sym y = st->fetchSymbol(popSAS().value);
+        sym x = st->fetchSymbol(popSAS().value);
         //is x / y valid?
         if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
             genSymError();
         //push x onto SAS
-        SAS.push_back(x.symid);
+        SAR s;
+        s.value = x.symid;
+        SAS.push_back(s);
     }
     //#=
     void passop(){//#=
-        sym y = st->fetchSymbol(popSAS());
-        sym x = st->fetchSymbol(popSAS());
+        sym y = st->fetchSymbol(popSAS().value);
+        sym x = st->fetchSymbol(popSAS().value);
         //is x = y valid?
         if(x.kind == LITERAL)//is x a valid lValue?
             genSymError();
@@ -688,6 +760,10 @@ public:
         scope = GLOBAL;
         while(c.lexeme != "void")
             class_declaration(c, n);
+        if(semantic){
+            OS.clear();
+            SAS.clear();
+        }
         if(c.lexeme != "void")
             genSynError(c, "void");
         getNextToken();
@@ -704,7 +780,7 @@ public:
         if(c.type != parenthc)
             genSynError(c, ")");
         getNextToken();
-        method_body(c, n);
+        method_body(c, n);about to start on implementing slide 80. 
         pop_scope(scope);
     }
     void class_declaration(token&c, token&n){
@@ -742,8 +818,10 @@ public:
             getNextToken();
             if(c.type != id)
                 genSynError(c, "identifier");
-            if(syntax)
+            if(syntax){
                 s.value = c.lexeme;
+                s.scope = scope;
+            }
             push_scope(scope,c.lexeme);
             getNextToken();
             field_declaration(c, n);
@@ -757,8 +835,6 @@ public:
     void field_declaration(token& c, token& n){
         //************* ["[" "]"] ["=" assignment_expression ] ";" | "(" [parameter_list] ")" method_body
         if(c.type == parentho){
-            if(syntax)
-                s.scope = scope;
             getNextToken();
             if(c.type != parenthc)
                 parameter_list(c, n);
@@ -1141,13 +1217,23 @@ public:
                 argument_list(c,n);
             if(c.type != parenthc)
                 genSynError(c, ")");
+            //#)
+            if(semantic){
+                pparenc();
+                EAL();
+                func();
+            }
             getNextToken();
         }
         else if (c.type == arrayb){//************| "[" expression "]"
             getNextToken();
+            if(semantic)
+                oPush(c);
             expression(c, n);
             if(c.type != arraye)
                 genSynError(c, "]");
+            //#]
+            //#arr
             getNextToken();
         }
         else
@@ -1172,6 +1258,8 @@ public:
     void argument_list(token& c, token& n){
         expression(c, n);//**************** expression { "," expression }
         while(c.lexeme == ","){
+            if(semantic)
+                pcomma();
             getNextToken();
             expression(c, n);
         }
