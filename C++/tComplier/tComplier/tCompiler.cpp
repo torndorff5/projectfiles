@@ -402,11 +402,18 @@ public:
         }
         //check to see if lexeme exists in current scope, or outer scope, returns symid
         string containsLexeme(string l, string currscope){
-            for(auto x: symtab){
-                if(x.second.value == l)
-                    if(currscope == x.second.scope)
-                        l = x.second.symid;
+            do{
+                for(auto x: symtab){
+                    if(x.second.value == l){
+                        if(currscope == x.second.scope){
+                            l = x.second.symid;
+                            return l;
+                        }
+                    }
+                }
+                pop_scope(currscope);
             }
+            while(currscope != "g");
             return l;
         }
         void printST(){
@@ -546,6 +553,18 @@ public:
         else
             OS.push_back(c);
     }
+    //#tPush
+    void tPush(token& c){
+        SAR type_sar;
+        type_sar.value = c.lexeme;
+        SAS.push_back(type_sar);
+    }
+    //vPush
+    void vPush(token& c){
+        SAR s;
+        s.value = c.lexeme;
+        SAS.push_back(s);
+    }
     //iExist
     void iExist(){
         //pop the top SAR off the SAS
@@ -586,7 +605,18 @@ public:
         else
         //if no, throw sym error
             genSymError();
-        
+    }
+    //#tExist
+    void tExist(){
+        SAR type_sar = popSAS();
+        string s = GLOBAL;
+        string temp = st->containsLexeme(type_sar.value, s);
+        if (temp == "int" || temp == "char" || temp  == "bool" || temp == "void" || temp == "sym")
+            return;
+        else if (temp != type_sar.value)
+            return;
+        else
+            genSymError();
     }
     //#BAL
     void BAL(){
@@ -612,6 +642,10 @@ public:
         func_sar.value = f.value;
         func_sar.arg_list = al_sar.arg_list;
         SAS.push_back(func_sar);
+    }
+    //dup
+    void dup(token& c, string s){
+        
     }
     //#,
     void pcomma(){
@@ -716,6 +750,8 @@ public:
         s += "." + temp;
     }
     static string pop_scope(string& s){
+        if(s == "g")
+            return s;
         size_t pos = s.find_last_of('.');
         s.erase(pos, s.length());
         return s;
@@ -780,7 +816,7 @@ public:
         if(c.type != parenthc)
             genSynError(c, ")");
         getNextToken();
-        method_body(c, n);about to start on implementing slide 80. 
+        method_body(c, n);
         pop_scope(scope);
     }
     void class_declaration(token&c, token&n){
@@ -810,7 +846,7 @@ public:
             if(syntax)
                 s.data.accessMod = c.lexeme;
             getNextToken();
-            if(!type(c,n))
+            if(istype(c))
                 if(c.type != id && n.type != id)
                     genSynError(c, "type or class_name identifier");
             if(syntax)
@@ -914,15 +950,22 @@ public:
         getNextToken();
     }
     void variable_declaration(token& c, token& n){
-        type(c, n);//***************** type identifier ["[" "]"] ["=" assignment_expression ] ";"
+        type(c, n);//***************** type identifier ["[" "]"] #dup #vPush ["=" #oPush assignment_expression ] ";"
         //set s type, value, change to array if need be and push before assignment call
         if(syntax)
             s.data.type = c.lexeme;
+        //texist
+        if(semantic)
+            tExist();
         getNextToken();
         if(c.type != id)
             genSynError(c, "identifier");
         if(syntax)
             s.value = c.lexeme;
+        if(semantic){
+            dup(c,scope);
+            vPush(c);aobut to hit up dup and vPush slide 112
+        }
         getNextToken();
         if(c.type == arrayb){
             if(syntax)
@@ -939,6 +982,8 @@ public:
             st->addBaseSymbol(s);
         }
         if(c.type == assop){
+            if(semantic)
+                oPush(c);
             getNextToken();
             assignment_expression(c, n);
         }
@@ -979,7 +1024,7 @@ public:
         //************** type identifier ["[" "]"] ;
         sym temp;//add all info and add to st
         //take symid and add to s.param
-        if(!type(c,n) && (c.type != id && n.type != id))
+        if(istype(c) && (c.type != id && n.type != id))
             genSynError(c, "type or class_name");
         if(syntax)
             temp.data.type = c.lexeme;
@@ -1167,7 +1212,7 @@ public:
             s.clear();//start new for the right side of assop
         if(c.lexeme == "new"){//*************** "new" type new_declaration
             getNextToken();
-            if(!type(c,n) && c.type != id)
+            if(istype(c) && c.type != id)
                 genSynError(c, "type");
             if(syntax)
                 s.value = c.lexeme + LITERAL;
@@ -1298,10 +1343,21 @@ public:
             genSynError(c, "character or number literal");
     }
     //checks only type keywords, not class_names
-    bool type(token&c,token&n){
-        if(c.lexeme != "int" && c.lexeme != "char" && c.lexeme != "void" && c.lexeme != "bool" && c.lexeme != "sym")
-                return false;
-        return true;
+    void type(token&c,token&n){
+        //"int" #tPush | "char" #tPush | "bool" #tPush | "void" #tPush | "sym" #tPush | class_name #tPush
+        if (c.type == id ||c.lexeme == "int" || c.lexeme == "char" || c.lexeme == "void" || c.lexeme == "bool" || c.lexeme == "sym" ){
+            if(semantic)
+                tPush(c);
+        }
+        else
+            genSynError(c, "valid type");
+    }
+    bool istype(token& c){
+        if (c.type == id ||c.lexeme == "int" || c.lexeme == "char" || c.lexeme == "void" || c.lexeme == "bool" || c.lexeme == "sym" ){
+            return true;
+        }
+        else
+            return false;
     }
     void passOne(std::string filename){
         //Lexical Analysis

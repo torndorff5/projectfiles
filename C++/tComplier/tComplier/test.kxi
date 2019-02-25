@@ -1,13 +1,10 @@
-class yapple {
-    public int f(int k, int g){
-        return k + g;
+class cat {
+    private int count = 0;
+    cat(int x){
+        count = x;
     }
 }
 void kxi2019 main(){
-    int x;
-    yapple y;
-    int k = 5;
-    int g = 3;
-    int r = 0;
-    x = y.f(k , g) + g * r ;
+    int r = 3;
+    cat c = new cat(r);
 }
