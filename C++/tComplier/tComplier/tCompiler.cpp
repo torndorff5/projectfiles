@@ -330,13 +330,13 @@ public:
         string type;
         string accessMod;
         vector<string> param;
-        int size;
+        string size;
         string asslit;
         void clear(){
             type="";
             accessMod="";
             asslit = "";
-            size = 0;
+            size = "";
             param.clear();
         }
     };
@@ -400,17 +400,37 @@ public:
                 throw e;
             }
         }
+        //checks to see if duplicate st values are in same scope.
+        //takes value and scope
+        bool containsDupCurrScope(string value, string sco){
+            int symcount = 0;
+            for(auto s: symtab){
+                if(s.second.scope == sco){
+                    if(s.second.value == value){
+                        symcount++;
+                    }
+                }
+            }
+            if(symcount > 1)
+                return true;
+            else
+                return false;
+        }
+        string containsLexemeCurrScope(string l, string currscope){
+            for(auto x: symtab){
+                if(x.second.value == l){
+                    if(currscope == x.second.scope){
+                        l = x.second.symid;
+                        return l;
+                    }
+                }
+            }
+            return l;
+        }
         //check to see if lexeme exists in current scope, or outer scope, returns symid
         string containsLexeme(string l, string currscope){
             do{
-                for(auto x: symtab){
-                    if(x.second.value == l){
-                        if(currscope == x.second.scope){
-                            l = x.second.symid;
-                            return l;
-                        }
-                    }
-                }
+                l = containsLexemeCurrScope(l, currscope);
                 pop_scope(currscope);
             }
             while(currscope != "g");
@@ -538,6 +558,13 @@ public:
         s.value = c.lexeme;
         SAS.push_back(s);
     }
+    //lpush
+    void lPush(token& c){
+        SAR lit_sar;
+        string temp = st->containsLexeme(c.lexeme, GLOBAL);
+        lit_sar.value = temp;
+        SAS.push_back(lit_sar);
+    }
     //oPush
     void oPush(token& c){
         //check precedence with curr and top of stack. If top of stack is high then run a "#op"
@@ -562,7 +589,7 @@ public:
     //vPush
     void vPush(token& c){
         SAR s;
-        s.value = c.lexeme;
+        s.value = st->containsLexeme(c.lexeme, scope);
         SAS.push_back(s);
     }
     //iExist
@@ -607,16 +634,17 @@ public:
             genSymError();
     }
     //#tExist
-    void tExist(){
+    string tExist(){
         SAR type_sar = popSAS();
         string s = GLOBAL;
         string temp = st->containsLexeme(type_sar.value, s);
         if (temp == "int" || temp == "char" || temp  == "bool" || temp == "void" || temp == "sym")
-            return;
+            return type_sar.value;
         else if (temp != type_sar.value)
-            return;
+            return type_sar.value;
         else
             genSymError();
+        return type_sar.value;
     }
     //#BAL
     void BAL(){
@@ -643,13 +671,60 @@ public:
         func_sar.arg_list = al_sar.arg_list;
         SAS.push_back(func_sar);
     }
-    //dup
-    void dup(token& c, string s){
+    //#newObj
+    void newObj(){
+        SAR al_sar =popSAS();
+        SAR type_sar = popSAS();
+        SAR constructor_sar;
+        //see if constructor exists in scope of type
+        string s = GLOBAL;
+        push_scope(s, type_sar.value);
+        string temp = st->containsLexemeCurrScope(type_sar.value, s);
+        if(temp != type_sar.value){
+            //does constructor take argument list
+            sym c = st->fetchSymbol(temp);
+            if(c.data.param.size() == al_sar.arg_list.size()){
+                //check to see if types match up
+                for(int i = 0; i < c.data.param.size(); i++){
+                    sym x = st->fetchSymbol(c.data.param[i]);
+                    sym y = st->fetchSymbol(al_sar.arg_list[i]);
+                    if(x.data.type != y.data.type)
+                        genSymError();
+                }
+                constructor_sar.value = c.symid;
+                constructor_sar.arg_list = al_sar.arg_list;
+                SAS.push_back(constructor_sar);
+                return;
+            }
+        }
+        genSymError();
+    }
+    //#newArray
+    void newArray(){
+        SAR new_sar;
+        SAR top_sar = popSAS();
+        sym size = st->fetchSymbol(top_sar.value);
+        if(size.data.type == INT){
+            new_sar.value = tExist();//is next type sar able to have an array made.
+            sym x;
+            x.value = new_sar.value;
+            x.kind = OBJECT;
+            x.scope = GLOBAL;
+            x.data.type = new_sar.value + ARRAY;
+            x.data.size = size.symid;
+            x.data.accessMod = PUBLIC;
+            x.symid = st->genSymID(x.value.at(0));
+            st->addSymbol(x);
+            about to finish up the new array function 
+        }
+        
         
     }
-    //#,
-    void pcomma(){
-        
+    //#dup
+    void dup(token& c, string s){
+        //check that current lexeme is not a duplicate in current scope
+        if(st->containsDupCurrScope(c.lexeme, s))
+            genSymError();
     }
     //#)
     void pparenc(){
@@ -658,6 +733,18 @@ public:
             p_op();
             t = popOS();
         }
+    }
+    //#]
+    void parraye(){
+        token t = popOS();
+        while(t.lexeme != "["){
+            p_op();
+            t = popOS();
+        }
+    }
+    //#,
+    void pcomma(){
+        
     }
     //#EOE
     void EOE(){
@@ -679,6 +766,12 @@ public:
             pdivop();
         else if (t.lexeme == "+")
             paddop();
+        else if (t.lexeme == ")")
+            pparenc();
+        else if (t.lexeme == "]")
+            parraye();
+        else if (t.lexeme == ",")
+            pcomma();
     }
     //#+
     void paddop(){
@@ -745,6 +838,7 @@ public:
     const string CONSTR = "constructor";
     const string PUBLIC = "public";
     const string PRIVATE = "private";
+    const string OBJECT = "object";
     
     void push_scope(string& s,string temp){
         s += "." + temp;
@@ -964,7 +1058,7 @@ public:
             s.value = c.lexeme;
         if(semantic){
             dup(c,scope);
-            vPush(c);aobut to hit up dup and vPush slide 112
+            vPush(c);
         }
         getNextToken();
         if(c.type == arrayb){
@@ -989,9 +1083,11 @@ public:
         }
         checkSemiColon(c);
         getNextToken();
+        if(semantic)
+            EOE();
     }
     void numeric_literal(token& c){
-        //************* ["+" | "-"]number ;
+        //************* ["+" | "-"]number #lpush ;
         if(c.lexeme == "+"){
             getNextToken();
             if(c.type != numb)
@@ -1010,6 +1106,8 @@ public:
         }
         if(syntax)
             addLit(c);
+        if(semantic)
+            lPush(c);
         getNextToken();
     }
     void parameter_list(token& c, token& n){
@@ -1212,8 +1310,7 @@ public:
             s.clear();//start new for the right side of assop
         if(c.lexeme == "new"){//*************** "new" type new_declaration
             getNextToken();
-            if(istype(c) && c.type != id)
-                genSynError(c, "type");
+            type(c, n);
             if(syntax)
                 s.value = c.lexeme + LITERAL;
             getNextToken();
@@ -1233,19 +1330,34 @@ public:
             expression(c, n);
     }
     void new_declaration(token& c, token& n){
-        if(c.type == parentho){//************* "(" [ argument_list ] ")"
+        if(c.type == parentho){//************* "(" #oPush #BAL [ argument_list ] ")" #) #EAL  #newObj
+            if(semantic){
+                oPush(c);
+                BAL();
+            }
             getNextToken();
             if(c.type != parenthc)
                 argument_list(c,n);
             if(c.type != parenthc)
                 genSynError(c, ")");
+            if(semantic){
+                pparenc();
+                EAL();
+                newObj();
+            }
             getNextToken();
         }
-        else if (c.type == arrayb){//************| "[" expression "]"
+        else if (c.type == arrayb){//************| "[" #oPush expression "]" #] #new[]
+            if(semantic)
+                oPush(c);
             getNextToken();
             expression(c, n);
             if(c.type != arraye)
                 genSynError(c, "]");
+            if(semantic){
+                parraye();
+                newArray();
+            }
             getNextToken();
         }
         else

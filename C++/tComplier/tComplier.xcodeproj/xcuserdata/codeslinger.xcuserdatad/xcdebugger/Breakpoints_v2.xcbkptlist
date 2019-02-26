@@ -90,12 +90,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tComplier/tCompiler.cpp"
-            timestampString = "572814811.226027"
+            timestampString = "572896116.301562"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "960"
-            endingLineNumber = "960"
-            landmarkName = "variable_declaration(token&amp; c, token&amp; n)"
+            startingLineNumber = "1358"
+            endingLineNumber = "1358"
+            landmarkName = "new_declaration(token&amp; c, token&amp; n)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "tComplier/tCompiler.cpp"
+            timestampString = "572896116.301972"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "704"
+            endingLineNumber = "704"
+            landmarkName = "newArray()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

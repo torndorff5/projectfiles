@@ -1,10 +1,12 @@
 class cat {
     private int count = 0;
-    cat(int x){
+    cat(int x, int y){
         count = x;
+        count = count - y;
     }
 }
 void kxi2019 main(){
     int r = 3;
-    cat c = new cat(r);
+    int q = -2;
+    cat x[] = new cat[r];
 }
