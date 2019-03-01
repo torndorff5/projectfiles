@@ -41,7 +41,7 @@ public:
     enum Type {space, nl, numb, pchar, charact, id, punct, keyw, mathop,logicop,relop,assop,arrayb,arraye,blockb,blocke,parentho,parenthc,streamop, uk, eof};
     
     //token class that has a lexeme, line# and type
-    struct token {
+    struct token { i am bout to start on slide 139. 
         string lexeme;
         size_t line_num;
         Type type;
@@ -714,8 +714,9 @@ public:
             x.data.size = size.symid;
             x.data.accessMod = PUBLIC;
             x.symid = st->genSymID(x.value.at(0));
+            new_sar.value = x.symid;
             st->addSymbol(x);
-            about to finish up the new array function 
+            SAS.push_back(new_sar);
         }
         
         
@@ -751,6 +752,8 @@ public:
         while (!OS.empty()){
             p_op();//pop off operator stack until its empty
         }
+        SAS.clear();
+        OS.clear();
     }
     //#op
     void p_op(){

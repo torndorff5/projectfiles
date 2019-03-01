@@ -1,12 +1,17 @@
-class cat {
-    private int count = 0;
-    cat(int x, int y){
-        count = x;
-        count = count - y;
+class func {
+    public void f(int a, bool c){
+        if(c){
+        a = a + 1;
+        }
     }
 }
+
+
 void kxi2019 main(){
+    func f;
     int r = 3;
-    int q = -2;
-    cat x[] = new cat[r];
+    int g =1;
+    int k = 2;
+    f.f(r * 3 , g < k ) ;
+
 }
