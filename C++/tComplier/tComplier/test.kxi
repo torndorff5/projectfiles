@@ -1,17 +1,6 @@
-class func {
-    public void f(int a, bool c){
-        if(c){
-        a = a + 1;
-        }
-    }
-}
-
 
 void kxi2019 main(){
-    func f;
-    int r = 3;
-    int g =1;
-    int k = 2;
-    f.f(r * 3 , g < k ) ;
-
+    int c[] = new int[11];
+    int r = 7;
+    c[r+3] = c[r-5];
 }

@@ -41,7 +41,7 @@ public:
     enum Type {space, nl, numb, pchar, charact, id, punct, keyw, mathop,logicop,relop,assop,arrayb,arraye,blockb,blocke,parentho,parenthc,streamop, uk, eof};
     
     //token class that has a lexeme, line# and type
-    struct token { i am bout to start on slide 139. 
+    struct token {
         string lexeme;
         size_t line_num;
         Type type;
@@ -624,6 +624,19 @@ public:
             top_sar.value = temp;
             t = st->fetchSymbol(top_sar.value);
             if(t.data.accessMod == PUBLIC){
+                //add top_sar to symbol table
+                sym ref;
+                ref.scope = GLOBAL;
+                ref.kind = METHOD + LITERAL;
+                ref.value = top_sar.value;
+                ref.data.accessMod = PUBLIC;
+                for(auto p: top_sar.arg_list){
+                    ref.data.param.push_back(p);
+                }
+                ref.data.type = t.data.type;
+                ref.symid = st->genSymID('t');
+                st->addSymbol(ref);
+                top_sar.value = ref.symid;
                 SAS.push_back(top_sar);
             }
             else
@@ -715,7 +728,7 @@ public:
             x.data.accessMod = PUBLIC;
             x.symid = st->genSymID(x.value.at(0));
             new_sar.value = x.symid;
-            st->addSymbol(x);
+            st->addSymbol(x); about to start on slide158 
             SAS.push_back(new_sar);
         }
         
@@ -729,23 +742,28 @@ public:
     }
     //#)
     void pparenc(){
-        token t = popOS();
+        token t = peekOS();
         while(t.lexeme != "("){
             p_op();
-            t = popOS();
+            t=peekOS();
         }
+        popOS();//pop off the "("
     }
     //#]
     void parraye(){
-        token t = popOS();
+        token t = peekOS();
         while(t.lexeme != "["){
             p_op();
-            t = popOS();
+            t=peekOS();
         }
     }
     //#,
     void pcomma(){
-        
+        token t = peekOS();
+        while(t.type != parentho){
+            p_op();
+            t=peekOS();
+        }
     }
     //#EOE
     void EOE(){
@@ -753,10 +771,9 @@ public:
             p_op();//pop off operator stack until its empty
         }
         SAS.clear();
-        OS.clear();
     }
     //#op
-    void p_op(){
+    token p_op(){
         token t = popOS();
         if(t.type == assop){//#=
             passop();
@@ -775,6 +792,17 @@ public:
             parraye();
         else if (t.lexeme == ",")
             pcomma();
+        else if (t.lexeme == "<")
+            plesst();
+        return t;
+    }
+    void addTemp2ST(sym& temp, string type){
+        temp.kind = type + LITERAL;
+        temp.scope = GLOBAL;
+        temp.data.accessMod = PUBLIC;
+        temp.data.type = type;
+        temp.symid = st->genSymID('t');
+        st->addSymbol(temp);
     }
     //#+
     void paddop(){
@@ -785,7 +813,9 @@ public:
             genSymError();
         //push x onto SAS to store type of answer
         SAR s;
-        s.value = x.symid;
+        sym temp;
+        addTemp2ST(temp, INT);
+        s.value = temp.symid;
         SAS.push_back(s);
     }
     //#*
@@ -797,7 +827,9 @@ public:
             genSymError();
         //push x onto SAS
         SAR s;
-        s.value = x.symid;
+        sym temp;
+        addTemp2ST(temp, INT);
+        s.value = temp.symid;
         SAS.push_back(s);
     }
     //#/
@@ -810,7 +842,9 @@ public:
             genSymError();
         //push x onto SAS
         SAR s;
-        s.value = x.symid;
+        sym temp;
+        addTemp2ST(temp, INT);
+        s.value = temp.symid;
         SAS.push_back(s);
     }
     //#=
@@ -822,6 +856,19 @@ public:
             genSymError();
         if(x.data.type != y.data.type)//do x and y share the same type
             genSymError();
+    }
+    //#<
+    void plesst(){
+        sym y = st->fetchSymbol(popSAS().value);
+        sym x = st->fetchSymbol(popSAS().value);
+        //is x < y valid (both ints)
+        if(x.data.type != y.data.type)//do x and y share the same type
+            genSymError();
+        sym temp;
+        SAR t_var;
+        addTemp2ST(temp, BOOL);
+        t_var.value = temp.symid;
+        SAS.push_back(t_var);
     }
     //SYTNAX FUNCTIONS AND DATA******************************************************************************************************************
     symboltable* st = new symboltable();
@@ -842,6 +889,8 @@ public:
     const string PUBLIC = "public";
     const string PRIVATE = "private";
     const string OBJECT = "object";
+    const string TEMP = "tval";
+    const string FUNC = "func";
     
     void push_scope(string& s,string temp){
         s += "." + temp;
