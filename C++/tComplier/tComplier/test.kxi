@@ -1,6 +1,11 @@
+class cat {
+    private int count;
+    cat(int x){
+        count = x;
+    }
+}
 
 void kxi2019 main(){
-    int c[] = new int[11];
-    int r = 7;
-    c[r+3] = c[r-5];
+char a = 'a';
+char b = a;
 }

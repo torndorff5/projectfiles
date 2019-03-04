@@ -532,6 +532,7 @@ public:
     struct SAR {
         vector<string> arg_list;
         string value;
+        string index;
     };
     vector<SAR> SAS;
     SAR popSAS(){
@@ -647,13 +648,15 @@ public:
             genSymError();
     }
     //#tExist
-    string tExist(){
+    string tExist(token& c){
+        if (c.lexeme == "int" || c.lexeme == "char" || c.lexeme  == "bool" || c.lexeme == "void" || c.lexeme == "sym")
+            return c.lexeme;
         SAR type_sar = popSAS();
+        if (type_sar.value == "int" || type_sar.value == "char" || type_sar.value  == "bool" || type_sar.value == "void" || type_sar.value == "sym")
+            return type_sar.value;
         string s = GLOBAL;
         string temp = st->containsLexeme(type_sar.value, s);
-        if (temp == "int" || temp == "char" || temp  == "bool" || temp == "void" || temp == "sym")
-            return type_sar.value;
-        else if (temp != type_sar.value)
+        if (temp != type_sar.value)
             return type_sar.value;
         else
             genSymError();
@@ -683,6 +686,15 @@ public:
         func_sar.value = f.value;
         func_sar.arg_list = al_sar.arg_list;
         SAS.push_back(func_sar);
+    }
+    //#arr
+    void arr(){
+        sym index = st->fetchSymbol(popSAS().value);
+        SAR arr = popSAS();
+        if(index.data.type != INT)
+            genSymError();
+        arr.index = index.symid;
+        SAS.push_back(arr);
     }
     //#newObj
     void newObj(){
@@ -718,7 +730,8 @@ public:
         SAR top_sar = popSAS();
         sym size = st->fetchSymbol(top_sar.value);
         if(size.data.type == INT){
-            new_sar.value = tExist();//is next type sar able to have an array made.
+            token t;
+            new_sar.value = tExist(t);//is next type sar able to have an array made.
             sym x;
             x.value = new_sar.value;
             x.kind = OBJECT;
@@ -728,11 +741,21 @@ public:
             x.data.accessMod = PUBLIC;
             x.symid = st->genSymID(x.value.at(0));
             new_sar.value = x.symid;
-            st->addSymbol(x); about to start on slide158 
+            st->addSymbol(x);
             SAS.push_back(new_sar);
         }
         
         
+    }
+    //#CD
+    void CD(token& t){
+        //check that this lexeme matches the name of the class
+        //get name of the class
+        string name = scope;
+        size_t pos = name.find_last_of('.');
+        name.erase(0, pos + 1);
+        if(t.lexeme != name)
+            genSymError();
     }
     //#dup
     void dup(token& c, string s){
@@ -756,6 +779,7 @@ public:
             p_op();
             t=peekOS();
         }
+        popOS();//pop off the "["
     }
     //#,
     void pcomma(){
@@ -784,6 +808,8 @@ public:
         //#/
         else if(t.lexeme == "/")
             pdivop();
+        else if(t.lexeme == "-")
+            psubtr();
         else if (t.lexeme == "+")
             paddop();
         else if (t.lexeme == ")")
@@ -806,6 +832,20 @@ public:
     }
     //#+
     void paddop(){
+        sym y = st->fetchSymbol(popSAS().value);
+        sym x = st->fetchSymbol(popSAS().value);
+        //is x + y valid?
+        if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
+            genSymError();
+        //push x onto SAS to store type of answer
+        SAR s;
+        sym temp;
+        addTemp2ST(temp, INT);
+        s.value = temp.symid;
+        SAS.push_back(s);
+    }
+    //#-
+    void psubtr(){
         sym y = st->fetchSymbol(popSAS().value);
         sym x = st->fetchSymbol(popSAS().value);
         //is x + y valid?
@@ -966,15 +1006,17 @@ public:
         pop_scope(scope);
     }
     void class_declaration(token&c, token&n){
-        //********************** "class" class_name "{" {class_member_declaration} "}"
+        //********************** "class" class_name #dup "{" {class_member_declaration} "}"
         if(c.lexeme != "class")
             genSynError(c, "class");
         getNextToken();
         if(syntax)
             addClass(c);
-        push_scope(scope,c.lexeme);
         if(c.type != id)
             genSynError(c, "class_name identifier");
+        if(semantic)
+            dup(c, scope);
+        push_scope(scope,c.lexeme);
         getNextToken();
         if(c.type != blockb)
             genSynError(c, "{");
@@ -987,7 +1029,7 @@ public:
         pop_scope(scope);
     }
     void class_member_declaration(token& c, token& n){
-        //************** modifier type identifier field_declaration | constructor declaration
+        //************** modifier type #tExist identifier #dup field_declaration | constructor declaration
         if(c.lexeme == PRIVATE || c.lexeme == PUBLIC){
             if(syntax)
                 s.data.accessMod = c.lexeme;
@@ -997,12 +1039,18 @@ public:
                     genSynError(c, "type or class_name identifier");
             if(syntax)
                 s.data.type = c.lexeme;
+            if(semantic)
+                tExist(c);
             getNextToken();
             if(c.type != id)
                 genSynError(c, "identifier");
             if(syntax){
                 s.value = c.lexeme;
                 s.scope = scope;
+            }
+            if(semantic){
+                dup(c, scope);
+                vPush(c);
             }
             push_scope(scope,c.lexeme);
             getNextToken();
@@ -1015,8 +1063,10 @@ public:
             genSynError(c, "access modifier or class_name indentifer ");
     }
     void field_declaration(token& c, token& n){
-        //************* ["[" "]"] ["=" assignment_expression ] ";" | "(" [parameter_list] ")" method_body
+        //************* ["[" "]"] #vPush ["=" #oPush assignment_expression ] ";" #EOE | "(" [parameter_list] ")" method_body
         if(c.type == parentho){
+            if(semantic)
+                popSAS();//get rid of vPush
             getNextToken();
             if(c.type != parenthc)
                 parameter_list(c, n);
@@ -1032,13 +1082,14 @@ public:
         }
         else{
             pop_scope(scope);
-            if(c.type == arrayb){//***********
+            if(c.type == arrayb){//*********** ["[" "]"] #vPush ["=" #oPush assignment_expression ] ";" #EOE
                 getNextToken();
                 if(c.type != arraye)
                     genSynError(c, "]");
                 getNextToken();
                 if(syntax)
                     s.data.type += ARRAY;
+                //#vPush: I did it earlier to get the right token and then popped the sas if it turned out to be a function call
             }
             if(syntax){
                 s.kind = IVAR;
@@ -1046,16 +1097,20 @@ public:
                 st->addBaseSymbol(s);
             }
             if(c.type == assop){
+                if(semantic)
+                    oPush(c);
                 getNextToken();
                 assignment_expression(c, n);
             }
             checkSemiColon(c);
+            if(semantic)
+                EOE();
             getNextToken();
         }
         
     }
     void constructor_declaration(token& c, token& n){
-        // *************** class_name "(" [parameter_list] ")" method_body
+        // *************** class_name #dup #CD "(" [parameter_list] ")" method_body
         if(c.type != id)
             genSynError(c, "class_name identifier");
         if(syntax){
@@ -1064,6 +1119,10 @@ public:
             s.value = c.lexeme;
             s.data.type = c.lexeme;
             s.data.accessMod = PUBLIC;
+        }
+        if(semantic){
+            dup(c, scope);
+            CD(c);
         }
         push_scope(scope,c.lexeme);
         getNextToken();
@@ -1102,7 +1161,7 @@ public:
             s.data.type = c.lexeme;
         //texist
         if(semantic)
-            tExist();
+            tExist(c);
         getNextToken();
         if(c.type != id)
             genSynError(c, "identifier");
@@ -1162,6 +1221,16 @@ public:
             lPush(c);
         getNextToken();
     }
+    void character_literal(token&c){
+        //*************** character #lpush
+        if(c.type != charact)
+            genSynError(c, "char literal");
+        if(semantic)
+            lPush(c);
+        if(syntax)
+            addLit(c);
+        getNextToken();
+    }
     void parameter_list(token& c, token& n){
         //*********** parameter { "," parameter }
         parameter(c, n);
@@ -1171,13 +1240,15 @@ public:
         }
     }
     void parameter(token&c, token&n){
-        //************** type identifier ["[" "]"] ;
+        //************** type #tExist identifier ["[" "]"] #dup;
         sym temp;//add all info and add to st
         //take symid and add to s.param
         if(istype(c) && (c.type != id && n.type != id))
             genSynError(c, "type or class_name");
         if(syntax)
             temp.data.type = c.lexeme;
+        if(semantic)
+            tExist(c); about to test texist and dup 
         getNextToken();
         if(c.type != id)
             genSynError(c, "identifier");
@@ -1200,6 +1271,8 @@ public:
             st->addSymbol(temp);
             s.data.param.push_back(temp.symid);
         }
+        if(semantic)
+            dup(c, scope);
     }
     void statement(token&c, token& n){
         if(c.type == blockb){//************* "{" {statement} "}"
@@ -1298,7 +1371,7 @@ public:
             if(c.type == mathop || c.type == relop ||c.type == assop || c.type == logicop )
                 expressionz(c,n);
         }
-        else if(c.lexeme == "true" || c.lexeme == "false" || c.lexeme == "null" || c.type == charact){//**************| "true" [expressionz] | "false" [expressionz] | "null" [expressionz] | char_literal [expressionz]
+        else if(c.lexeme == "true" || c.lexeme == "false" || c.lexeme == "null"){//**************| "true" [expressionz] | "false" [expressionz] | "null" [expressionz] |
             if(syntax)
                 addLit(c);
             getNextToken();
@@ -1332,6 +1405,12 @@ public:
         else if(c.type == numb || c.lexeme == "-" || c.lexeme == "+"){
             //************** number literal [expressionz]
             numeric_literal(c);
+            if (c.type == mathop || c.type == relop ||c.type == assop || c.type == logicop)
+                expressionz(c, n);
+        }
+        else if(c.type == charact){
+            //*************** character literal [expressionz]
+            character_literal(c);
             if (c.type == mathop || c.type == relop ||c.type == assop || c.type == logicop)
                 expressionz(c, n);
         }
@@ -1434,15 +1513,19 @@ public:
             }
             getNextToken();
         }
-        else if (c.type == arrayb){//************| "[" expression "]"
-            getNextToken();
+        else if (c.type == arrayb){//************| "[" #oPush expression "]" #] #arr
             if(semantic)
                 oPush(c);
+            getNextToken();
             expression(c, n);
             if(c.type != arraye)
                 genSynError(c, "]");
-            //#]
-            //#arr
+            if(semantic){
+                //#]
+                parraye();
+                //#arr
+                arr();
+            }
             getNextToken();
         }
         else
@@ -1497,14 +1580,10 @@ public:
     void literal(token&c){
         //************** charact | numb
         if(c.type == charact){
-            if(syntax)
-                addLit(c);
-            getNextToken();
+            character_literal(c);
         }
         else if(c.type == numb || c.lexeme == "+" || c.lexeme == "-")
             numeric_literal(c);
-        else
-            genSynError(c, "character or number literal");
     }
     //checks only type keywords, not class_names
     void type(token&c,token&n){
