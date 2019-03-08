@@ -623,12 +623,13 @@ public:
         if(top_sar.value != temp){
         //if yes, push onto SAS
             top_sar.value = temp;
+            string tvalue = t.value;
             t = st->fetchSymbol(top_sar.value);
-            if(t.data.accessMod == PUBLIC){
+            if(t.data.accessMod == PUBLIC || tvalue == THIS){
                 //add top_sar to symbol table
                 sym ref;
                 ref.scope = GLOBAL;
-                ref.kind = METHOD + LITERAL;
+                ref.kind = REF + LITERAL;
                 ref.value = top_sar.value;
                 ref.data.accessMod = PUBLIC;
                 for(auto p: top_sar.arg_list){
@@ -649,8 +650,6 @@ public:
     }
     //#tExist
     string tExist(token& c){
-        if (c.lexeme == "int" || c.lexeme == "char" || c.lexeme  == "bool" || c.lexeme == "void" || c.lexeme == "sym")
-            return c.lexeme;
         SAR type_sar = popSAS();
         if (type_sar.value == "int" || type_sar.value == "char" || type_sar.value  == "bool" || type_sar.value == "void" || type_sar.value == "sym")
             return type_sar.value;
@@ -715,9 +714,7 @@ public:
         }
         sym exp = st->fetchSymbol(popSAS().value);
         //get current function with scope
-        string name = scope;
-        size_t pos = name.find_last_of('.');
-        name.erase(0, pos + 1);
+        string name = pop_tail_scope(scope);
         sym func = st->fetchSymbol(st->containsLexeme(name, scope));
         if(exp.data.type != func.data.type)//check to see if expression type is the same as function return type
             genSymError();
@@ -800,9 +797,7 @@ public:
     void CD(token& t){
         //check that this lexeme matches the name of the class
         //get name of the class
-        string name = scope;
-        size_t pos = name.find_last_of('.');
-        name.erase(0, pos + 1);
+        string name = pop_tail_scope(scope);
         if(t.lexeme != name)
             genSymError();
     }
@@ -812,7 +807,7 @@ public:
         if(st->containsDupCurrScope(c.lexeme, s))
             genSymError();
     }
-    //#switch implementation goes here 
+    //#switch implementation goes here
     /*void _switch(){
         
     }*/
@@ -1017,6 +1012,8 @@ public:
     const string OBJECT = "object";
     const string TEMP = "tval";
     const string FUNC = "func";
+    const string THIS = "this";
+    const string REF = "reference";
     
     void push_scope(string& s,string temp){
         s += "." + temp;
@@ -1026,6 +1023,11 @@ public:
             return s;
         size_t pos = s.find_last_of('.');
         s.erase(pos, s.length());
+        return s;
+    }
+    string pop_tail_scope(string s){
+        size_t pos = s.find_last_of('.');
+        s.erase(0,pos+1);
         return s;
     }
     void addLit(token& c){
@@ -1053,6 +1055,17 @@ public:
         //change scope to whatever it is currently
         s.scope = scope;
         st->addBaseSymbol(s);
+    }
+    //takes scope and class name and adds a this to the symbol table at that scope
+    void addThis(string s, string name){
+        sym t;
+        t.data.type = name;
+        t.kind = OBJECT;
+        t.value = THIS;
+        t.scope = s;
+        t.data.accessMod = PRIVATE;
+        t.symid = st->genSymID('t');
+        st->addSymbol(t);
     }
     void genSynError(token& c, string expected){
         cout << c.line_num << ": Found \"" << c.lexeme << "\" expecting \""<< expected << "\"" << endl;
@@ -1096,8 +1109,9 @@ public:
         if(c.lexeme != "class")
             genSynError(c, "class");
         getNextToken();
-        if(syntax)
+        if(syntax){
             addClass(c);
+        }
         if(c.type != id)
             genSynError(c, "class_name identifier");
         if(semantic)
@@ -1120,9 +1134,7 @@ public:
             if(syntax)
                 s.data.accessMod = c.lexeme;
             getNextToken();
-            if(istype(c))
-                if(c.type != id && n.type != id)
-                    genSynError(c, "type or class_name identifier");
+            type(c,n);
             if(syntax)
                 s.data.type = c.lexeme;
             if(semantic)
@@ -1161,6 +1173,8 @@ public:
             getNextToken();
             if(syntax){
                 s.kind = METHOD;
+                string name = pop_tail_scope(s.scope);
+                addThis(scope, name);
                 st->addBaseSymbol(s);
             }
             method_body(c, n);
@@ -1220,8 +1234,10 @@ public:
         if(c.type != parenthc)
             genSynError(c, ")");
         getNextToken();
-        if(syntax)
+        if(syntax){
+            addThis(scope, s.value);
             st->addBaseSymbol(s);
+        }
         method_body(c, n);
         pop_scope(scope);
     }
@@ -1329,8 +1345,7 @@ public:
         //************** type #tExist identifier ["[" "]"] #dup;
         sym temp;//add all info and add to st
         //take symid and add to s.param
-        if(istype(c) && (c.type != id && n.type != id))
-            genSynError(c, "type or class_name");
+        type(c,n);
         if(syntax)
             temp.data.type = c.lexeme;
         if(semantic)
@@ -1470,25 +1485,34 @@ public:
     }
     //checks syntax for an expression
     void expression(token& c, token& n){
-        if(c.type == parentho){//************** "(" expression ")" [ expressionz ]
+        if(c.type == parentho){//************** "(" #oPush expression ")" #) [ expressionz ]
+            if(semantic)
+                oPush(c);
             getNextToken();
             expression(c, n);
-            if(c.type == parenthc){
-                getNextToken();
-            }
-            else
+            if(c.type != parenthc){
                 genSynError(c, ")");
+            }
+            if(semantic)
+                pparenc();
+            getNextToken();
             if(c.type == mathop || c.type == relop ||c.type == assop || c.type == logicop )
                 expressionz(c,n);
         }
-        else if(c.lexeme == "true" || c.lexeme == "false" || c.lexeme == "null"){//**************| "true" [expressionz] | "false" [expressionz] | "null" [expressionz] |
+        else if(c.lexeme == "true" || c.lexeme == "false" || c.lexeme == "null"){//**************| "true" #lPush [ expressionz ] | "false" #lpush [expressionz] | "null" #lpush [expressionz] |
             if(syntax)
                 addLit(c);
+            if(semantic)
+                lPush(c);
             getNextToken();
             if (c.type == mathop || c.type == relop ||c.type == assop || c.type == logicop)
                 expressionz(c, n);
         }
         else if(c.lexeme == "this"){
+            if(semantic){
+                iPush(c);
+                iExist(); 
+            }
             getNextToken();
             if(c.lexeme == ".")//************ [member_refz]
                 member_refz(c,n);
@@ -1496,17 +1520,13 @@ public:
                 expressionz(c,n);
         }
         else if(c.type == id){//************* | identifier #iPush [fn_arr_member] #iExist [member_refz] [expressionz]
-            if(semantic){
-                //iPush
+            if(semantic)
                 iPush(c);
-            }
             getNextToken();
             if(c.type == parentho || c.type == arrayb)
                 fn_arr_member(c, n);
-            if(semantic){
-                //iExist
+            if(semantic)
                 iExist();
-            }
             if(c.lexeme == ".")
                 member_refz(c,n);
             if(c.type == mathop || c.type == relop ||c.type == assop || c.type == logicop )
@@ -1703,14 +1723,7 @@ public:
                 tPush(c);
         }
         else
-            genSynError(c, "valid type");
-    }
-    bool istype(token& c){
-        if (c.type == id ||c.lexeme == "int" || c.lexeme == "char" || c.lexeme == "void" || c.lexeme == "bool" || c.lexeme == "sym" ){
-            return true;
-        }
-        else
-            return false;
+            genSynError(c, "valid type or class name");
     }
     void passOne(std::string filename){
         //Lexical Analysis

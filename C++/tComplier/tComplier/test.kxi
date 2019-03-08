@@ -1,8 +1,11 @@
 class cat{
     private char dog[];
-    private int kitty = 0;
-    public int getKitty(){
-        return -6;
+    private int x;
+    cat(int x){
+        this.x = x;
+    }
+    public int run(int x){
+        return this.x;
     }
 }
 
