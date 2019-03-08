@@ -696,6 +696,55 @@ public:
         arr.index = index.symid;
         SAS.push_back(arr);
     }
+    //#if
+    void _if(){
+        sym exp = st->fetchSymbol(popSAS().value);
+        if(exp.data.type != BOOL)
+            genSymError();
+    }
+    //#while
+    void _while(){
+        sym exp = st->fetchSymbol(popSAS().value);
+        if(exp.data.type != BOOL)
+            genSymError();
+    }
+    //#return
+    void _return(){
+        while (!OS.empty()){
+            p_op();//pop off operator stack until its empty
+        }
+        sym exp = st->fetchSymbol(popSAS().value);
+        //get current function with scope
+        string name = scope;
+        size_t pos = name.find_last_of('.');
+        name.erase(0, pos + 1);
+        sym func = st->fetchSymbol(st->containsLexeme(name, scope));
+        if(exp.data.type != func.data.type)//check to see if expression type is the same as function return type
+            genSymError();
+    }
+    //#cout
+    void _cout(){
+        while (!OS.empty()){
+            p_op();//pop off operator stack until its empty
+        }
+        sym exp = st->fetchSymbol(popSAS().value);
+        //is int or char
+        if(exp.data.type != INT && exp.data.type != CHAR)
+            genSymError();
+    }
+    //#cin
+    void _cin(){
+        while (!OS.empty()){
+            p_op();//pop off operator stack until its empty
+        }
+        sym exp = st->fetchSymbol(popSAS().value);
+        //is int or char
+        if(exp.data.type != INT && exp.data.type != CHAR)
+            genSymError();
+        //can not be lit
+        if(exp.kind == LITERAL)
+            genSymError();
+    }
     //#newObj
     void newObj(){
         SAR al_sar =popSAS();
@@ -763,6 +812,10 @@ public:
         if(st->containsDupCurrScope(c.lexeme, s))
             genSymError();
     }
+    //#switch implementation goes here 
+    /*void _switch(){
+        
+    }*/
     //#)
     void pparenc(){
         token t = peekOS();
@@ -818,8 +871,12 @@ public:
             parraye();
         else if (t.lexeme == ",")
             pcomma();
-        else if (t.lexeme == "<")
-            plesst();
+        else if (t.lexeme == "<" || t.lexeme == ">" || t.lexeme == ">=" || t.lexeme == "<=")
+            pcomp();
+        else if (t.lexeme == "==" || t.lexeme == "!=")
+            pequals();
+        else if (t.lexeme == "||" || t.lexeme == "&&")
+            pcompexp();
         return t;
     }
     void addTemp2ST(sym& temp, string type){
@@ -897,12 +954,41 @@ public:
         if(x.data.type != y.data.type)//do x and y share the same type
             genSymError();
     }
-    //#<
-    void plesst(){
+    //#< #<= #>= # #>
+    //works on only ints and chars
+    void pcomp(){
         sym y = st->fetchSymbol(popSAS().value);
         sym x = st->fetchSymbol(popSAS().value);
-        //is x < y valid (both ints)
+        //is x < y valid (int or char)
         if(x.data.type != y.data.type)//do x and y share the same type
+            genSymError();
+        if(x.data.type != INT && x.data.type != CHAR)//is it either int or char?
+            genSymError();
+        sym temp;
+        SAR t_var;
+        addTemp2ST(temp, BOOL);
+        t_var.value = temp.symid;
+        SAS.push_back(t_var);
+    }
+    //#== #!= works if left side is same as right side
+    void pequals(){
+        sym y = st->fetchSymbol(popSAS().value);
+        sym x = st->fetchSymbol(popSAS().value);
+        //do x and y have same type?
+        if(x.data.type != y.data.type)
+            genSymError();
+        sym temp;
+        SAR t_var;
+        addTemp2ST(temp, BOOL);
+        t_var.value = temp.symid;
+        SAS.push_back(t_var);
+    }
+    //#|| #&& works if both are boolean
+    void pcompexp(){
+        sym y = st->fetchSymbol(popSAS().value);
+        sym x = st->fetchSymbol(popSAS().value);
+        //are x and y both boolean
+        if(x.data.type != BOOL || y.data.type != BOOL)
             genSymError();
         sym temp;
         SAR t_var;
@@ -1248,12 +1334,14 @@ public:
         if(syntax)
             temp.data.type = c.lexeme;
         if(semantic)
-            tExist(c); about to test texist and dup 
+            tExist(c);
         getNextToken();
         if(c.type != id)
             genSynError(c, "identifier");
         if(syntax)
             temp.value = c.lexeme;
+        if(semantic)
+            dup(c, scope);
         getNextToken();
         if(c.type == arrayb){
             if(syntax)
@@ -1271,8 +1359,6 @@ public:
             st->addSymbol(temp);
             s.data.param.push_back(temp.symid);
         }
-        if(semantic)
-            dup(c, scope);
     }
     void statement(token&c, token& n){
         if(c.type == blockb){//************* "{" {statement} "}"
@@ -1282,13 +1368,19 @@ public:
             getNextToken();
         }
         else if(c.lexeme == "if"){
-            getNextToken();//************** "(" expression ")" statement [ "else" statement ]
+            getNextToken();//************** "if" "(" #oPush expression ")" #) #if statement [ "else" statement ]
             if(c.type != parentho)
                 genSynError(c, "(");
+            if(semantic)
+                oPush(c);
             getNextToken();
             expression(c, n);
             if(c.type != parenthc)
                 genSynError(c, ")");
+            if(semantic){
+                pparenc();
+                _if();
+            }
             getNextToken();
             statement(c, n);
             if(c.lexeme == "else"){
@@ -1298,50 +1390,68 @@ public:
             
         }
         else if(c.lexeme == "while"){
-            getNextToken();//***************** "while" "(" expression ")" statement
+            getNextToken();//***************** "while" "(" #oPush expression ")" #) #while statement
             if(c.type != parentho)
                 genSynError(c, "(");
+            if(semantic)
+                oPush(c);
             getNextToken();
             expression(c, n);
             if(c.type != parenthc)
                 genSynError(c, ")");
+            if(semantic){
+                pparenc();
+                _while();
+            }
             getNextToken();
             statement(c, n);
         }
-        else if (c.lexeme == "return"){//************* "return" [ expression ] ";"
+        else if (c.lexeme == "return"){//************* "return" [ expression ] ";" #return
             getNextToken();
             if(c.lexeme != ";"){
                 expression(c, n);
             }
             checkSemiColon(c);
+            if(semantic)
+                _return();
             getNextToken();
         }
         else if (c.lexeme == "cout"){
-            getNextToken();//****************** "cout" "<<" expression ";"
+            getNextToken();//****************** "cout" "<<" expression ";" #cout
             if(c.lexeme != "<<")
                 genSynError(c, "<<");
             getNextToken();
             expression(c, n);
             checkSemiColon(c);
+            if(semantic)
+                _cout();
             getNextToken();
         }
         else if(c.lexeme == "cin"){
-            getNextToken();//****************** "cin" ">>" expression ";"
+            getNextToken();//****************** "cin" ">>" expression ";" #cin
             if(c.lexeme != ">>")
                 genSynError(c, ">>");
             getNextToken();
             expression(c, n);
             checkSemiColon(c);
+            if(semantic)
+                _cin();
             getNextToken();
         }
         else if(c.lexeme == "switch"){
-            getNextToken();//*********************"switch" "(" expression ")" case_block
+            getNextToken();//*********************"switch" "(" #oPush expression ")" #)#switch case_block
             if(c.type != parentho)
                 genSynError(c, "(");
+            if(semantic)
+                oPush(c);
             getNextToken();
             expression(c, n);
             if(c.type != parenthc)
                 genSynError(c, ")");
+            if(semantic){
+                pparenc();
+                //_switch();
+            }
             getNextToken();
             case_block(c, n);
         }

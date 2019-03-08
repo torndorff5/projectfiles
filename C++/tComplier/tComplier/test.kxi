@@ -1,11 +1,18 @@
-class cat {
-    private int count;
-    cat(int x){
-        count = x;
+class cat{
+    private char dog[];
+    private int kitty = 0;
+    public int getKitty(){
+        return -6;
     }
 }
 
 void kxi2019 main(){
-char a = 'a';
-char b = a;
+    int count = 0;
+    int x = count;
+    int y = count;
+    while(count > 100){
+        count = count + 1;
+        cout << 5;
+        cout << 'a';
+    }
 }
