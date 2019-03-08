@@ -625,11 +625,27 @@ public:
             top_sar.value = temp;
             string tvalue = t.value;
             t = st->fetchSymbol(top_sar.value);
-            if(t.data.accessMod == PUBLIC || tvalue == THIS){
+            size_t pos = string::npos;
+            pos = t.data.type.find("@");
+            if(pos != string::npos ){//array
+                sym ref;
+                ref.scope = GLOBAL;
+                ref.kind = REF+ARRAY;
+                ref.value = t.value;
+                ref.data.accessMod = PUBLIC;
+                ref.data.type = t.data.type;
+                pos = ref.data.type.find_last_of(":");
+                ref.data.type.erase(pos,ref.data.type.length());
+                ref.symid = st->genSymID('t');
+                st->addSymbol(ref);
+                top_sar.value = ref.symid;
+                SAS.push_back(top_sar);
+            }
+            else if(t.data.accessMod == PUBLIC || tvalue == THIS){//function or variable
                 //add top_sar to symbol table
                 sym ref;
                 ref.scope = GLOBAL;
-                ref.kind = REF + LITERAL;
+                ref.kind = REF;
                 ref.value = top_sar.value;
                 ref.data.accessMod = PUBLIC;
                 for(auto p: top_sar.arg_list){

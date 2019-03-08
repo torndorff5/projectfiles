@@ -1,21 +1,13 @@
 class cat{
-    private char dog[];
+    public char dog[];
     private int x;
     cat(int x){
         this.x = x;
-    }
-    public int run(int x){
-        return this.x;
+        dog = new char[x];
     }
 }
 
 void kxi2019 main(){
-    int count = 0;
-    int x = count;
-    int y = count;
-    while(count > 100){
-        count = count + 1;
-        cout << 5;
-        cout << 'a';
-    }
+    cat c = new cat(5);
+    c.dog[2] = 'a';
 }
