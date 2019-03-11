@@ -479,6 +479,10 @@ public:
     };
     //Semantic Functions and Data ******************************************************************************************************************
     const string bal_sar = "BAL";
+    const string FUNCTION_ERROR = "Function ";
+    const string VARIABLE_ERROR = "Variable ";
+    const string ARRAY_ERROR = "Array ";
+    const string NOT_DEFINED = " not defined";
     //precedence
     int stackprecedence(token t){
         if(t.lexeme == "*" || t.lexeme == "/")
@@ -524,20 +528,28 @@ public:
         else
             return 0;
     }
-    void genSymError(){
-        cout << line_number <<  ": Semantic Error" << endl;
-        exit(1);
-    }
     //Semantic Action Stack
     struct SAR {
         vector<string> arg_list;
         string value;
         string index;
     };
+    void genSemError(SAR sar, string value, string s){
+        cout << line_number <<  ": ";
+        if(!sar.arg_list.empty())
+            cout << FUNCTION_ERROR;
+        //array
+        else if (sar.index != "")
+            cout << ARRAY_ERROR;
+        //variable
+        else
+            cout << VARIABLE_ERROR;
+        cout << value + s <<  "." << endl;
+        exit(1);
+    }
+    
     vector<SAR> SAS;
     SAR popSAS(){
-        if(SAS.empty())
-            genSymError();
         SAR s = SAS.back();
         SAS.pop_back();
         return s;
@@ -606,7 +618,7 @@ public:
         }
         else{
         //if does not exist, throw semantic errors
-            genSymError();
+            genSemError(top_sar, top_sar.value, NOT_DEFINED);
         }
     }
     //#rexist
@@ -657,12 +669,18 @@ public:
                 top_sar.value = ref.symid;
                 SAS.push_back(top_sar);
             }
-            else
-                genSymError();
+            else{
+                string s = pop_tail_scope(t.scope);
+                if(t.kind == METHOD && top_sar.arg_list.empty())
+                    top_sar.arg_list.push_back("\n");
+                genSemError(top_sar,t.value, " not public in class " + s);
+            }
         }
-        else
+        else{
         //if no, throw sym error
-            genSymError();
+            string s = pop_tail_scope(t.scope);
+            genSemError(top_sar,top_sar.value, " not defined in class " + t.data.type);
+        }
     }
     //#tExist
     string tExist(token& c){
@@ -674,7 +692,7 @@ public:
         if (temp != type_sar.value)
             return type_sar.value;
         else
-            genSymError();
+            exit(1); //lol
         return type_sar.value;
     }
     //#BAL
@@ -707,21 +725,21 @@ public:
         sym index = st->fetchSymbol(popSAS().value);
         SAR arr = popSAS();
         if(index.data.type != INT)
-            genSymError();
+            exit(1); //lol
         arr.index = index.symid;
-        SAS.push_back(arr);
+        SAS.push_back(arr);tyring to test the array failure in r exist 
     }
     //#if
     void _if(){
         sym exp = st->fetchSymbol(popSAS().value);
         if(exp.data.type != BOOL)
-            genSymError();
+            exit(1); //lol
     }
     //#while
     void _while(){
         sym exp = st->fetchSymbol(popSAS().value);
         if(exp.data.type != BOOL)
-            genSymError();
+            exit(1); //lol
     }
     //#return
     void _return(){
@@ -733,7 +751,7 @@ public:
         string name = pop_tail_scope(scope);
         sym func = st->fetchSymbol(st->containsLexeme(name, scope));
         if(exp.data.type != func.data.type)//check to see if expression type is the same as function return type
-            genSymError();
+            exit(1); //lol
     }
     //#cout
     void _cout(){
@@ -743,7 +761,7 @@ public:
         sym exp = st->fetchSymbol(popSAS().value);
         //is int or char
         if(exp.data.type != INT && exp.data.type != CHAR)
-            genSymError();
+            exit(1); //lol
     }
     //#cin
     void _cin(){
@@ -753,10 +771,10 @@ public:
         sym exp = st->fetchSymbol(popSAS().value);
         //is int or char
         if(exp.data.type != INT && exp.data.type != CHAR)
-            genSymError();
+            exit(1); //lol
         //can not be lit
         if(exp.kind == LITERAL)
-            genSymError();
+            exit(1); //lol
     }
     //#newObj
     void newObj(){
@@ -776,7 +794,7 @@ public:
                     sym x = st->fetchSymbol(c.data.param[i]);
                     sym y = st->fetchSymbol(al_sar.arg_list[i]);
                     if(x.data.type != y.data.type)
-                        genSymError();
+                        exit(1); //lol
                 }
                 constructor_sar.value = c.symid;
                 constructor_sar.arg_list = al_sar.arg_list;
@@ -784,7 +802,7 @@ public:
                 return;
             }
         }
-        genSymError();
+        exit(1); //lol
     }
     //#newArray
     void newArray(){
@@ -815,13 +833,13 @@ public:
         //get name of the class
         string name = pop_tail_scope(scope);
         if(t.lexeme != name)
-            genSymError();
+            exit(1); //lol
     }
     //#dup
     void dup(token& c, string s){
         //check that current lexeme is not a duplicate in current scope
         if(st->containsDupCurrScope(c.lexeme, s))
-            genSymError();
+            exit(1); //lol
     }
     //#switch implementation goes here
     /*void _switch(){
@@ -904,7 +922,7 @@ public:
         sym x = st->fetchSymbol(popSAS().value);
         //is x + y valid?
         if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
-            genSymError();
+            exit(1); //lol
         //push x onto SAS to store type of answer
         SAR s;
         sym temp;
@@ -918,7 +936,7 @@ public:
         sym x = st->fetchSymbol(popSAS().value);
         //is x + y valid?
         if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
-            genSymError();
+            exit(1); //lol
         //push x onto SAS to store type of answer
         SAR s;
         sym temp;
@@ -932,7 +950,7 @@ public:
         sym x = st->fetchSymbol(popSAS().value);
         //is x*y valid?
         if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
-            genSymError();
+            exit(1); //lol
         //push x onto SAS
         SAR s;
         sym temp;
@@ -947,7 +965,7 @@ public:
         sym x = st->fetchSymbol(popSAS().value);
         //is x / y valid?
         if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
-            genSymError();
+            exit(1); //lol
         //push x onto SAS
         SAR s;
         sym temp;
@@ -961,9 +979,9 @@ public:
         sym x = st->fetchSymbol(popSAS().value);
         //is x = y valid?
         if(x.kind == LITERAL)//is x a valid lValue?
-            genSymError();
+            exit(1); //lol
         if(x.data.type != y.data.type)//do x and y share the same type
-            genSymError();
+            exit(1); //lol
     }
     //#< #<= #>= # #>
     //works on only ints and chars
@@ -972,9 +990,9 @@ public:
         sym x = st->fetchSymbol(popSAS().value);
         //is x < y valid (int or char)
         if(x.data.type != y.data.type)//do x and y share the same type
-            genSymError();
+            exit(1); //lol
         if(x.data.type != INT && x.data.type != CHAR)//is it either int or char?
-            genSymError();
+            exit(1); //lol
         sym temp;
         SAR t_var;
         addTemp2ST(temp, BOOL);
@@ -987,7 +1005,7 @@ public:
         sym x = st->fetchSymbol(popSAS().value);
         //do x and y have same type?
         if(x.data.type != y.data.type)
-            genSymError();
+            exit(1); //lol
         sym temp;
         SAR t_var;
         addTemp2ST(temp, BOOL);
@@ -1000,7 +1018,7 @@ public:
         sym x = st->fetchSymbol(popSAS().value);
         //are x and y both boolean
         if(x.data.type != BOOL || y.data.type != BOOL)
-            genSymError();
+            exit(1); //lol
         sym temp;
         SAR t_var;
         addTemp2ST(temp, BOOL);
@@ -1030,6 +1048,7 @@ public:
     const string FUNC = "func";
     const string THIS = "this";
     const string REF = "reference";
+    
     
     void push_scope(string& s,string temp){
         s += "." + temp;

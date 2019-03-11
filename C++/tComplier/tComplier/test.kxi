@@ -1,13 +1,13 @@
-class cat{
-    public char dog[];
-    private int x;
+class cat {
+    public int x;
+    private int y[];
     cat(int x){
         this.x = x;
-        dog = new char[x];
     }
 }
-
 void kxi2019 main(){
-    cat c = new cat(5);
-    c.dog[2] = 'a';
+    int arr = new int[5];
+    cat c = new cat(4);
+    int x = c.x;
+    c.y = arr;
 }
