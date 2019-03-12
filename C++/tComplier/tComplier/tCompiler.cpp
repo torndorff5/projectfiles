@@ -547,7 +547,11 @@ public:
         cout << value + s <<  "." << endl;
         exit(1);
     }
-    
+    void genSemError(string t1, string l1, string t2, string l2,string op){
+        cout << line_number <<  ": Invalid Expression ";
+        cout << t1 + " " + l1 + " " + op + " " + t2 + " " + l2 + "." << endl;
+        exit(1);
+    }
     vector<SAR> SAS;
     SAR popSAS(){
         SAR s = SAS.back();
@@ -569,6 +573,7 @@ public:
     void iPush(token& c){
         SAR s;
         s.value = c.lexeme;
+        s.index = "";
         SAS.push_back(s);
     }
     //lpush
@@ -576,6 +581,7 @@ public:
         SAR lit_sar;
         string temp = st->containsLexeme(c.lexeme, GLOBAL);
         lit_sar.value = temp;
+        lit_sar.index ="";
         SAS.push_back(lit_sar);
     }
     //oPush
@@ -597,12 +603,14 @@ public:
     void tPush(token& c){
         SAR type_sar;
         type_sar.value = c.lexeme;
+        type_sar.index ="";
         SAS.push_back(type_sar);
     }
     //vPush
     void vPush(token& c){
         SAR s;
         s.value = st->containsLexeme(c.lexeme, scope);
+        s.index = "";
         SAS.push_back(s);
     }
     //iExist
@@ -613,7 +621,21 @@ public:
         string temp = st->containsLexeme(top_sar.value, scope);
         if(top_sar.value != temp){
         //if exists, push id_sar onto the SAS
-            top_sar.value = temp;
+            //if is an array with an index, create temp value
+            if(top_sar.index != ""){
+                sym arr = st->fetchSymbol(temp);
+                string type =arr.data.type;
+                size_t pos = type.find(":");
+                type.erase(pos,type.length());
+                sym t;
+                addTemp2ST(t, type);
+                top_sar.value = t.symid;
+                top_sar.index = "";
+            }
+            else{
+                top_sar.value = temp;
+                top_sar.index = "";
+            }
             SAS.push_back(top_sar);
         }
         else{
@@ -639,18 +661,23 @@ public:
             t = st->fetchSymbol(top_sar.value);
             size_t pos = string::npos;
             pos = t.data.type.find("@");
-            if(pos != string::npos ){//array
+            if(pos != string::npos && t.data.accessMod == PUBLIC){//array
                 sym ref;
                 ref.scope = GLOBAL;
                 ref.kind = REF+ARRAY;
                 ref.value = t.value;
                 ref.data.accessMod = PUBLIC;
                 ref.data.type = t.data.type;
-                pos = ref.data.type.find_last_of(":");
-                ref.data.type.erase(pos,ref.data.type.length());
+                //if index!= "" type is not array but array type
+                if(top_sar.index != ""){
+                    //erase array type
+                    size_t pos = ref.data.type.find(":");
+                    ref.data.type.erase(pos,ref.data.type.length());
+                }
                 ref.symid = st->genSymID('t');
                 st->addSymbol(ref);
                 top_sar.value = ref.symid;
+                top_sar.index = "";
                 SAS.push_back(top_sar);
             }
             else if(t.data.accessMod == PUBLIC || tvalue == THIS){//function or variable
@@ -667,6 +694,7 @@ public:
                 ref.symid = st->genSymID('t');
                 st->addSymbol(ref);
                 top_sar.value = ref.symid;
+                top_sar.index = "";
                 SAS.push_back(top_sar);
             }
             else{
@@ -699,6 +727,7 @@ public:
     void BAL(){
         SAR s;
         s.value = bal_sar;
+        s.index = "";
         SAS.push_back(s);
     }
     //#EAL
@@ -718,6 +747,7 @@ public:
         SAR f = popSAS();
         func_sar.value = f.value;
         func_sar.arg_list = al_sar.arg_list;
+        func_sar.index = "";
         SAS.push_back(func_sar);
     }
     //#arr
@@ -727,7 +757,7 @@ public:
         if(index.data.type != INT)
             exit(1); //lol
         arr.index = index.symid;
-        SAS.push_back(arr);tyring to test the array failure in r exist 
+        SAS.push_back(arr);
     }
     //#if
     void _if(){
@@ -798,6 +828,7 @@ public:
                 }
                 constructor_sar.value = c.symid;
                 constructor_sar.arg_list = al_sar.arg_list;
+                constructor_sar.index = "";
                 SAS.push_back(constructor_sar);
                 return;
             }
@@ -822,6 +853,7 @@ public:
             x.symid = st->genSymID(x.value.at(0));
             new_sar.value = x.symid;
             st->addSymbol(x);
+            new_sar.index = "";
             SAS.push_back(new_sar);
         }
         
@@ -901,11 +933,11 @@ public:
         else if (t.lexeme == ",")
             pcomma();
         else if (t.lexeme == "<" || t.lexeme == ">" || t.lexeme == ">=" || t.lexeme == "<=")
-            pcomp();
+            pcomp(t.lexeme);
         else if (t.lexeme == "==" || t.lexeme == "!=")
-            pequals();
+            pequals(t.lexeme);
         else if (t.lexeme == "||" || t.lexeme == "&&")
-            pcompexp();
+            pcompexp(t.lexeme);
         return t;
     }
     void addTemp2ST(sym& temp, string type){
@@ -922,12 +954,13 @@ public:
         sym x = st->fetchSymbol(popSAS().value);
         //is x + y valid?
         if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
-            exit(1); //lol
+            genSemError(x.data.type, x.value, y.data.type , y.value, "+");
         //push x onto SAS to store type of answer
         SAR s;
         sym temp;
         addTemp2ST(temp, INT);
         s.value = temp.symid;
+        s.index = "";
         SAS.push_back(s);
     }
     //#-
@@ -936,12 +969,13 @@ public:
         sym x = st->fetchSymbol(popSAS().value);
         //is x + y valid?
         if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
-            exit(1); //lol
+            genSemError(x.data.type, x.value, y.data.type , y.value, "-");
         //push x onto SAS to store type of answer
         SAR s;
         sym temp;
         addTemp2ST(temp, INT);
         s.value = temp.symid;
+        s.index = "";
         SAS.push_back(s);
     }
     //#*
@@ -950,12 +984,13 @@ public:
         sym x = st->fetchSymbol(popSAS().value);
         //is x*y valid?
         if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
-            exit(1); //lol
+            genSemError(x.data.type, x.value, y.data.type , y.value, "*");
         //push x onto SAS
         SAR s;
         sym temp;
         addTemp2ST(temp, INT);
         s.value = temp.symid;
+        s.index = "";
         SAS.push_back(s);
     }
     //#/
@@ -965,12 +1000,13 @@ public:
         sym x = st->fetchSymbol(popSAS().value);
         //is x / y valid?
         if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
-            exit(1); //lol
+            genSemError(x.data.type, x.value, y.data.type , y.value, "/");
         //push x onto SAS
         SAR s;
         sym temp;
         addTemp2ST(temp, INT);
         s.value = temp.symid;
+        s.index = "";
         SAS.push_back(s);
     }
     //#=
@@ -979,33 +1015,34 @@ public:
         sym x = st->fetchSymbol(popSAS().value);
         //is x = y valid?
         if(x.kind == LITERAL)//is x a valid lValue?
-            exit(1); //lol
+            genSemError(x.data.type, x.value, y.data.type , y.value, "=");
         if(x.data.type != y.data.type)//do x and y share the same type
-            exit(1); //lol
+            genSemError(x.data.type, x.value, y.data.type , y.value, "="); //lol
     }
     //#< #<= #>= # #>
     //works on only ints and chars
-    void pcomp(){
+    void pcomp(string s){
         sym y = st->fetchSymbol(popSAS().value);
         sym x = st->fetchSymbol(popSAS().value);
         //is x < y valid (int or char)
         if(x.data.type != y.data.type)//do x and y share the same type
-            exit(1); //lol
+            genSemError(x.data.type, x.value, y.data.type , y.value, s);
         if(x.data.type != INT && x.data.type != CHAR)//is it either int or char?
-            exit(1); //lol
+            genSemError(x.data.type, x.value, y.data.type , y.value, s);
         sym temp;
         SAR t_var;
         addTemp2ST(temp, BOOL);
         t_var.value = temp.symid;
+        t_var.index = "";
         SAS.push_back(t_var);
     }
     //#== #!= works if left side is same as right side
-    void pequals(){
+    void pequals(string s){
         sym y = st->fetchSymbol(popSAS().value);
         sym x = st->fetchSymbol(popSAS().value);
         //do x and y have same type?
         if(x.data.type != y.data.type)
-            exit(1); //lol
+            genSemError(x.data.type, x.value, y.data.type , y.value, s);
         sym temp;
         SAR t_var;
         addTemp2ST(temp, BOOL);
@@ -1013,12 +1050,12 @@ public:
         SAS.push_back(t_var);
     }
     //#|| #&& works if both are boolean
-    void pcompexp(){
+    void pcompexp(string s){
         sym y = st->fetchSymbol(popSAS().value);
         sym x = st->fetchSymbol(popSAS().value);
         //are x and y both boolean
         if(x.data.type != BOOL || y.data.type != BOOL)
-            exit(1); //lol
+            genSemError(x.data.type, x.value, y.data.type , y.value, s);
         sym temp;
         SAR t_var;
         addTemp2ST(temp, BOOL);
