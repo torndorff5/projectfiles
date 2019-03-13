@@ -536,15 +536,29 @@ public:
     };
     void genSemError(SAR sar, string value, string s){
         cout << line_number <<  ": ";
-        if(!sar.arg_list.empty())
+        if(!sar.arg_list.empty()){
             cout << FUNCTION_ERROR;
+            //get parameters
+            
+            cout << value + "(";
+            for(int i = int(sar.arg_list.size()-1); i >= 0; i--){
+                if(i != int(sar.arg_list.size()-1))
+                    cout << ", ";
+                //fetch param
+                sym param = st->fetchSymbol(sar.arg_list[i]);
+                cout << param.data.type;
+            }
+            cout << ")";
+        }
+        bout to work on c.f(32) statement; 
         //array
         else if (sar.index != "")
-            cout << ARRAY_ERROR;
+            cout << ARRAY_ERROR + value;
+    
         //variable
         else
-            cout << VARIABLE_ERROR;
-        cout << value + s <<  "." << endl;
+            cout << VARIABLE_ERROR + value;
+        cout << s <<  "." << endl;
         exit(1);
     }
     void genSemError(string t1, string l1, string t2, string l2,string op){
@@ -632,6 +646,22 @@ public:
                 top_sar.value = t.symid;
                 top_sar.index = "";
             }
+            else if(!top_sar.arg_list.empty()){
+                //fetch temp and compare parameters with top_sar parameters to check them
+                sym func = st->fetchSymbol(temp);
+                int i = int(top_sar.arg_list.size()-1);
+                int j = 0;
+                while(i >= 0){
+                    sym param1 = st->fetchSymbol(top_sar.arg_list[i]);
+                    sym param2 = st->fetchSymbol(func.data.param[j]);
+                    if(param1.data.type != param2.data.type)
+                        genSemError(top_sar, top_sar.value, NOT_DEFINED);
+                    i--;
+                    j++;
+                }
+                top_sar.value = temp;
+                top_sar.index = "";
+            }
             else{
                 top_sar.value = temp;
                 top_sar.index = "";
@@ -640,6 +670,9 @@ public:
         }
         else{
         //if does not exist, throw semantic errors
+            if(!top_sar.arg_list.empty()){
+
+            }
             genSemError(top_sar, top_sar.value, NOT_DEFINED);
         }
     }
