@@ -4,17 +4,15 @@ class cat {
     cat(int x){
         this.x = x;
     }
-    public int f(bool t, int x){
+    public int f(bool t, int x, int l){
         if(t){
             x = x + 1;
         }
-        x = f(t,x);
         return x;
     }
 }
 void kxi2019 main(){
-    cat c = new cat(4);
-    int l = c.f(32);
+    cat c = new cat(5);
     int arr[] = new int[5];
     int x = c.x;
     c.y = arr;

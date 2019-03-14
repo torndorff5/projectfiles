@@ -533,37 +533,44 @@ public:
         vector<string> arg_list;
         string value;
         string index;
+        size_t ln;
     };
+    string formatFunc(SAR sar, string value){
+        value += "(";
+        for(int i = int(sar.arg_list.size()-1); i >= 0; i--){
+            if(i != int(sar.arg_list.size()-1))
+                value += ", ";
+            //fetch param
+            sym param = st->fetchSymbol(sar.arg_list[i]);
+            value += param.data.type;
+        }
+        value += ")";
+        return value;
+    }
     void genSemError(SAR sar, string value, string s){
-        cout << line_number <<  ": ";
+        cout << sar.ln <<  ": ";
         if(!sar.arg_list.empty()){
             cout << FUNCTION_ERROR;
             //get parameters
-            
-            cout << value + "(";
-            for(int i = int(sar.arg_list.size()-1); i >= 0; i--){
-                if(i != int(sar.arg_list.size()-1))
-                    cout << ", ";
-                //fetch param
-                sym param = st->fetchSymbol(sar.arg_list[i]);
-                cout << param.data.type;
-            }
-            cout << ")";
+            value = formatFunc(sar, value);
+            cout << value;
         }
-        bout to work on c.f(32) statement; 
         //array
         else if (sar.index != "")
             cout << ARRAY_ERROR + value;
-    
         //variable
         else
             cout << VARIABLE_ERROR + value;
         cout << s <<  "." << endl;
         exit(1);
     }
-    void genSemError(string t1, string l1, string t2, string l2,string op){
-        cout << line_number <<  ": Invalid Expression ";
-        cout << t1 + " " + l1 + " " + op + " " + t2 + " " + l2 + "." << endl;
+    void genSemError(string t1, string l1, string t2, string l2,token op){
+        cout << op.line_num <<  ": Invalid Expression ";
+        cout << t1 + " " + l1 + " " + op.lexeme + " " + t2 + " " + l2 + "." << endl;
+        exit(1);
+    }
+    void genSemError(string s, SAR sar){
+        cout << sar.ln << ": " << s + "." << endl;
         exit(1);
     }
     vector<SAR> SAS;
@@ -587,6 +594,7 @@ public:
     void iPush(token& c){
         SAR s;
         s.value = c.lexeme;
+        s.ln = c.line_num;
         s.index = "";
         SAS.push_back(s);
     }
@@ -595,6 +603,7 @@ public:
         SAR lit_sar;
         string temp = st->containsLexeme(c.lexeme, GLOBAL);
         lit_sar.value = temp;
+        lit_sar.ln = line_number;
         lit_sar.index ="";
         SAS.push_back(lit_sar);
     }
@@ -617,6 +626,7 @@ public:
     void tPush(token& c){
         SAR type_sar;
         type_sar.value = c.lexeme;
+        type_sar.ln = c.line_num;
         type_sar.index ="";
         SAS.push_back(type_sar);
     }
@@ -624,6 +634,7 @@ public:
     void vPush(token& c){
         SAR s;
         s.value = st->containsLexeme(c.lexeme, scope);
+        s.ln = c.line_num;
         s.index = "";
         SAS.push_back(s);
     }
@@ -669,10 +680,6 @@ public:
             SAS.push_back(top_sar);
         }
         else{
-        //if does not exist, throw semantic errors
-            if(!top_sar.arg_list.empty()){
-
-            }
             genSemError(top_sar, top_sar.value, NOT_DEFINED);
         }
     }
@@ -715,6 +722,22 @@ public:
             }
             else if(t.data.accessMod == PUBLIC || tvalue == THIS){//function or variable
                 //add top_sar to symbol table
+                if(!t.data.param.empty()){//function
+                    if(top_sar.arg_list.empty())//param is empty when it shouldnt be
+                        genSemError(top_sar, t.value, NOT_DEFINED);
+                    //check params
+                    int i = int(top_sar.arg_list.size()-1);
+                    int j = 0;
+                    while(i >= 0){
+                        sym param1 = st->fetchSymbol(top_sar.arg_list[i]);
+                        sym param2 = st->fetchSymbol(t.data.param[j]);
+                        if(param1.data.type != param2.data.type)
+                            genSemError(top_sar, t.value, NOT_DEFINED);
+                        i--;
+                        j++;
+                    }
+                    top_sar.value = "";
+                }
                 sym ref;
                 ref.scope = GLOBAL;
                 ref.kind = REF;
@@ -734,13 +757,13 @@ public:
                 string s = pop_tail_scope(t.scope);
                 if(t.kind == METHOD && top_sar.arg_list.empty())
                     top_sar.arg_list.push_back("\n");
-                genSemError(top_sar,t.value, " not public in class " + s);
+                genSemError(top_sar,t.value, " not definded/public in class " + s);
             }
         }
         else{
         //if no, throw sym error
             string s = pop_tail_scope(t.scope);
-            genSemError(top_sar,top_sar.value, " not defined in class " + t.data.type);
+            genSemError(top_sar,top_sar.value, " not defined/public in class " + t.data.type);
         }
     }
     //#tExist
@@ -753,7 +776,7 @@ public:
         if (temp != type_sar.value)
             return type_sar.value;
         else
-            exit(1); //lol
+            genSemError("Type " + type_sar.value +  NOT_DEFINED, type_sar);
         return type_sar.value;
     }
     //#BAL
@@ -769,6 +792,7 @@ public:
         SAR al_sar;
         while( s.value != "BAL"){
             al_sar.arg_list.push_back(s.value);
+            al_sar.ln = s.ln;
             s = popSAS();
         }
         SAS.push_back(al_sar);
@@ -780,6 +804,7 @@ public:
         SAR f = popSAS();
         func_sar.value = f.value;
         func_sar.arg_list = al_sar.arg_list;
+        func_sar.ln = f.ln;
         func_sar.index = "";
         SAS.push_back(func_sar);
     }
@@ -788,56 +813,61 @@ public:
         sym index = st->fetchSymbol(popSAS().value);
         SAR arr = popSAS();
         if(index.data.type != INT)
-            exit(1); //lol
+            genSemError("Array requires int index got " + index.data.type, arr);
         arr.index = index.symid;
         SAS.push_back(arr);
     }
     //#if
     void _if(){
-        sym exp = st->fetchSymbol(popSAS().value);
+        SAR sar = popSAS();
+        sym exp = st->fetchSymbol(sar.value);
         if(exp.data.type != BOOL)
-            exit(1); //lol
+            genSemError("if requires bool got " + exp.data.type,sar);
     }
     //#while
     void _while(){
-        sym exp = st->fetchSymbol(popSAS().value);
+        SAR sar = popSAS();
+        sym exp = st->fetchSymbol(sar.value);
         if(exp.data.type != BOOL)
-            exit(1); //lol
+            genSemError("while requires bool got " + exp.data.type,sar);
     }
     //#return
     void _return(){
         while (!OS.empty()){
             p_op();//pop off operator stack until its empty
         }
-        sym exp = st->fetchSymbol(popSAS().value);
+        SAR sar = popSAS();
+        sym exp = st->fetchSymbol(sar.value);
         //get current function with scope
         string name = pop_tail_scope(scope);
         sym func = st->fetchSymbol(st->containsLexeme(name, scope));
         if(exp.data.type != func.data.type)//check to see if expression type is the same as function return type
-            exit(1); //lol
+            genSemError("Function requires " + func.data.type + " returned " + exp.data.type,sar);
     }
     //#cout
     void _cout(){
         while (!OS.empty()){
             p_op();//pop off operator stack until its empty
         }
-        sym exp = st->fetchSymbol(popSAS().value);
+        SAR sar = popSAS();
+        sym exp = st->fetchSymbol(sar.value);
         //is int or char
         if(exp.data.type != INT && exp.data.type != CHAR)
-            exit(1); //lol
+            genSemError("cout not defined for " + exp.data.type,sar);
     }
     //#cin
     void _cin(){
         while (!OS.empty()){
             p_op();//pop off operator stack until its empty
         }
-        sym exp = st->fetchSymbol(popSAS().value);
+        SAR sar = popSAS();
+        sym exp = st->fetchSymbol(sar.value);
         //is int or char
         if(exp.data.type != INT && exp.data.type != CHAR)
-            exit(1); //lol
+            genSemError("cin not defined for " + exp.data.type,sar);
         //can not be lit
         if(exp.kind == LITERAL)
-            exit(1); //lol
+            genSemError("cin not defined for literal",sar);
     }
     //#newObj
     void newObj(){
@@ -857,16 +887,17 @@ public:
                     sym x = st->fetchSymbol(c.data.param[i]);
                     sym y = st->fetchSymbol(al_sar.arg_list[i]);
                     if(x.data.type != y.data.type)
-                        exit(1); //lol
+                        genSemError("Constructor " + formatFunc(al_sar, type_sar.value) + " not defined",al_sar);
                 }
                 constructor_sar.value = c.symid;
                 constructor_sar.arg_list = al_sar.arg_list;
+                constructor_sar.ln = al_sar.ln;
                 constructor_sar.index = "";
                 SAS.push_back(constructor_sar);
                 return;
             }
         }
-        exit(1); //lol
+        genSemError("Constructor " + formatFunc(al_sar, type_sar.value) + " not defined",type_sar);
     }
     //#newArray
     void newArray(){
@@ -887,9 +918,12 @@ public:
             new_sar.value = x.symid;
             st->addSymbol(x);
             new_sar.index = "";
+            new_sar.ln = top_sar.ln;
             SAS.push_back(new_sar);
         }
-        
+        else{
+            genSemError("Array requires int index, got " + size.data.type,top_sar);
+        }
         
     }
     //#CD
@@ -897,14 +931,28 @@ public:
         //check that this lexeme matches the name of the class
         //get name of the class
         string name = pop_tail_scope(scope);
-        if(t.lexeme != name)
-            exit(1); //lol
+        if(t.lexeme != name){
+            SAR sar;
+            sar.ln = t.line_num;//pass in line num
+            genSemError("Constructor " + t.lexeme + " must match class name " + name,sar);
+        }
     }
     //#dup
     void dup(token& c, string s){
         //check that current lexeme is not a duplicate in current scope
-        if(st->containsDupCurrScope(c.lexeme, s))
-            exit(1); //lol
+        if(st->containsDupCurrScope(c.lexeme, s)){
+            //get sym
+            sym t = st->fetchSymbol(st->containsLexeme(c.lexeme, s));
+            SAR sar;
+            sar.ln = c.line_num;//
+            if(t.kind == "class")//array
+                genSemError("Duplicate class " + t.value,sar);
+            else if(t.kind == METHOD || !t.data.param.empty())//function
+                genSemError("Duplicate function " + t.value,sar);
+            else //variable
+                genSemError("Duplicate variable " + t.value,sar);
+        }
+        
     }
     //#switch implementation goes here
     /*void _switch(){
@@ -947,18 +995,18 @@ public:
     token p_op(){
         token t = popOS();
         if(t.type == assop){//#=
-            passop();
+            passop(t);
         }
         //#*
         else if(t.lexeme == "*")
-            pmultop();
+            pmultop(t);
         //#/
         else if(t.lexeme == "/")
-            pdivop();
+            pdivop(t);
         else if(t.lexeme == "-")
-            psubtr();
+            psubtr(t);
         else if (t.lexeme == "+")
-            paddop();
+            paddop(t);
         else if (t.lexeme == ")")
             pparenc();
         else if (t.lexeme == "]")
@@ -966,11 +1014,11 @@ public:
         else if (t.lexeme == ",")
             pcomma();
         else if (t.lexeme == "<" || t.lexeme == ">" || t.lexeme == ">=" || t.lexeme == "<=")
-            pcomp(t.lexeme);
+            pcomp(t);
         else if (t.lexeme == "==" || t.lexeme == "!=")
-            pequals(t.lexeme);
+            pequals(t);
         else if (t.lexeme == "||" || t.lexeme == "&&")
-            pcompexp(t.lexeme);
+            pcompexp(t);
         return t;
     }
     void addTemp2ST(sym& temp, string type){
@@ -982,12 +1030,12 @@ public:
         st->addSymbol(temp);
     }
     //#+
-    void paddop(){
+    void paddop(token t){
         sym y = st->fetchSymbol(popSAS().value);
         sym x = st->fetchSymbol(popSAS().value);
         //is x + y valid?
         if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
-            genSemError(x.data.type, x.value, y.data.type , y.value, "+");
+            genSemError(x.data.type, x.value, y.data.type , y.value, t);
         //push x onto SAS to store type of answer
         SAR s;
         sym temp;
@@ -997,12 +1045,12 @@ public:
         SAS.push_back(s);
     }
     //#-
-    void psubtr(){
+    void psubtr(token t){
         sym y = st->fetchSymbol(popSAS().value);
         sym x = st->fetchSymbol(popSAS().value);
         //is x + y valid?
         if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
-            genSemError(x.data.type, x.value, y.data.type , y.value, "-");
+            genSemError(x.data.type, x.value, y.data.type , y.value, t);
         //push x onto SAS to store type of answer
         SAR s;
         sym temp;
@@ -1012,12 +1060,12 @@ public:
         SAS.push_back(s);
     }
     //#*
-    void pmultop(){
+    void pmultop(token t){
         sym y = st->fetchSymbol(popSAS().value);
         sym x = st->fetchSymbol(popSAS().value);
         //is x*y valid?
         if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
-            genSemError(x.data.type, x.value, y.data.type , y.value, "*");
+            genSemError(x.data.type, x.value, y.data.type , y.value, t);
         //push x onto SAS
         SAR s;
         sym temp;
@@ -1027,13 +1075,13 @@ public:
         SAS.push_back(s);
     }
     //#/
-    void pdivop(){
+    void pdivop(token t){
         //get y and x from the SAS
         sym y = st->fetchSymbol(popSAS().value);
         sym x = st->fetchSymbol(popSAS().value);
         //is x / y valid?
         if(x.data.type != INT || y.data.type != INT)//are x and y both ints?
-            genSemError(x.data.type, x.value, y.data.type , y.value, "/");
+            genSemError(x.data.type, x.value, y.data.type , y.value, t);
         //push x onto SAS
         SAR s;
         sym temp;
@@ -1043,25 +1091,25 @@ public:
         SAS.push_back(s);
     }
     //#=
-    void passop(){//#=
+    void passop(token t){//#=
         sym y = st->fetchSymbol(popSAS().value);
         sym x = st->fetchSymbol(popSAS().value);
         //is x = y valid?
         if(x.kind == LITERAL)//is x a valid lValue?
-            genSemError(x.data.type, x.value, y.data.type , y.value, "=");
+            genSemError(x.data.type, x.value, y.data.type , y.value, t);
         if(x.data.type != y.data.type)//do x and y share the same type
-            genSemError(x.data.type, x.value, y.data.type , y.value, "="); //lol
+            genSemError(x.data.type, x.value, y.data.type , y.value, t); //lol
     }
     //#< #<= #>= # #>
     //works on only ints and chars
-    void pcomp(string s){
+    void pcomp(token t){
         sym y = st->fetchSymbol(popSAS().value);
         sym x = st->fetchSymbol(popSAS().value);
         //is x < y valid (int or char)
         if(x.data.type != y.data.type)//do x and y share the same type
-            genSemError(x.data.type, x.value, y.data.type , y.value, s);
+            genSemError(x.data.type, x.value, y.data.type , y.value, t);
         if(x.data.type != INT && x.data.type != CHAR)//is it either int or char?
-            genSemError(x.data.type, x.value, y.data.type , y.value, s);
+            genSemError(x.data.type, x.value, y.data.type , y.value, t);
         sym temp;
         SAR t_var;
         addTemp2ST(temp, BOOL);
@@ -1070,12 +1118,12 @@ public:
         SAS.push_back(t_var);
     }
     //#== #!= works if left side is same as right side
-    void pequals(string s){
+    void pequals(token t){
         sym y = st->fetchSymbol(popSAS().value);
         sym x = st->fetchSymbol(popSAS().value);
         //do x and y have same type?
         if(x.data.type != y.data.type)
-            genSemError(x.data.type, x.value, y.data.type , y.value, s);
+            genSemError(x.data.type, x.value, y.data.type , y.value, t);
         sym temp;
         SAR t_var;
         addTemp2ST(temp, BOOL);
@@ -1083,12 +1131,12 @@ public:
         SAS.push_back(t_var);
     }
     //#|| #&& works if both are boolean
-    void pcompexp(string s){
+    void pcompexp(token t){
         sym y = st->fetchSymbol(popSAS().value);
         sym x = st->fetchSymbol(popSAS().value);
         //are x and y both boolean
         if(x.data.type != BOOL || y.data.type != BOOL)
-            genSemError(x.data.type, x.value, y.data.type , y.value, s);
+            genSemError(x.data.type, x.value, y.data.type , y.value, t);
         sym temp;
         SAR t_var;
         addTemp2ST(temp, BOOL);
@@ -1847,7 +1895,7 @@ public:
             if(curr.type != eof)
                 genSynError(curr, "EOF");
             st->removeDup();
-            st->printST();
+            //st->printST();
             in.close();
         }
         else{
