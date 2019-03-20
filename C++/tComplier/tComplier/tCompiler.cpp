@@ -477,6 +477,55 @@ public:
             return c;
         }
     };
+    //ICODE FUNCTIONS AND DATA********************************************************************************************************************
+    ofstream icode;
+    const string ADD = "ADD ";
+    const string MUL = "MUL ";
+    const string SUB = "SUB ";
+    const string DIV = "DIV ";
+    const string LT = "LT ";
+    const string GT = "GT ";
+    const string NE = "NE ";
+    const string EQ = "EQ ";
+    const string LE = "LE ";
+    const string GE = "GE ";
+    const string AND = "AND ";
+    const string OR = "OR ";
+    const string MOV = "MOV ";
+    const string iREF = "REF ";
+    const string BF = "BF ";
+    const string SKIPIF = "SKIPIF";
+    const string COMMA = ", ";
+    void iCodeGen(string operation, string a_symid, string b_symid, string c_symid){
+        icode << "\t" << operation << a_symid << COMMA << b_symid << COMMA << c_symid << "\n";
+    }
+    void iCodeGen(string operation, string a_symid, string b_symid){
+        icode << "\t" << operation << a_symid << COMMA << b_symid << "\n";
+    }
+    void iCodeGen(string label){
+        icode << label << ":";
+    }
+    string opcheck(string op){
+        if(op == "<")
+            return LT;
+        else if (op == ">")
+            return GT;
+        else if (op == "!=")
+            return NE;
+        else if (op == "==")
+            return EQ;
+        else if (op == "<=")
+            return LE;
+        else if (op == ">=")
+            return GE;
+        else if (op == "&&")
+            return AND;
+        else
+            return OR;
+    }
+    void $skip(){
+        iCodeGen(SKIPIF);
+    }
     //Semantic Functions and Data ******************************************************************************************************************
     const string bal_sar = "BAL";
     const string FUNCTION_ERROR = "Function ";
@@ -759,6 +808,7 @@ public:
                     top_sar.arg_list.push_back("\n");
                 genSemError(top_sar,t.value, " not definded/public in class " + s);
             }
+            iCodeGen(iREF, next_sar.value, t.symid, top_sar.value);
         }
         else{
         //if no, throw sym error
@@ -823,6 +873,7 @@ public:
         sym exp = st->fetchSymbol(sar.value);
         if(exp.data.type != BOOL)
             genSemError("if requires bool got " + exp.data.type,sar);
+        iCodeGen(BF, sar.value, SKIPIF);
     }
     //#while
     void _while(){
@@ -1043,6 +1094,8 @@ public:
         s.value = temp.symid;
         s.index = "";
         SAS.push_back(s);
+        //ICODE generation
+        iCodeGen(ADD, x.symid, y.symid, s.value);
     }
     //#-
     void psubtr(token t){
@@ -1058,6 +1111,7 @@ public:
         s.value = temp.symid;
         s.index = "";
         SAS.push_back(s);
+        iCodeGen(SUB, x.symid, y.symid, s.value);
     }
     //#*
     void pmultop(token t){
@@ -1073,6 +1127,7 @@ public:
         s.value = temp.symid;
         s.index = "";
         SAS.push_back(s);
+        iCodeGen(MUL, x.symid, y.symid, s.value);
     }
     //#/
     void pdivop(token t){
@@ -1089,6 +1144,7 @@ public:
         s.value = temp.symid;
         s.index = "";
         SAS.push_back(s);
+        iCodeGen(DIV, x.symid, y.symid, s.value);
     }
     //#=
     void passop(token t){//#=
@@ -1098,7 +1154,8 @@ public:
         if(x.kind == LITERAL)//is x a valid lValue?
             genSemError(x.data.type, x.value, y.data.type , y.value, t);
         if(x.data.type != y.data.type)//do x and y share the same type
-            genSemError(x.data.type, x.value, y.data.type , y.value, t); //lol
+            genSemError(x.data.type, x.value, y.data.type , y.value, t);
+        iCodeGen(MOV, y.symid, x.symid);
     }
     //#< #<= #>= # #>
     //works on only ints and chars
@@ -1116,6 +1173,7 @@ public:
         t_var.value = temp.symid;
         t_var.index = "";
         SAS.push_back(t_var);
+        iCodeGen(opcheck(t.lexeme), x.symid, y.symid, t_var.value);
     }
     //#== #!= works if left side is same as right side
     void pequals(token t){
@@ -1129,6 +1187,7 @@ public:
         addTemp2ST(temp, BOOL);
         t_var.value = temp.symid;
         SAS.push_back(t_var);
+        iCodeGen(opcheck(t.lexeme), x.symid, y.symid, t_var.value);
     }
     //#|| #&& works if both are boolean
     void pcompexp(token t){
@@ -1142,6 +1201,7 @@ public:
         addTemp2ST(temp, BOOL);
         t_var.value = temp.symid;
         SAS.push_back(t_var);
+        iCodeGen(opcheck(t.lexeme), x.symid, y.symid, t_var.value);
     }
     //SYTNAX FUNCTIONS AND DATA******************************************************************************************************************
     symboltable* st = new symboltable();
@@ -1536,7 +1596,7 @@ public:
             getNextToken();
         }
         else if(c.lexeme == "if"){
-            getNextToken();//************** "if" "(" #oPush expression ")" #) #if statement [ "else" statement ]
+            getNextToken();//************** "if" "(" #oPush expression ")" #) #if $if statement $skip [ "else" statement $else ]
             if(c.type != parentho)
                 genSynError(c, "(");
             if(semantic)
@@ -1551,9 +1611,14 @@ public:
             }
             getNextToken();
             statement(c, n);
+            if(semantic)
+                $skip();
             if(c.lexeme == "else"){
                 getNextToken();
                 statement(c, n);
+                //if(semantic)
+                    //$skip
+                gonna work on the if else iCode
             }
             
         }
@@ -1916,7 +1981,13 @@ public:
             getNextToken();//sets curr to next, gets next whole token
             semantic = true;//do semantic operations on next pass through
             syntax = false;
-            compilation_unit(curr, next);
+            icode.open("icode.txt");
+            if(icode.is_open()){
+                compilation_unit(curr, next);
+                icode.close();
+            }
+            else
+                cout << "Error writing to iCode." << endl;
         }
         else{
             cout << "Error opening file." << endl;
