@@ -201,7 +201,7 @@ public:
         if(c.type == eof){
             return;
         }
-        while (c.type == space || c.type == nl)
+        while (c.type == space || c.type == nl || c.lexeme == "\t")
             nextToken(c,n);//disregard and get next token
         if(c.lexeme == "/"){//catch the comments
             if(n.lexeme == "/"){
@@ -494,6 +494,7 @@ public:
     const string MOV = "MOV ";
     const string JMP = "JMP ";
     const string RETURN = "RETURN ";
+    const string RTN = "RTN ";
     const string WRITE = "WRITE ";
     const string READ = "READ ";
     const string iREF = "REF ";
@@ -726,6 +727,8 @@ public:
                 sym arr = st->fetchSymbol(temp);
                 string type =arr.data.type;
                 size_t pos = type.find(":");
+                if(pos == string::npos)
+                    genSemError(top_sar, top_sar.value, NOT_DEFINED);
                 type.erase(pos,type.length());
                 sym t;
                 addTemp2ST(t, type);
@@ -914,15 +917,24 @@ public:
         while (!OS.empty()){
             p_op();//pop off operator stack until its empty
         }
-        SAR sar = popSAS();
-        need to make sure that just "return" is also checked semantically.
-        sym exp = st->fetchSymbol(sar.value);
+        SAR sar;
+        sym exp;
+        if(!SAS.empty()){
+            sar = popSAS();
+            exp = st->fetchSymbol(sar.value);
+        }
+        else{
+            exp.data.type = VOID;
+        }
         //get current function with scope
         string name = pop_tail_scope(scope);
         sym func = st->fetchSymbol(st->containsLexeme(name, scope));
         if(exp.data.type != func.data.type)//check to see if expression type is the same as function return type
             genSemError("Function requires " + func.data.type + " returned " + exp.data.type,sar);
-        iCodeGen(RETURN, exp.symid);
+        if(exp.data.type == VOID)
+            iCodeGen(RTN, "");
+        else
+            iCodeGen(RETURN, exp.symid);
     }
     //#cout
     void _cout(){
@@ -1250,6 +1262,7 @@ public:
     const string CHAR = "char";
     const string INT = "int";
     const string BOOL = "bool";
+    const string VOID = "void";
     const string nul = "null";
     const string GLOBAL = "g";
     const string ARRAY = ":@";
@@ -1688,6 +1701,7 @@ public:
             if(semantic)
                 _return();
             getNextToken();
+            write test to test a return; statement 
         }
         else if (c.lexeme == "cout"){
             getNextToken();//****************** "cout" "<<" expression ";" #cout

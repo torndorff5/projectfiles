@@ -1,15 +1,9 @@
-class cat{
-    public int x = 4;
-    public int f(){
-        return x;
+class Cat {
+    public void f(){
+        return;
     }
 }
 
+void kxi2019 main(){
 
-
-void kxi2019 main()
-{
-    char a = 'a';
-    cout << a;
-    cin >> a;
 }
