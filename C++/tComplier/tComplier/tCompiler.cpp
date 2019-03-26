@@ -492,15 +492,28 @@ public:
     const string AND = "AND ";
     const string OR = "OR ";
     const string MOV = "MOV ";
+    const string JMP = "JMP ";
+    const string RETURN = "RETURN ";
+    const string WRITE = "WRITE ";
+    const string READ = "READ ";
     const string iREF = "REF ";
     const string BF = "BF ";
     const string SKIPIF = "SKIPIF";
+    const string ELSE = "else";
+    const string SKIPELSE = "SKIPELSE";
+    const string BEGIN = "BEGIN";
+    const string ENDWHILE = "ENDWHILE";
     const string COMMA = ", ";
+    const string IO_ONE = "1";
+    const string IO_TWO = "2";
     void iCodeGen(string operation, string a_symid, string b_symid, string c_symid){
         icode << "\t" << operation << a_symid << COMMA << b_symid << COMMA << c_symid << "\n";
     }
     void iCodeGen(string operation, string a_symid, string b_symid){
         icode << "\t" << operation << a_symid << COMMA << b_symid << "\n";
+    }
+    void iCodeGen(string operation, string label){
+        icode << "\t" << operation << label << "\n";
     }
     void iCodeGen(string label){
         icode << label << ":";
@@ -523,8 +536,21 @@ public:
         else
             return OR;
     }
-    void $skip(){
+    void __skip(){
+        if(curr.lexeme == ELSE){//check if there is an else
+            iCodeGen(JMP, SKIPELSE);//if there is an else, put jmp skipelse
+        }
         iCodeGen(SKIPIF);
+    }
+    void __else(){
+        iCodeGen(SKIPELSE);
+    }
+    void __begin(){
+        iCodeGen(BEGIN);
+    }
+    void __end(){
+        iCodeGen(JMP, BEGIN);
+        iCodeGen(ENDWHILE);
     }
     //Semantic Functions and Data ******************************************************************************************************************
     const string bal_sar = "BAL";
@@ -881,6 +907,7 @@ public:
         sym exp = st->fetchSymbol(sar.value);
         if(exp.data.type != BOOL)
             genSemError("while requires bool got " + exp.data.type,sar);
+        iCodeGen(BF, sar.value, ENDWHILE);
     }
     //#return
     void _return(){
@@ -888,12 +915,14 @@ public:
             p_op();//pop off operator stack until its empty
         }
         SAR sar = popSAS();
+        need to make sure that just "return" is also checked semantically.
         sym exp = st->fetchSymbol(sar.value);
         //get current function with scope
         string name = pop_tail_scope(scope);
         sym func = st->fetchSymbol(st->containsLexeme(name, scope));
         if(exp.data.type != func.data.type)//check to see if expression type is the same as function return type
             genSemError("Function requires " + func.data.type + " returned " + exp.data.type,sar);
+        iCodeGen(RETURN, exp.symid);
     }
     //#cout
     void _cout(){
@@ -905,6 +934,10 @@ public:
         //is int or char
         if(exp.data.type != INT && exp.data.type != CHAR)
             genSemError("cout not defined for " + exp.data.type,sar);
+        if(exp.data.type == INT)
+            iCodeGen(WRITE, IO_ONE, exp.symid);
+        else
+            iCodeGen(WRITE, IO_TWO, exp.symid);
     }
     //#cin
     void _cin(){
@@ -919,6 +952,10 @@ public:
         //can not be lit
         if(exp.kind == LITERAL)
             genSemError("cin not defined for literal",sar);
+        if(exp.data.type == INT)
+            iCodeGen(READ, IO_ONE, exp.symid);
+        else
+            iCodeGen(READ, IO_TWO, exp.symid);
     }
     //#newObj
     void newObj(){
@@ -1612,18 +1649,19 @@ public:
             getNextToken();
             statement(c, n);
             if(semantic)
-                $skip();
+                __skip();
             if(c.lexeme == "else"){
                 getNextToken();
                 statement(c, n);
-                //if(semantic)
-                    //$skip
-                gonna work on the if else iCode
+                if(semantic)
+                    __else();
             }
             
         }
         else if(c.lexeme == "while"){
-            getNextToken();//***************** "while" "(" #oPush expression ")" #) #while statement
+            getNextToken();//***************** "while" $begin "(" #oPush expression ")" #) #while $while statement $end
+            if(semantic)
+                __begin();
             if(c.type != parentho)
                 genSynError(c, "(");
             if(semantic)
@@ -1638,6 +1676,8 @@ public:
             }
             getNextToken();
             statement(c, n);
+            if(semantic)
+                __end();
         }
         else if (c.lexeme == "return"){//************* "return" [ expression ] ";" #return
             getNextToken();

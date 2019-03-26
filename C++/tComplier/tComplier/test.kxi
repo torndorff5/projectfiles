@@ -1,9 +1,15 @@
+class cat{
+    public int x = 4;
+    public int f(){
+        return x;
+    }
+}
+
+
+
 void kxi2019 main()
 {
-    int x = 0;
-    int y = 0;
-    if(x < y){
-        x = x + 1;
-    }
-    x = x - 1;
+    char a = 'a';
+    cout << a;
+    cin >> a;
 }
