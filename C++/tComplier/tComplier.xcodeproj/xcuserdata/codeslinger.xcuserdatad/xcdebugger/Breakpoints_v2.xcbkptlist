@@ -90,12 +90,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.640366"
+            timestampString = "575424370.847695"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "627"
-            endingLineNumber = "627"
-            landmarkName = "genSemError(SAR sar, string value, string s)"
+            startingLineNumber = "628"
+            endingLineNumber = "628"
+            landmarkName = "formatFunc(SAR sar, string value)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -106,11 +106,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.640911"
+            timestampString = "575424370.848179"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "845"
-            endingLineNumber = "845"
+            startingLineNumber = "857"
+            endingLineNumber = "857"
             landmarkName = "rExist()"
             landmarkType = "7">
          </BreakpointContent>
@@ -122,43 +122,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.6413471"
+            timestampString = "575424370.848622"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "838"
-            endingLineNumber = "838"
-            landmarkName = "rExist()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.6417561"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "761"
-            endingLineNumber = "761"
-            landmarkName = "iExist()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.642162"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "895"
-            endingLineNumber = "895"
+            startingLineNumber = "907"
+            endingLineNumber = "907"
             landmarkName = "arr()"
             landmarkType = "7">
          </BreakpointContent>
@@ -170,11 +138,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.642583"
+            timestampString = "575424370.84895"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "904"
-            endingLineNumber = "904"
+            startingLineNumber = "916"
+            endingLineNumber = "916"
             landmarkName = "_if()"
             landmarkType = "7">
          </BreakpointContent>
@@ -186,11 +154,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.642979"
+            timestampString = "575424370.84926"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "912"
-            endingLineNumber = "912"
+            startingLineNumber = "924"
+            endingLineNumber = "924"
             landmarkName = "_while()"
             landmarkType = "7">
          </BreakpointContent>
@@ -202,11 +170,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.643383"
+            timestampString = "575424370.849546"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "933"
-            endingLineNumber = "933"
+            startingLineNumber = "945"
+            endingLineNumber = "945"
             landmarkName = "_return()"
             landmarkType = "7">
          </BreakpointContent>
@@ -218,11 +186,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.643756"
+            timestampString = "575424370.8498321"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "963"
-            endingLineNumber = "963"
+            startingLineNumber = "975"
+            endingLineNumber = "975"
             landmarkName = "_cin()"
             landmarkType = "7">
          </BreakpointContent>
@@ -234,11 +202,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.644138"
+            timestampString = "575424370.850125"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "966"
-            endingLineNumber = "966"
+            startingLineNumber = "978"
+            endingLineNumber = "978"
             landmarkName = "_cin()"
             landmarkType = "7">
          </BreakpointContent>
@@ -250,11 +218,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.644541"
+            timestampString = "575424370.850396"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "990"
-            endingLineNumber = "990"
+            startingLineNumber = "1002"
+            endingLineNumber = "1002"
             landmarkName = "newObj()"
             landmarkType = "7">
          </BreakpointContent>
@@ -266,13 +234,45 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.6449521"
+            timestampString = "575424370.8506809"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1000"
-            endingLineNumber = "1000"
+            startingLineNumber = "1012"
+            endingLineNumber = "1012"
             landmarkName = "newObj()"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "compiler::newObj()"
+                  moduleName = "tComplier"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/codeslinger/Desktop/C++/tComplier/tComplier/tCompiler.cpp"
+                  timestampString = "575424371.505398"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1013"
+                  endingLineNumber = "1013"
+                  offsetFromSymbolStart = "5913">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "compiler::newObj()"
+                  moduleName = "tComplier"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/codeslinger/Desktop/C++/tComplier/tComplier/tCompiler.cpp"
+                  timestampString = "575424371.50799"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1013"
+                  endingLineNumber = "1013"
+                  offsetFromSymbolStart = "5954">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -282,11 +282,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.6453511"
+            timestampString = "575424370.85096"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1037"
-            endingLineNumber = "1037"
+            startingLineNumber = "1049"
+            endingLineNumber = "1049"
             landmarkName = "CD(token&amp; t)"
             landmarkType = "7">
          </BreakpointContent>
@@ -298,11 +298,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.645748"
+            timestampString = "575424370.851246"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1206"
-            endingLineNumber = "1206"
+            startingLineNumber = "1218"
+            endingLineNumber = "1218"
             landmarkName = "passop(token t)"
             landmarkType = "7">
          </BreakpointContent>
@@ -314,61 +314,45 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.646134"
+            timestampString = "575424370.851531"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "813"
-            endingLineNumber = "813"
-            landmarkName = "rExist()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.6465009"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "805"
-            endingLineNumber = "805"
-            landmarkName = "rExist()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.646856"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "858"
-            endingLineNumber = "858"
-            landmarkName = "tExist(token&amp; c)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.6472141"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1025"
-            endingLineNumber = "1025"
+            startingLineNumber = "1037"
+            endingLineNumber = "1037"
             landmarkName = "newArray()"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "compiler::newArray()"
+                  moduleName = "tComplier"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/codeslinger/Desktop/C++/tComplier/tComplier/tCompiler.cpp"
+                  timestampString = "575424371.525913"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1037"
+                  endingLineNumber = "1037"
+                  offsetFromSymbolStart = "5189">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "compiler::newArray()"
+                  moduleName = "tComplier"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/codeslinger/Desktop/C++/tComplier/tComplier/tCompiler.cpp"
+                  timestampString = "575424371.527922"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1037"
+                  endingLineNumber = "1037"
+                  offsetFromSymbolStart = "5206">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -378,11 +362,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.647572"
+            timestampString = "575424370.851807"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "945"
-            endingLineNumber = "945"
+            startingLineNumber = "957"
+            endingLineNumber = "957"
             landmarkName = "_cout()"
             landmarkType = "7">
          </BreakpointContent>
@@ -394,12 +378,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tComplier/tCompiler.cpp"
-            timestampString = "575323336.647908"
+            timestampString = "575424370.852092"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "920"
-            endingLineNumber = "920"
+            startingLineNumber = "932"
+            endingLineNumber = "932"
             landmarkName = "_return()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "tComplier/tCompiler.cpp"
+            timestampString = "575424370.85241"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "850"
+            endingLineNumber = "850"
+            landmarkName = "rExist()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

@@ -493,6 +493,9 @@ public:
     const string OR = "OR ";
     const string MOV = "MOV ";
     const string JMP = "JMP ";
+    const string iFUNC = "FUNC ";
+    const string FRAME = "FRAME ";
+    const string CALL = "CALL ";
     const string RETURN = "RETURN ";
     const string RTN = "RTN ";
     const string WRITE = "WRITE ";
@@ -713,6 +716,12 @@ public:
         s.ln = c.line_num;
         s.index = "";
         SAS.push_back(s);
+        //f FUNC f
+        sym func = st->fetchSymbol(s.value);
+        if(func.kind == METHOD){
+            iCodeGen(s.value);
+            iCodeGen(iFUNC, s.value);
+        }
     }
     //iExist
     void iExist(){
@@ -837,7 +846,13 @@ public:
                     top_sar.arg_list.push_back("\n");
                 genSemError(top_sar,t.value, " not definded/public in class " + s);
             }
-            iCodeGen(iREF, next_sar.value, t.symid, top_sar.value);
+            if(t.kind == METHOD){//function
+                iCodeGen(FRAME, t.symid, next_sar.value);
+                iCodeGen(CALL, t.symid);
+                just did x.f() and now need to do f() in the iCode document. 
+            }
+            else//variable
+                iCodeGen(iREF, next_sar.value, t.symid, top_sar.value);
         }
         else{
         //if no, throw sym error
@@ -1701,7 +1716,6 @@ public:
             if(semantic)
                 _return();
             getNextToken();
-            write test to test a return; statement 
         }
         else if (c.lexeme == "cout"){
             getNextToken();//****************** "cout" "<<" expression ";" #cout

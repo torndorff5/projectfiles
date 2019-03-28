@@ -1,9 +1,10 @@
+class Dog {
+}
 class Cat {
     public void f(){
-        return;
     }
 }
-
 void kxi2019 main(){
-
+    Cat x;
+    x.f();
 }
