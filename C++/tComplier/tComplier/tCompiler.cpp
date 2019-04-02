@@ -47,6 +47,13 @@ public:
         Type type;
     };
     
+    struct SAR {
+        vector<string> arg_list;
+        string value;
+        string index;
+        size_t ln;
+    };
+    
     //struct level variables
     size_t line_number;
     fstream in;
@@ -496,6 +503,8 @@ public:
     const string iFUNC = "FUNC ";
     const string FRAME = "FRAME ";
     const string CALL = "CALL ";
+    const string PUSH = "PUSH ";
+    const string PEEK = "PEEK ";
     const string RETURN = "RETURN ";
     const string RTN = "RTN ";
     const string WRITE = "WRITE ";
@@ -520,7 +529,7 @@ public:
         icode << "\t" << operation << label << "\n";
     }
     void iCodeGen(string label){
-        icode << label << ":";
+        icode << "\n" << label << ":";
     }
     string opcheck(string op){
         if(op == "<")
@@ -555,6 +564,14 @@ public:
     void __end(){
         iCodeGen(JMP, BEGIN);
         iCodeGen(ENDWHILE);
+    }
+    void __func(string symid,SAR top_sar,string object){
+        iCodeGen(FRAME, symid, object);
+        for(auto s: top_sar.arg_list){
+            iCodeGen(PUSH, s);
+        }
+        iCodeGen(CALL, symid);
+        iCodeGen(PEEK, top_sar.value);
     }
     //Semantic Functions and Data ******************************************************************************************************************
     const string bal_sar = "BAL";
@@ -608,12 +625,6 @@ public:
             return 0;
     }
     //Semantic Action Stack
-    struct SAR {
-        vector<string> arg_list;
-        string value;
-        string index;
-        size_t ln;
-    };
     string formatFunc(SAR sar, string value){
         value += "(";
         for(int i = int(sar.arg_list.size()-1); i >= 0; i--){
@@ -732,9 +743,9 @@ public:
         if(top_sar.value != temp){
         //if exists, push id_sar onto the SAS
             //if is an array with an index, create temp value
+            sym var = st->fetchSymbol(temp);
             if(top_sar.index != ""){
-                sym arr = st->fetchSymbol(temp);
-                string type =arr.data.type;
+                string type =var.data.type;
                 size_t pos = type.find(":");
                 if(pos == string::npos)
                     genSemError(top_sar, top_sar.value, NOT_DEFINED);
@@ -746,12 +757,11 @@ public:
             }
             else if(!top_sar.arg_list.empty()){
                 //fetch temp and compare parameters with top_sar parameters to check them
-                sym func = st->fetchSymbol(temp);
                 int i = int(top_sar.arg_list.size()-1);
                 int j = 0;
                 while(i >= 0){
                     sym param1 = st->fetchSymbol(top_sar.arg_list[i]);
-                    sym param2 = st->fetchSymbol(func.data.param[j]);
+                    sym param2 = st->fetchSymbol(var.data.param[j]);
                     if(param1.data.type != param2.data.type)
                         genSemError(top_sar, top_sar.value, NOT_DEFINED);
                     i--;
@@ -765,7 +775,11 @@ public:
                 top_sar.index = "";
             }
             SAS.push_back(top_sar);
-        }
+            //iCODE
+            if(var.kind == METHOD){
+                __func(var.symid,top_sar,THIS);
+            }
+        }working on array iCOde
         else{
             genSemError(top_sar, top_sar.value, NOT_DEFINED);
         }
@@ -806,6 +820,7 @@ public:
                 top_sar.value = ref.symid;
                 top_sar.index = "";
                 SAS.push_back(top_sar);
+                //Array iCOde
             }
             else if(t.data.accessMod == PUBLIC || tvalue == THIS){//function or variable
                 //add top_sar to symbol table
@@ -839,6 +854,12 @@ public:
                 top_sar.value = ref.symid;
                 top_sar.index = "";
                 SAS.push_back(top_sar);
+                //iCode
+                if(t.kind == METHOD){//function
+                    __func(t.symid,top_sar,next_sar.value);
+                }
+                else//variable
+                    iCodeGen(iREF, next_sar.value, t.symid, top_sar.value);
             }
             else{
                 string s = pop_tail_scope(t.scope);
@@ -846,13 +867,6 @@ public:
                     top_sar.arg_list.push_back("\n");
                 genSemError(top_sar,t.value, " not definded/public in class " + s);
             }
-            if(t.kind == METHOD){//function
-                iCodeGen(FRAME, t.symid, next_sar.value);
-                iCodeGen(CALL, t.symid);
-                just did x.f() and now need to do f() in the iCode document. 
-            }
-            else//variable
-                iCodeGen(iREF, next_sar.value, t.symid, top_sar.value);
         }
         else{
         //if no, throw sym error
@@ -1219,6 +1233,7 @@ public:
             genSemError(x.data.type, x.value, y.data.type , y.value, t);
         if(x.data.type != y.data.type)//do x and y share the same type
             genSemError(x.data.type, x.value, y.data.type , y.value, t);
+        //iCode
         iCodeGen(MOV, y.symid, x.symid);
     }
     //#< #<= #>= # #>

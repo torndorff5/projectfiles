@@ -1,10 +1,8 @@
-class Dog {
-}
 class Cat {
-    public void f(){
-    }
 }
 void kxi2019 main(){
-    Cat x;
-    x.f();
+    int c[] = new int[6];
+    int r = 4;
+    int x;
+    x = c[r];
 }
