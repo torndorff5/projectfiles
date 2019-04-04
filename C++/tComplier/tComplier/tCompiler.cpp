@@ -97,6 +97,8 @@ class compiler {
     const string IO_ONE = "1";
     const string IO_TWO = "2";
     const string IO_POINT_SIZE = "POINT_SIZE";
+    int label_count;
+    vector<string> label_stack;
     //Semantic DATA********************************************************************************************************************
     const string bal_sar = "BAL";
     const string FUNCTION_ERROR = "Function ";
@@ -107,6 +109,7 @@ public:
     compiler(){
         syntax = false;
         semantic = true;
+        label_count = 0;
     }
     //Defined Types for tCompiler ****************************************************************************************************************************
     enum Type {space, nl, numb, pchar, charact, id, punct, keyw, mathop,logicop,relop,assop,arrayb,arraye,blockb,blocke,parentho,parenthc,streamop, uk, eof};
@@ -304,7 +307,6 @@ public:
         }
     };
     Symboltable* st = new Symboltable();
-    
     //METHODS****************************************************************************************************************************
     //LEXICAL ANALYISIS****************************************************************************************************************************
     void checkType(token &t){
@@ -576,6 +578,15 @@ public:
     void iCodeGen(string label){
         icode << "\n" << label << ":";
     }
+    string genLabel(string start){
+        string label = start + to_string(label_count++);
+        return label;
+    }
+    string pop_label_stack(){
+        string label = label_stack.back();
+        label_stack.pop_back();
+        return label;
+    }
     string opcheck(string op){
         if(op == "<")
             return LT;
@@ -596,19 +607,43 @@ public:
     }
     void __skip(){
         if(curr.lexeme == ELSE){//check if there is an else
-            iCodeGen(JMP, SKIPELSE);//if there is an else, put jmp skipelse
+            string label = genLabel(SKIPELSE);
+            iCodeGen(JMP, label );//if there is an else, put jmp skipelse
+            string label1 = pop_label_stack();
+            iCodeGen(label1);
+            label_stack.push_back(label);
         }
-        iCodeGen(SKIPIF);
+        else{
+            string label = pop_label_stack();
+            iCodeGen(label);
+        }
+    }
+    void __if(string s){
+        string label = genLabel(SKIPIF);
+        label_stack.push_back(label);
+        iCodeGen(BF, s, label);
     }
     void __else(){
-        iCodeGen(SKIPELSE);
+        string label = pop_label_stack();
+        iCodeGen(label);
+    }
+    void __while(string s){
+        string label = genLabel(ENDWHILE);
+        label_stack.push_back(label);
+        iCodeGen(BF, s, label);
     }
     void __begin(){
-        iCodeGen(BEGIN);
+        string label = genLabel(BEGIN);
+        label_stack.push_back(label);
+        iCodeGen(label); finishi while loops and nested ones too (backpatching )
     }
     void __end(){
         iCodeGen(JMP, BEGIN);
-        iCodeGen(ENDWHILE);
+        iCodeGen(ENDWHILE + to_string(label_count++));
+    }
+    void __declareFunc(string s){
+        iCodeGen(s);
+        iCodeGen(iFUNC, s);
     }
     void __func(string symid,SAR top_sar,string object){
         iCodeGen(FRAME, symid, object);
@@ -767,8 +802,7 @@ public:
         //f FUNC f
         sym func = st->fetchSymbol(s.value);
         if(func.kind == METHOD){
-            iCodeGen(s.value);
-            iCodeGen(iFUNC, s.value);
+            __declareFunc(s.value);
         }
     }
     //iExist
@@ -974,7 +1008,8 @@ public:
         sym exp = st->fetchSymbol(sar.value);
         if(exp.data.type != BOOL)
             genSemError("if requires bool got " + exp.data.type,sar);
-        iCodeGen(BF, sar.value, SKIPIF);
+        //iCode
+        __if(sar.value);
     }
     //#while
     void _while(){
@@ -982,7 +1017,7 @@ public:
         sym exp = st->fetchSymbol(sar.value);
         if(exp.data.type != BOOL)
             genSemError("while requires bool got " + exp.data.type,sar);
-        iCodeGen(BF, sar.value, ENDWHILE);
+        __while(sar.value);
     }
     //#return
     void _return(){
@@ -1068,8 +1103,10 @@ public:
                 temp.size = func_types[c.value];
                 temp.symid = st->genSymID('t');
                 temp.data.type = c.value;
+                temp.value = c.value;
+                temp.data.accessMod = PUBLIC;
                 temp.data.param = al_sar.arg_list;
-                st->addSymbol(s);
+                st->addSymbol(temp);
                 constructor_sar.value = temp.symid;
                 constructor_sar.arg_list = al_sar.arg_list;
                 constructor_sar.ln = al_sar.ln;
@@ -1079,7 +1116,6 @@ public:
                 //NEWI SIZEOFCAT, NEWTEMP
                 sym t;
                 addTemp2ST(t, INT);
-                constructor_sar.value = t.symid;
                 iCodeGen(NEWI, to_string(size_types[type_sar.value]), t.symid);
                 __func(c.symid, constructor_sar, t.symid);
                 return;
@@ -1131,6 +1167,9 @@ public:
             sar.ln = t.line_num;//pass in line num
             genSemError("Constructor " + t.lexeme + " must match class name " + name,sar);
         }
+        //get constructor symid
+        string symid = st->containsLexeme(name, scope);
+        __declareFunc(symid);
     }
     //#dup
     void dup(token& c, string s){

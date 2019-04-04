@@ -3,9 +3,11 @@ class Cat {
     private int k;
     private char a;
     private bool status;
-    Cat(int x, int y){
-        this.l = x;
-        this.k = y;
+    Cat(){
+        l = 4;
+        k = 6;
+        a = 'a';
+        status = false;
     }
     public void f(int l, int j, char a){
         int k = 4;
@@ -14,5 +16,6 @@ class Cat {
 }
 void kxi2019 main(){
     int x = 3;
-    Cat k = new Cat(7, x);
+    int y = 4;
+    if (x == y) { x = y; } else { y = x; } char a = 'a';
 }
