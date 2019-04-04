@@ -16,56 +16,297 @@
 #include <map>
 #include <algorithm>
 
+
 using namespace std;
 
-
-//lexical struct
-//contains all functions and members necessary to run a lexical analysis on a .kxi file.
-//
 static bool semantic;
 static bool syntax;
 
+
 class compiler {
+    //Class Level Variables****************************************************************************************************************************
+    string scope;
+    const string IVAR = "ivar";
+    const string LVAR = "lvar";
+    const string LITERAL = "lit";
+    const string CHAR = "char";
+    const string INT = "int";
+    const string BOOL = "bool";
+    const string VOID = "void";
+    const string nul = "null";
+    const string GLOBAL = "g";
+    const string ARRAY = ":@";
+    const string PARAM = "param";
+    const string METHOD = "method";
+    const string CONSTR = "constructor";
+    const string PUBLIC = "public";
+    const string PRIVATE = "private";
+    const string OBJECT = "object";
+    const string TEMP = "tval";
+    const string FUNC = "func";
+    const string THIS = "this";
+    const string REF = "reference";
+    const string CLASS = "class";
+    const static int SIZEINT = 4;
+    const static int SIZEBYT = 1;
+    const int DEFAULT_FUNC_SIZE = 12;
+    map<string,int> size_types;
+    map<string,int> func_types;
+    size_t line_number;
+    fstream in;
+    string buffer;
+    map<string,int> KEYWORDS = { std::pair<string,int>("atoi",0), std::pair<string,int>("and",1), std::pair<string,int>("bool",2), std::pair<string,int>("block",3) , std::pair<string,int>("break",4) , std::pair<string,int>("case",5) , std::pair<string,int>("class",6) , std::pair<string,int>("char",7), std::pair<string,int>("cin",8), std::pair<string,int>("cout",9), std::pair<string,int>("default",10), std::pair<string,int>("else",11), std::pair<string,int>("false",12), std::pair<string,int>("if",13) , std::pair<string,int>("int",14) , std::pair<string,int>("itoa",15), std::pair<string,int>("kxi2019",16), std::pair<string,int>("lock",17), std::pair<string,int>("main",18), std::pair<string,int>("new",19), std::pair<string,int>("null",20), std::pair<string,int>("object",21), std::pair<string,int>("or",22), std::pair<string,int>("public",23) , std::pair<string,int>("private",24), std::pair<string,int>("protected",25), std::pair<string,int>("return",26), std::pair<string,int>("release",27), std::pair<string,int>("string",28), std::pair<string,int>("spawn",29), std::pair<string,int>("sym",30), std::pair<string,int>("set",31), std::pair<string,int>("switch",32), std::pair<string,int>("this",33), std::pair<string,int>("true",34), std::pair<string,int>("thread",35), std::pair<string,int>("unprotected",36), std::pair<string,int>("unlock",37), std::pair<string,int>("void",38), std::pair<string,int>("while",39), std::pair<string,int>("wait",40)};
+    //ICODE DATA********************************************************************************************************************
+    ofstream icode;
+    const string DOTINT = ".INT ";
+    const string DOTBYT = ".BYT ";
+    const string ADD = "ADD ";
+    const string MUL = "MUL ";
+    const string SUB = "SUB ";
+    const string DIV = "DIV ";
+    const string LT = "LT ";
+    const string GT = "GT ";
+    const string NE = "NE ";
+    const string EQ = "EQ ";
+    const string LE = "LE ";
+    const string GE = "GE ";
+    const string AND = "AND ";
+    const string OR = "OR ";
+    const string MOV = "MOV ";
+    const string JMP = "JMP ";
+    const string iFUNC = "FUNC ";
+    const string NEWI = "NEWI ";
+    const string FRAME = "FRAME ";
+    const string CALL = "CALL ";
+    const string PUSH = "PUSH ";
+    const string PEEK = "PEEK ";
+    const string RETURN = "RETURN ";
+    const string RTN = "RTN ";
+    const string WRITE = "WRITE ";
+    const string READ = "READ ";
+    const string iREF = "REF ";
+    const string AEF = "AEF ";
+    const string BF = "BF ";
+    const string NEW = "NEW ";
+    const string SKIPIF = "SKIPIF";
+    const string ELSE = "else";
+    const string SKIPELSE = "SKIPELSE";
+    const string BEGIN = "BEGIN";
+    const string ENDWHILE = "ENDWHILE";
+    const string COMMA = ", ";
+    const string IO_ONE = "1";
+    const string IO_TWO = "2";
+    const string IO_POINT_SIZE = "POINT_SIZE";
+    //Semantic DATA********************************************************************************************************************
+    const string bal_sar = "BAL";
+    const string FUNCTION_ERROR = "Function ";
+    const string VARIABLE_ERROR = "Variable ";
+    const string ARRAY_ERROR = "Array ";
+    const string NOT_DEFINED = " not defined";
 public:
     compiler(){
         syntax = false;
         semantic = true;
     }
-    
-    //Lexical ************************************************************************************************************************************
-    
-    map<string,int> KEYWORDS = { std::pair<string,int>("atoi",0), std::pair<string,int>("and",1), std::pair<string,int>("bool",2), std::pair<string,int>("block",3) , std::pair<string,int>("break",4) , std::pair<string,int>("case",5) , std::pair<string,int>("class",6) , std::pair<string,int>("char",7), std::pair<string,int>("cin",8), std::pair<string,int>("cout",9), std::pair<string,int>("default",10), std::pair<string,int>("else",11), std::pair<string,int>("false",12), std::pair<string,int>("if",13) , std::pair<string,int>("int",14) , std::pair<string,int>("itoa",15), std::pair<string,int>("kxi2019",16), std::pair<string,int>("lock",17), std::pair<string,int>("main",18), std::pair<string,int>("new",19), std::pair<string,int>("null",20), std::pair<string,int>("object",21), std::pair<string,int>("or",22), std::pair<string,int>("public",23) , std::pair<string,int>("private",24), std::pair<string,int>("protected",25), std::pair<string,int>("return",26), std::pair<string,int>("release",27), std::pair<string,int>("string",28), std::pair<string,int>("spawn",29), std::pair<string,int>("sym",30), std::pair<string,int>("set",31), std::pair<string,int>("switch",32), std::pair<string,int>("this",33), std::pair<string,int>("true",34), std::pair<string,int>("thread",35), std::pair<string,int>("unprotected",36), std::pair<string,int>("unlock",37), std::pair<string,int>("void",38), std::pair<string,int>("while",39), std::pair<string,int>("wait",40)};
-    
-    //type enumeration
-    //space, number, potential character literal, character literal, identifier, punctuation, keyword, symbol, unknown, end of file
+    //Defined Types for tCompiler ****************************************************************************************************************************
     enum Type {space, nl, numb, pchar, charact, id, punct, keyw, mathop,logicop,relop,assop,arrayb,arraye,blockb,blocke,parentho,parenthc,streamop, uk, eof};
-    
     //token class that has a lexeme, line# and type
     struct token {
         string lexeme;
         size_t line_num;
         Type type;
     };
-    
+    token curr;
+    token next;
+    token one;
+    token two;
+    //Operator Stack
+    vector<token> OS;
     struct SAR {
         vector<string> arg_list;
         string value;
         string index;
         size_t ln;
     };
+    vector<SAR> SAS;
+    struct Data{
+        string type;
+        string accessMod;
+        vector<string> param;
+        string size;
+        string asslit;
+        void clear(){
+            type="";
+            accessMod="";
+            asslit = "";
+            size = "";
+            param.clear();
+        }
+    };
+    struct sym{
+        string scope;
+        string symid;
+        string value;
+        string kind;
+        int size = 0;
+        Data data;
+        void clear(){
+            scope = "";
+            symid = "";
+            value = "";
+            kind = "";
+            size = 0;
+            data.clear();
+        }
+    };
+    sym s;
+    vector<sym> sizeStack;
+    class Symboltable {
+    public:
+        //know
+        //symbol counter
+        int count;
+        //key - > values table
+        map<string,sym> symtab;
+        //do
+        //construct itself
+        Symboltable(){
+            count = 1;
+        };
+        //generate symid
+        //takes a char and adds the symbol counter to it to create a unique symbol id
+        string genSymID(char c){
+            string s = "";
+            s+=c;
+            s+=(to_string(count++));
+            return s;
+        }
+        //add global s variable to the table. also gen symid and clears s after
+        void addBaseSymbol(sym& s){
+            //generate symid
+            s.symid = genSymID(s.value.at(0));
+            sym* temp = new sym(s);
+            symtab.insert(std::pair<string,sym>(s.symid,*temp));
+            s.clear();//resets s
+        }
+        void removeSymbol(sym s){
+            symtab.erase(s.symid);
+        }
+        //add any symbol to the table
+        void addSymbol(sym& s){
+            symtab.insert(std::pair<string,sym>(s.symid,s));
+        }
+        //fecth symbol with symid
+        sym fetchSymbol(string s){
+            try{
+                sym r = symtab.at(s);
+                return r;
+            }
+            catch (std::out_of_range e){
+                throw e;
+            }
+        }
+        sym fetchObj(string objname, string scope){
+            string symid = containsLexeme(objname, scope);
+            sym s = fetchSymbol(symid);
+            return s;
+        }
+        //checks to see if duplicate st values are in same scope.
+        //takes value and scope
+        bool containsDupCurrScope(string value, string sco){
+            int symcount = 0;
+            for(auto s: symtab){
+                if(s.second.scope == sco){
+                    if(s.second.value == value){
+                        symcount++;
+                    }
+                }
+            }
+            if(symcount > 1)
+                return true;
+            else
+                return false;
+        }
+        string containsLexemeCurrScope(string l, string currscope){
+            for(auto x: symtab){
+                if(x.second.value == l){
+                    if(currscope == x.second.scope){
+                        l = x.second.symid;
+                        return l;
+                    }
+                }
+            }
+            return l;
+        }
+        vector<sym> getScope(string currscope){
+            vector<sym> scopeobjects;
+            for(auto x:symtab){
+                if(x.second.scope == currscope)
+                    scopeobjects.push_back(x.second);
+            }
+            return scopeobjects;
+        }
+        //check to see if lexeme exists in current scope, or outer scope, returns symid
+        string containsLexeme(string l, string currscope){
+            do{
+                l = containsLexemeCurrScope(l, currscope);
+                pop_scope(currscope);
+            }
+            while(currscope != "g");
+            return l;
+        }
+        void printST(){
+            for(auto s:symtab){
+                cout << "Symid: " << s.second.symid << endl;
+                /*
+                cout << "Scope: " << s.second.scope << endl;
+                cout << "Kind: " << s.second.kind << endl;
+                 */
+                cout << "Value: " << s.second.value << endl;
+                cout << "\tType: " << s.second.data.type << endl;
+                /*
+                cout << "\tAccessMod: " << s.second.data.accessMod << endl;
+                cout << "\tParam: ";
+                 */
+                cout << "Size: " << s.second.size << endl;
+                /*for(auto p: s.second.data.param){
+                    cout << p << " ";
+                }
+                 */
+                cout << endl;
+                /*
+                cout << "\tSize: " << s.second.data.size << endl;
+                cout << endl;*/
+            }
+        }
+        int removeDup(){
+            vector<string> global_values;
+            vector<string> removelist;
+            int c = 0;
+            for(auto s:symtab){
+                if(s.second.kind == "lit"){
+                    if(std::find(global_values.begin(), global_values.end(), s.second.value) != global_values.end()) {
+                        /* global_values contains second value */
+                        //delete symbol
+                        removelist.push_back(s.second.symid);
+                        c++;
+                    }
+                    else {
+                        /* does not contain */
+                        global_values.push_back(s.second.value);
+                    }
+                }
+            }
+            for(string s:removelist){
+                symtab.erase(s);
+            }
+            return c;
+        }
+    };
+    Symboltable* st = new Symboltable();
     
-    //struct level variables
-    size_t line_number;
-    fstream in;
-    string buffer;
-    token curr;
-    token next;
-    token one;
-    token two;
-    
-
-    
-    //checks type of token and sets its type value
+    //METHODS****************************************************************************************************************************
+    //LEXICAL ANALYISIS****************************************************************************************************************************
     void checkType(token &t){
         //Reg expressions
         std::regex reg_space("[ ]");
@@ -76,7 +317,6 @@ public:
         std::regex reg_punct("[:,;.]");
         std::regex reg_pchar("[']");
         std::smatch match;
-        
         if (std::regex_search(t.lexeme,match, reg_space))//is token a space
             t.type = space;
         else if (std::regex_search(t.lexeme,match, reg_relop))//istoken a number?
@@ -111,9 +351,7 @@ public:
             t.type = nl;
         else
             t.type = uk;
-        
     }
-    
     //check to see if current is charact
     void charCheck(token& c, token& n){
         std::regex reg_charact(".");
@@ -131,19 +369,16 @@ public:
             }
         }
     }
-    
     //checks to see if a string is a keyw
     void checkKeyW(token& t){
         if(KEYWORDS.end() != KEYWORDS.find(t.lexeme))
             t.type = keyw;
     }
-    
     //gets token from front char of string, places char in token, and pops front char
     void getChar(string& s, token& t){
         t.lexeme = s.front();
         s.erase(s.begin());//assign next token to front of line
     }
-
     token getToken(){
         return curr;
     }
@@ -327,198 +562,8 @@ public:
                 break;
         }
         cout << "\t\t" << t.line_num << endl;
-        
     }
-    
-    //symbol table functions and data ****************************************************************************************************************************************
-    //sym struct to place in map
-    //Data struct to hold symbol specific data
-    struct Data{
-        string type;
-        string accessMod;
-        vector<string> param;
-        string size;
-        string asslit;
-        void clear(){
-            type="";
-            accessMod="";
-            asslit = "";
-            size = "";
-            param.clear();
-        }
-    };
-    struct sym{
-        string scope;
-        string symid;
-        string value;
-        string kind;
-        Data data;
-        void clear(){
-            scope = "";
-            symid = "";
-            value = "";
-            kind = "";
-            data.clear();
-        }
-    };
-    
-    class symboltable {
-        //know
-        //symbol counter
-        int count;
-        //key - > values table
-        map<string,sym> symtab;
-        //do
-        //construct itself
-    public:
-        symboltable(){
-            count = 1;
-        };
-        //generate symid
-        //takes a char and adds the symbol counter to it to create a unique symbol id
-        string genSymID(char c){
-            string s = "";
-            s+=c;
-            s+=(to_string(count++));
-            return s;
-        }
-        //add global s variable to the table. also gen symid and clears s after
-        void addBaseSymbol(sym& s){
-            //generate symid
-            s.symid = genSymID(s.value.at(0));
-            sym* temp = new sym(s);
-            symtab.insert(std::pair<string,sym>(s.symid,*temp));
-            s.clear();//resets s
-        }
-        void removeSymbol(sym s){
-            symtab.erase(s.symid);
-        }
-        //add any symbol to the table
-        void addSymbol(sym& s){
-            symtab.insert(std::pair<string,sym>(s.symid,s));
-        }
-        //fecth symbol with symid
-        sym fetchSymbol(string s){
-            try{
-                sym r = symtab.at(s);
-                return r;
-            }
-            catch (std::out_of_range e){
-                throw e;
-            }
-        }
-        //checks to see if duplicate st values are in same scope.
-        //takes value and scope
-        bool containsDupCurrScope(string value, string sco){
-            int symcount = 0;
-            for(auto s: symtab){
-                if(s.second.scope == sco){
-                    if(s.second.value == value){
-                        symcount++;
-                    }
-                }
-            }
-            if(symcount > 1)
-                return true;
-            else
-                return false;
-        }
-        string containsLexemeCurrScope(string l, string currscope){
-            for(auto x: symtab){
-                if(x.second.value == l){
-                    if(currscope == x.second.scope){
-                        l = x.second.symid;
-                        return l;
-                    }
-                }
-            }
-            return l;
-        }
-        //check to see if lexeme exists in current scope, or outer scope, returns symid
-        string containsLexeme(string l, string currscope){
-            do{
-                l = containsLexemeCurrScope(l, currscope);
-                pop_scope(currscope);
-            }
-            while(currscope != "g");
-            return l;
-        }
-        void printST(){
-            for(auto s:symtab){
-                cout << "Symid: " << s.second.symid << endl;
-                cout << "Scope: " << s.second.scope << endl;
-                cout << "Kind: " << s.second.kind << endl;
-                cout << "Value: " << s.second.value << endl;
-                cout << "\tType: " << s.second.data.type << endl;
-                cout << "\tAccessMod: " << s.second.data.accessMod << endl;
-                cout << "\tParam: ";
-                for(auto p: s.second.data.param){
-                    cout << p << " ";
-                }
-                cout << endl;
-                cout << "\tSize: " << s.second.data.size << endl;
-                cout << endl;
-            }
-        }
-        int removeDup(){
-            vector<string> global_values;
-            vector<string> removelist;
-            int c = 0;
-            for(auto s:symtab){
-                if(s.second.kind == "lit"){
-                    if(std::find(global_values.begin(), global_values.end(), s.second.value) != global_values.end()) {
-                        /* global_values contains second value */
-                        //delete symbol
-                        removelist.push_back(s.second.symid);
-                        c++;
-                    }
-                    else {
-                        /* does not contain */
-                        global_values.push_back(s.second.value);
-                    }
-                }
-            }
-            for(string s:removelist){
-                symtab.erase(s);
-            }
-            return c;
-        }
-    };
-    //ICODE FUNCTIONS AND DATA********************************************************************************************************************
-    ofstream icode;
-    const string ADD = "ADD ";
-    const string MUL = "MUL ";
-    const string SUB = "SUB ";
-    const string DIV = "DIV ";
-    const string LT = "LT ";
-    const string GT = "GT ";
-    const string NE = "NE ";
-    const string EQ = "EQ ";
-    const string LE = "LE ";
-    const string GE = "GE ";
-    const string AND = "AND ";
-    const string OR = "OR ";
-    const string MOV = "MOV ";
-    const string JMP = "JMP ";
-    const string iFUNC = "FUNC ";
-    const string FRAME = "FRAME ";
-    const string CALL = "CALL ";
-    const string PUSH = "PUSH ";
-    const string PEEK = "PEEK ";
-    const string RETURN = "RETURN ";
-    const string RTN = "RTN ";
-    const string WRITE = "WRITE ";
-    const string READ = "READ ";
-    const string iREF = "REF ";
-    const string BF = "BF ";
-    const string SKIPIF = "SKIPIF";
-    const string ELSE = "else";
-    const string SKIPELSE = "SKIPELSE";
-    const string BEGIN = "BEGIN";
-    const string ENDWHILE = "ENDWHILE";
-    const string COMMA = ", ";
-    const string IO_ONE = "1";
-    const string IO_TWO = "2";
+    //iCODE FUNCTIONS **************************************************************************************************************************
     void iCodeGen(string operation, string a_symid, string b_symid, string c_symid){
         icode << "\t" << operation << a_symid << COMMA << b_symid << COMMA << c_symid << "\n";
     }
@@ -573,12 +618,7 @@ public:
         iCodeGen(CALL, symid);
         iCodeGen(PEEK, top_sar.value);
     }
-    //Semantic Functions and Data ******************************************************************************************************************
-    const string bal_sar = "BAL";
-    const string FUNCTION_ERROR = "Function ";
-    const string VARIABLE_ERROR = "Variable ";
-    const string ARRAY_ERROR = "Array ";
-    const string NOT_DEFINED = " not defined";
+    //Semantic Functions******************************************************************************************************************
     //precedence
     int stackprecedence(token t){
         if(t.lexeme == "*" || t.lexeme == "/")
@@ -663,14 +703,11 @@ public:
         cout << sar.ln << ": " << s + "." << endl;
         exit(1);
     }
-    vector<SAR> SAS;
     SAR popSAS(){
         SAR s = SAS.back();
         SAS.pop_back();
         return s;
     }
-    //Operator Stack
-    vector<token> OS;
     token popOS(){
         token t = OS.back();
         OS.pop_back();
@@ -753,7 +790,8 @@ public:
                 sym t;
                 addTemp2ST(t, type);
                 top_sar.value = t.symid;
-                top_sar.index = "";
+                //Array iCOde
+                iCodeGen(AEF, var.symid, top_sar.index, t.symid);
             }
             else if(!top_sar.arg_list.empty()){
                 //fetch temp and compare parameters with top_sar parameters to check them
@@ -768,18 +806,17 @@ public:
                     j++;
                 }
                 top_sar.value = temp;
-                top_sar.index = "";
             }
             else{
                 top_sar.value = temp;
-                top_sar.index = "";
             }
+            top_sar.index = "";
             SAS.push_back(top_sar);
             //iCODE
             if(var.kind == METHOD){
                 __func(var.symid,top_sar,THIS);
             }
-        }working on array iCOde
+        }
         else{
             genSemError(top_sar, top_sar.value, NOT_DEFINED);
         }
@@ -795,6 +832,8 @@ public:
         string s = GLOBAL;
         push_scope(s, t.data.type);
         string temp = st->containsLexeme(top_sar.value, s);
+        sym ref;
+        sym arr;
         if(top_sar.value != temp){
         //if yes, push onto SAS
             top_sar.value = temp;
@@ -803,24 +842,24 @@ public:
             size_t pos = string::npos;
             pos = t.data.type.find("@");
             if(pos != string::npos && t.data.accessMod == PUBLIC){//array
-                sym ref;
                 ref.scope = GLOBAL;
                 ref.kind = REF+ARRAY;
                 ref.value = t.value;
                 ref.data.accessMod = PUBLIC;
                 ref.data.type = t.data.type;
+                ref.symid = st->genSymID('t');
                 //if index!= "" type is not array but array type
                 if(top_sar.index != ""){
                     //erase array type
                     size_t pos = ref.data.type.find(":");
                     ref.data.type.erase(pos,ref.data.type.length());
+                    //create temp on symbol table with index
+                    addTemp2ST(arr, ref.data.type);
+                    top_sar.value = arr.symid;
                 }
-                ref.symid = st->genSymID('t');
-                st->addSymbol(ref);
-                top_sar.value = ref.symid;
-                top_sar.index = "";
-                SAS.push_back(top_sar);
-                //Array iCOde
+                else
+                    top_sar.value = ref.symid;
+                addSymbol(ref);
             }
             else if(t.data.accessMod == PUBLIC || tvalue == THIS){//function or variable
                 //add top_sar to symbol table
@@ -840,7 +879,6 @@ public:
                     }
                     top_sar.value = "";
                 }
-                sym ref;
                 ref.scope = GLOBAL;
                 ref.kind = REF;
                 ref.value = top_sar.value;
@@ -850,16 +888,8 @@ public:
                 }
                 ref.data.type = t.data.type;
                 ref.symid = st->genSymID('t');
-                st->addSymbol(ref);
+                addSymbol(ref);
                 top_sar.value = ref.symid;
-                top_sar.index = "";
-                SAS.push_back(top_sar);
-                //iCode
-                if(t.kind == METHOD){//function
-                    __func(t.symid,top_sar,next_sar.value);
-                }
-                else//variable
-                    iCodeGen(iREF, next_sar.value, t.symid, top_sar.value);
             }
             else{
                 string s = pop_tail_scope(t.scope);
@@ -867,6 +897,19 @@ public:
                     top_sar.arg_list.push_back("\n");
                 genSemError(top_sar,t.value, " not definded/public in class " + s);
             }
+            //iCode
+            if(t.kind == METHOD){//function
+                __func(t.symid,top_sar,next_sar.value);
+            }
+            else//variable
+                iCodeGen(iREF, next_sar.value, t.symid, ref.symid);
+            //Additional Array iCOde
+            if(pos != string::npos && top_sar.index != ""){
+                //AEF top_sar.value, top_sar.index,  ???
+                iCodeGen(AEF, ref.symid, top_sar.index, arr.symid);
+            }
+            top_sar.index = "";
+            SAS.push_back(top_sar);
         }
         else{
         //if no, throw sym error
@@ -1018,11 +1061,27 @@ public:
                     if(x.data.type != y.data.type)
                         genSemError("Constructor " + formatFunc(al_sar, type_sar.value) + " not defined",al_sar);
                 }
-                constructor_sar.value = c.symid;
+                //create temp sym to represent instance of constructor
+                sym temp;
+                temp.kind = CONSTR + LITERAL;
+                temp.scope = GLOBAL;
+                temp.size = func_types[c.value];
+                temp.symid = st->genSymID('t');
+                temp.data.type = c.value;
+                temp.data.param = al_sar.arg_list;
+                st->addSymbol(s);
+                constructor_sar.value = temp.symid;
                 constructor_sar.arg_list = al_sar.arg_list;
                 constructor_sar.ln = al_sar.ln;
                 constructor_sar.index = "";
                 SAS.push_back(constructor_sar);
+                //iCode
+                //NEWI SIZEOFCAT, NEWTEMP
+                sym t;
+                addTemp2ST(t, INT);
+                constructor_sar.value = t.symid;
+                iCodeGen(NEWI, to_string(size_types[type_sar.value]), t.symid);
+                __func(c.symid, constructor_sar, t.symid);
                 return;
             }
         }
@@ -1043,12 +1102,19 @@ public:
             x.data.type = new_sar.value + ARRAY;
             x.data.size = size.symid;
             x.data.accessMod = PUBLIC;
-            x.symid = st->genSymID(x.value.at(0));
+            x.symid = st->genSymID('t');
             new_sar.value = x.symid;
-            st->addSymbol(x);
+            addSymbol(x);
             new_sar.index = "";
             new_sar.ln = top_sar.ln;
             SAS.push_back(new_sar);
+            //iCode
+            sym temp;
+            addTemp2ST(temp, x.data.type);
+            //mul sizeofpointer, top_sar.value, new temp variable
+            iCodeGen(MUL, IO_POINT_SIZE, top_sar.value, temp.symid);
+            //NEW, new temp variable, new new temp variable
+            iCodeGen(NEW, temp.symid, x.symid);
         }
         else{
             genSemError("Array requires int index, got " + size.data.type,top_sar);
@@ -1085,7 +1151,6 @@ public:
     }
     //#switch implementation goes here
     /*void _switch(){
-        
     }*/
     //#)
     void pparenc(){
@@ -1156,7 +1221,7 @@ public:
         temp.data.accessMod = PUBLIC;
         temp.data.type = type;
         temp.symid = st->genSymID('t');
-        st->addSymbol(temp);
+        addSymbol(temp);
     }
     //#+
     void paddop(token t){
@@ -1282,40 +1347,80 @@ public:
         SAS.push_back(t_var);
         iCodeGen(opcheck(t.lexeme), x.symid, y.symid, t_var.value);
     }
-    //SYTNAX FUNCTIONS AND DATA******************************************************************************************************************
-    symboltable* st = new symboltable();
-    sym s;
-    string scope;
-    const string IVAR = "ivar";
-    const string LVAR = "lvar";
-    const string LITERAL = "lit";
-    const string CHAR = "char";
-    const string INT = "int";
-    const string BOOL = "bool";
-    const string VOID = "void";
-    const string nul = "null";
-    const string GLOBAL = "g";
-    const string ARRAY = ":@";
-    const string PARAM = "param";
-    const string METHOD = "method";
-    const string CONSTR = "constructor";
-    const string PUBLIC = "public";
-    const string PRIVATE = "private";
-    const string OBJECT = "object";
-    const string TEMP = "tval";
-    const string FUNC = "func";
-    const string THIS = "this";
-    const string REF = "reference";
-    
-    
-    void push_scope(string& s,string temp){
-        s += "." + temp;
+    //SYTNAX FUNCTIONS******************************************************************************************************************
+    void addBaseSymbol(sym& s){
+        calcSize(s);
+        st->addBaseSymbol(s);
+    }
+    void addSymbol(sym& s){
+        calcSize(s);
+        st->addSymbol(s);
+    }
+    int calcSize(sym& s){
+        if(s.kind == LVAR || s.kind == PARAM){
+            if(size_types.find(s.data.type)!= size_types.end()){
+                s.size = size_types[s.data.type];
+            }
+            else
+                s.size = SIZEINT;
+        }
+        else{
+            if(s.data.type == INT){
+                s.size = SIZEINT;
+            }
+            else if (s.data.type == CHAR){
+                s.size = SIZEBYT;
+            }
+            else if (s.data.type == BOOL){
+                s.size = SIZEBYT;
+            }
+            else{
+                if(size_types.find(s.data.type)!= size_types.end()){
+                    s.size = size_types[s.data.type];
+                }
+            }
+        }
+        return s.size;
+    }
+    void calcObjSize(string currscope){
+        //get all symbols in class
+        vector<sym> scopeobjects = st->getScope(currscope);
+        //add up all the sizes
+        int sum = 0;
+        for(auto s: scopeobjects){
+            if(s.kind == METHOD || s.kind == CONSTR){
+                calcObjSize(push_scope_noref(s.scope, s.value));
+            }
+            else
+                sum += s.size;
+        }
+        //store as size of class
+        string objname = pop_tail_scope(currscope);
+        string scope = pop_scope(currscope);
+        sym obj = st->fetchObj(objname,scope);
+        st->removeSymbol(obj);
+        if(obj.kind == METHOD || obj.kind == CONSTR){
+            obj.size = sum + DEFAULT_FUNC_SIZE;
+            func_types.insert(pair<string,int>(obj.value,obj.size));
+        }
+        else{
+            obj.size = sum;
+            size_types.insert(pair<string,int>(obj.value,obj.size));
+        }
+        st->addSymbol(obj);
     }
     static string pop_scope(string& s){
         if(s == "g")
             return s;
         size_t pos = s.find_last_of('.');
         s.erase(pos, s.length());
+        return s;
+    }
+    void push_scope(string& s,string temp){
+        s += "." + temp;
+    }
+    string push_scope_noref(string s, string temp){
+        s+= "." + temp;
         return s;
     }
     string pop_tail_scope(string s){
@@ -1330,7 +1435,7 @@ public:
         synType(c);
         s.scope = GLOBAL;
         s.data.accessMod = PUBLIC;
-        st->addBaseSymbol(s);
+        addBaseSymbol(s);
     }
     void synType(token& c){
         if(c.type == charact)
@@ -1347,7 +1452,7 @@ public:
         s.value = c.lexeme;
         //change scope to whatever it is currently
         s.scope = scope;
-        st->addBaseSymbol(s);
+        addBaseSymbol(s);
     }
     //takes scope and class name and adds a this to the symbol table at that scope
     void addThis(string s, string name){
@@ -1358,7 +1463,7 @@ public:
         t.scope = s;
         t.data.accessMod = PRIVATE;
         t.symid = st->genSymID('t');
-        st->addSymbol(t);
+        addSymbol(t);
     }
     void genSynError(token& c, string expected){
         cout << c.line_num << ": Found \"" << c.lexeme << "\" expecting \""<< expected << "\"" << endl;
@@ -1369,6 +1474,7 @@ public:
         if(c.lexeme != ";")
             genSynError(c, ";");
     }
+    //RECURSIVE PARSER *****************************************************************************************************************
     void compilation_unit(token&c, token&n){
         //********************* {class_declaration} "void" "kxi2019" "main" "(" ")" method_body
         scope = GLOBAL;
@@ -1419,6 +1525,10 @@ public:
         if(c.type != blocke)
             genSynError(c, "}");
         getNextToken();
+        //calculate class size
+        if(syntax){
+            calcObjSize(scope);
+        }
         pop_scope(scope);
     }
     void class_member_declaration(token& c, token& n){
@@ -1468,7 +1578,7 @@ public:
                 s.kind = METHOD;
                 string name = pop_tail_scope(s.scope);
                 addThis(scope, name);
-                st->addBaseSymbol(s);
+                addBaseSymbol(s);
             }
             method_body(c, n);
             pop_scope(scope);
@@ -1487,7 +1597,7 @@ public:
             if(syntax){
                 s.kind = IVAR;
                 s.scope = scope;
-                st->addBaseSymbol(s);
+                addBaseSymbol(s);
             }
             if(c.type == assop){
                 if(semantic)
@@ -1529,7 +1639,7 @@ public:
         getNextToken();
         if(syntax){
             addThis(scope, s.value);
-            st->addBaseSymbol(s);
+            addBaseSymbol(s);
         }
         method_body(c, n);
         pop_scope(scope);
@@ -1579,7 +1689,7 @@ public:
             s.kind = LVAR;
             s.data.accessMod = PRIVATE;
             s.scope = scope;
-            st->addBaseSymbol(s);
+            addBaseSymbol(s);
         }
         if(c.type == assop){
             if(semantic)
@@ -1664,7 +1774,7 @@ public:
             temp.scope = scope;
             temp.data.accessMod = PRIVATE;
             temp.symid = st->genSymID(temp.value.at(0));
-            st->addSymbol(temp);
+            addSymbol(temp);
             s.data.param.push_back(temp.symid);
         }
     }
@@ -2043,7 +2153,7 @@ public:
             if(curr.type != eof)
                 genSynError(curr, "EOF");
             st->removeDup();
-            //st->printST();
+            st->printST();
             in.close();
         }
         else{
