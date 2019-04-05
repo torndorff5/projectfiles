@@ -1,21 +1,25 @@
-class Cat {
-    private int l;
-    private int k;
-    private char a;
-    private bool status;
-    Cat(){
-        l = 4;
-        k = 6;
-        a = 'a';
-        status = false;
+class Cat{
+    public int j = 4;
+    public int a = 0;
+    public int f(int x){
+        return x;
     }
-    public void f(int l, int j, char a){
-        int k = 4;
-        int y = l + j + k;
+    public int b(int x){
+        return x;
+    }
+    public int g(int y, int l, bool x, int j){
+        if(x){
+            y = l + j - 3;
+        }
+        return y;
     }
 }
-void kxi2019 main(){
-    int x = 3;
-    int y = 4;
-    if (x == y) { x = y; } else { y = x; } char a = 'a';
+void kxi2019 main()
+{
+    int j = -3;
+    int i = -5;
+    int a[];
+    int k[];
+    Cat x;
+    x.g(x.f(1 + x.j + 7), a[j + x.j], x.a < x.b(x.f(x.j)), k[i+j]);
 }

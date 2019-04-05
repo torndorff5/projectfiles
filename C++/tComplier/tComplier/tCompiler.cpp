@@ -57,7 +57,8 @@ class compiler {
     string buffer;
     map<string,int> KEYWORDS = { std::pair<string,int>("atoi",0), std::pair<string,int>("and",1), std::pair<string,int>("bool",2), std::pair<string,int>("block",3) , std::pair<string,int>("break",4) , std::pair<string,int>("case",5) , std::pair<string,int>("class",6) , std::pair<string,int>("char",7), std::pair<string,int>("cin",8), std::pair<string,int>("cout",9), std::pair<string,int>("default",10), std::pair<string,int>("else",11), std::pair<string,int>("false",12), std::pair<string,int>("if",13) , std::pair<string,int>("int",14) , std::pair<string,int>("itoa",15), std::pair<string,int>("kxi2019",16), std::pair<string,int>("lock",17), std::pair<string,int>("main",18), std::pair<string,int>("new",19), std::pair<string,int>("null",20), std::pair<string,int>("object",21), std::pair<string,int>("or",22), std::pair<string,int>("public",23) , std::pair<string,int>("private",24), std::pair<string,int>("protected",25), std::pair<string,int>("return",26), std::pair<string,int>("release",27), std::pair<string,int>("string",28), std::pair<string,int>("spawn",29), std::pair<string,int>("sym",30), std::pair<string,int>("set",31), std::pair<string,int>("switch",32), std::pair<string,int>("this",33), std::pair<string,int>("true",34), std::pair<string,int>("thread",35), std::pair<string,int>("unprotected",36), std::pair<string,int>("unlock",37), std::pair<string,int>("void",38), std::pair<string,int>("while",39), std::pair<string,int>("wait",40)};
     //ICODE DATA********************************************************************************************************************
-    ofstream icode;
+    fstream icode;
+    string icodeFile = "icode.txt";
     const string DOTINT = ".INT ";
     const string DOTBYT = ".BYT ";
     const string ADD = "ADD ";
@@ -605,6 +606,38 @@ public:
         else
             return OR;
     }
+    void __backpatch(char c,size_t pos,string label){
+        //backpatch
+        size_t len = -1;
+        while(c!='\n'){
+            icode.seekg(--pos);
+            c = icode.get();
+            len++;
+        }
+        char temp[256];
+        icode.get(temp,len,':');
+        string label_to_replace = temp;
+        //replace label with label_to_replace in whole file
+        icode.seekg(0);
+        string buffer;
+        string final_buffer = "";
+        len = label_to_replace.length();
+        while(getline(icode,buffer)){
+            while (true)
+            {
+                size_t pos = buffer.find(label_to_replace);
+                if (pos != string::npos)
+                    buffer.replace(pos, len, label);
+                else
+                    break;
+            }
+            final_buffer += buffer + "\n";
+        }
+        final_buffer.erase(final_buffer.length()-1,final_buffer.length());
+        icode.close();
+        icode.open(icodeFile,ios::in|ios::out|ios::trunc);
+        icode << final_buffer;
+    }
     void __skip(){
         if(curr.lexeme == ELSE){//check if there is an else
             string label = genLabel(SKIPELSE);
@@ -624,8 +657,18 @@ public:
         iCodeGen(BF, s, label);
     }
     void __else(){
+        //get previous char
+        size_t pos = icode.tellg();
+        icode.seekg(pos-1);
+        char c = icode.get();
+        icode.seekg(pos);
         string label = pop_label_stack();
-        iCodeGen(label);
+        if(c == ':'){
+            __backpatch(c, pos, label);
+        }
+        else{
+            iCodeGen(label);
+        }
     }
     void __while(string s){
         string label = genLabel(ENDWHILE);
@@ -633,13 +676,26 @@ public:
         iCodeGen(BF, s, label);
     }
     void __begin(){
-        string label = genLabel(BEGIN);
-        label_stack.push_back(label);
-        iCodeGen(label); finishi while loops and nested ones too (backpatching )
+        size_t pos = icode.tellg();
+        icode.seekg(pos-1);
+        char c = icode.get();
+        icode.seekg(pos);
+        if(c == ':'){
+            string label = genLabel(BEGIN);
+            label_stack.push_back(label);
+            __backpatch(c, pos,label);
+        }
+        else{
+            string label = genLabel(BEGIN);
+            label_stack.push_back(label);
+            iCodeGen(label);
+        }
     }
     void __end(){
-        iCodeGen(JMP, BEGIN);
-        iCodeGen(ENDWHILE + to_string(label_count++));
+        string endlabel = pop_label_stack();
+        string beglabel = pop_label_stack();
+        iCodeGen(JMP, beglabel);
+        iCodeGen(endlabel);
     }
     void __declareFunc(string s){
         iCodeGen(s);
@@ -2213,7 +2269,7 @@ public:
             getNextToken();//sets curr to next, gets next whole token
             semantic = true;//do semantic operations on next pass through
             syntax = false;
-            icode.open("icode.txt");
+            icode.open(icodeFile,ios::in|ios::out|ios::trunc);
             if(icode.is_open()){
                 compilation_unit(curr, next);
                 icode.close();
