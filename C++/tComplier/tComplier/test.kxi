@@ -1,25 +1,6 @@
-class Cat{
-    public int j = 4;
-    public int a = 0;
-    public int f(int x){
-        return x;
-    }
-    public int b(int x){
-        return x;
-    }
-    public int g(int y, int l, bool x, int j){
-        if(x){
-            y = l + j - 3;
-        }
-        return y;
-    }
-}
-void kxi2019 main()
-{
+void kxi2019 main(){
     int j = -3;
     int i = -5;
-    int a[];
-    int k[];
-    Cat x;
-    x.g(x.f(1 + x.j + 7), a[j + x.j], x.a < x.b(x.f(x.j)), k[i+j]);
+    int y = j + i;
+    cout << y;
 }

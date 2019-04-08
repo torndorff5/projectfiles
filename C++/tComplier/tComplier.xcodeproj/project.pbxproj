@@ -30,6 +30,7 @@
 		5291F44D21E65FA100D5572E /* vm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vm.h; sourceTree = "<group>"; };
 		5291F44E21E6602100D5572E /* test.kxi */ = {isa = PBXFileReference; lastKnownFileType = text; path = test.kxi; sourceTree = "<group>"; };
 		5291F44F21E667EE00D5572E /* tCompiler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tCompiler.cpp; sourceTree = "<group>"; };
+		52BFE348225BBAB9004600D8 /* test1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = test1.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +68,7 @@
 				5291F44D21E65FA100D5572E /* vm.h */,
 				5291F44C21E65F9700D5572E /* assembler.h */,
 				5291F44E21E6602100D5572E /* test.kxi */,
+				52BFE348225BBAB9004600D8 /* test1.txt */,
 			);
 			path = tComplier;
 			sourceTree = "<group>";

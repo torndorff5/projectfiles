@@ -25,7 +25,7 @@ O .BYT 'O'
 D .BYT 'D'
 F .BYT 'F'
 COM .BYT ','
-SPACE .BYT 32
+SACE .BYT 32
 NL .BYT 10
 START   LDB R3, O       ;the start of the program
         TRP 3           ; load my last name and print
@@ -44,7 +44,7 @@ START   LDB R3, O       ;the start of the program
         TRP 3
         LDB R3, COM
         TRP 3
-        LDB R3, SPACE
+        LDB R3, SACE
         TRP 3
         LDB R3, T       ; load my first name and print
         TRP 3
@@ -64,28 +64,28 @@ START   LDB R3, O       ;the start of the program
         ADD R1, R2
         MOV R3, R1
         TRP 1
-        LDB R3, SPACE
+        LDB R3, SACE
         TRP 3
         TRP 3
         LDR R2, B3
         ADD R1, R2
         MOV R3, R1
         TRP 1
-        LDB R3, SPACE
+        LDB R3, SACE
         TRP 3
         TRP 3
         LDR R2, B4
         ADD R1, R2
         MOV R3, R1
         TRP 1
-        LDB R3, SPACE
+        LDB R3, SACE
         TRP 3
         TRP 3
         LDR R2, B5
         ADD R1, R2
         MOV R3, R1
         TRP 1
-        LDB R3, SPACE
+        LDB R3, SACE
         TRP 3
         TRP 3
         LDR R2, B6
@@ -100,28 +100,28 @@ START   LDB R3, O       ;the start of the program
         MUL R1, R2
         MOV R3, R1
         TRP 1
-        LDB R3, SPACE
+        LDB R3, SACE
         TRP 3
         TRP 3
         LDR R2, A3
         MUL R1, R2
         MOV R3, R1
         TRP 1
-        LDB R3, SPACE
+        LDB R3, SACE
         TRP 3
         TRP 3
         LDR R2, A4
         MUL R1, R2
         MOV R3, R1
         TRP 1
-        LDB R3, SPACE
+        LDB R3, SACE
         TRP 3
         TRP 3
         LDR R2, A5
         MUL R1, R2
         MOV R3, R1
         TRP 1
-        LDB R3, SPACE
+        LDB R3, SACE
         TRP 3
         TRP 3
         LDR R2, A6
@@ -136,7 +136,7 @@ START   LDB R3, O       ;the start of the program
         DIV R1, R2
         MOV R3, R1
         TRP 1
-        LDB R3 SPACE
+        LDB R3 SACE
         TRP 3
         TRP 3
         LDR R1, BRESULT
@@ -144,7 +144,7 @@ START   LDB R3, O       ;the start of the program
         DIV R1, R2
         MOV R3, R1
         TRP 1
-        LDB R3 SPACE
+        LDB R3 SACE
         TRP 3
         TRP 3
         LDR R1, BRESULT
@@ -152,7 +152,7 @@ START   LDB R3, O       ;the start of the program
         DIV R1, R2
         MOV R3, R1
         TRP 1
-        LDB R3 SPACE
+        LDB R3 SACE
         TRP 3
         TRP 3
         LDR R1, BRESULT
@@ -160,7 +160,7 @@ START   LDB R3, O       ;the start of the program
         DIV R1, R2
         MOV R3, R1
         TRP 1
-        LDB R3, SPACE
+        LDB R3, SACE
         TRP 3
         TRP 3
         LDR R1, BRESULT
@@ -168,7 +168,7 @@ START   LDB R3, O       ;the start of the program
         DIV R1, R2
         MOV R3, R1
         TRP 1
-        LDB R3, SPACE
+        LDB R3, SACE
         TRP 3
         TRP 3
         LDR R1, BRESULT
@@ -176,7 +176,7 @@ START   LDB R3, O       ;the start of the program
         DIV R1, R2
         MOV R3, R1
         TRP 1
-        LDB R3, SPACE
+        LDB R3, SACE
         TRP 3
         TRP 3
         LDB R3, NL
@@ -186,7 +186,7 @@ START   LDB R3, O       ;the start of the program
         SUB R1, R2
         MOV R3, R1
         TRP 1
-        LDB R3, SPACE
+        LDB R3, SACE
         TRP 3
         TRP 3
         LDR R1, ARESULT
@@ -194,7 +194,7 @@ START   LDB R3, O       ;the start of the program
         SUB R1, R2
         MOV R3, R1
         TRP 1
-        LDB R3, SPACE
+        LDB R3, SACE
         TRP 3
         TRP 3
         LDR R1, ARESULT
@@ -202,7 +202,7 @@ START   LDB R3, O       ;the start of the program
         SUB R1, R2
         MOV R3, R1
         TRP 1
-        LDB R3, SPACE
+        LDB R3, SACE
         TRP 3
         TRP 3
         LDR R1, ARESULT
@@ -210,7 +210,7 @@ START   LDB R3, O       ;the start of the program
         SUB R1, R2
         MOV R3, R1
         TRP 1
-        LDB R3, SPACE
+        LDB R3, SACE
         TRP 3
         TRP 3
         LDB R3, NL

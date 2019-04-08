@@ -261,26 +261,27 @@ public:
         }
         void printST(){
             for(auto s:symtab){
-                cout << "Symid: " << s.second.symid << endl;
-                /*
+                /*cout << "Symid: " << s.second.symid << endl;
+                
                 cout << "Scope: " << s.second.scope << endl;
                 cout << "Kind: " << s.second.kind << endl;
-                 */
+                 
                 cout << "Value: " << s.second.value << endl;
                 cout << "\tType: " << s.second.data.type << endl;
-                /*
+                
                 cout << "\tAccessMod: " << s.second.data.accessMod << endl;
                 cout << "\tParam: ";
-                 */
+                 
                 cout << "Size: " << s.second.size << endl;
                 /*for(auto p: s.second.data.param){
                     cout << p << " ";
                 }
-                 */
+                 
                 cout << endl;
-                /*
+                
                 cout << "\tSize: " << s.second.data.size << endl;
-                cout << endl;*/
+                cout << endl;
+                */
             }
         }
         int removeDup(){
@@ -2231,6 +2232,28 @@ public:
         else
             genSynError(c, "valid type or class name");
     }
+    //tCode ****************************************************************************************************************************************
+    void declareVar(){
+        //goes through symbol table and declares all the variables
+        for(auto s: st->symtab){
+            if(s.second.data.type == INT){
+                if(s.second.kind == LVAR){
+                    workoign on initializing all the lvars and ivars and lits for the target code 
+                }
+                else if(s.second.kind == LITERAL){
+                    
+                }
+            }
+            else if(s.second.data.type == CHAR){
+                
+            }
+            else if(s.second.data.type == BOOL){
+                
+            }
+        }
+    }
+    
+    
     void passOne(std::string filename){
         //Lexical Analysis
         in.open(filename, ios::in);
@@ -2248,14 +2271,14 @@ public:
             if(curr.type != eof)
                 genSynError(curr, "EOF");
             st->removeDup();
-            st->printST();
+            //st->printST();
             in.close();
         }
         else{
             cout << "Error opening file." << endl;
         }
     }
-    //Semantic Pass
+    //Semantic Pass,iCode, and tCode 
     void passTwo(std::string filename){
         in.open(filename,ios::in);
         if(in.is_open()){
@@ -2280,6 +2303,26 @@ public:
         else{
             cout << "Error opening file." << endl;
         }
-        
+    }
+    
+    //iCode and tCode pass
+    void passThree(string filename){
+        in.close();
+        in.open(filename, ios::in);
+        if(in.is_open()){
+            std::getline(in,buffer);//read in first line
+            line_number = 1;
+            updateNext(one,two);//sets the first token read in to token "two"
+            nextToken(one, two);//gets the next token and puts it in "two", sets one to two
+            lexicalAnalysis(one, two);//repeats process to get the first whole token
+            next = one;//saves first whole token to next
+            getNextToken();//sets curr to next, gets next whole token
+            //set all declared to zero
+            declareVar();
+            
+        }
+        else
+            cout << "ICODE read error." << endl;
+           
     }
 };
