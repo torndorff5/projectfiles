@@ -59,42 +59,42 @@ class compiler {
     //ICODE DATA********************************************************************************************************************
     fstream icode;
     string icodeFile = "icode.txt";
-    const string DOTINT = ".INT ";
-    const string DOTBYT = ".BYT ";
-    const string ADD = "ADD ";
-    const string MUL = "MUL ";
-    const string SUB = "SUB ";
-    const string DIV = "DIV ";
-    const string LT = "LT ";
-    const string GT = "GT ";
-    const string NE = "NE ";
-    const string EQ = "EQ ";
-    const string LE = "LE ";
-    const string GE = "GE ";
-    const string AND = "AND ";
-    const string OR = "OR ";
-    const string MOV = "MOV ";
-    const string JMP = "JMP ";
-    const string iFUNC = "FUNC ";
-    const string NEWI = "NEWI ";
-    const string FRAME = "FRAME ";
-    const string CALL = "CALL ";
-    const string PUSH = "PUSH ";
-    const string PEEK = "PEEK ";
-    const string RETURN = "RETURN ";
-    const string RTN = "RTN ";
-    const string WRITE = "WRITE ";
-    const string READ = "READ ";
-    const string iREF = "REF ";
-    const string AEF = "AEF ";
-    const string BF = "BF ";
-    const string NEW = "NEW ";
+    const string DOTINT = ".INT";
+    const string DOTBYT = ".BYT";
+    const string ADD = "ADD";
+    const string MUL = "MUL";
+    const string SUB = "SUB";
+    const string DIV = "DIV";
+    const string LT = "LT";
+    const string GT = "GT";
+    const string NE = "NE";
+    const string EQ = "EQ";
+    const string LE = "LE";
+    const string GE = "GE";
+    const string AND = "AND";
+    const string OR = "OR";
+    const string MOV = "MOV";
+    const string JMP = "JMP";
+    const string iFUNC = "FUNC";
+    const string NEWI = "NEWI";
+    const string FRAME = "FRAME";
+    const string CALL = "CALL";
+    const string PUSH = "PUSH";
+    const string PEEK = "PEEK";
+    const string RETURN = "RETURN";
+    const string RTN = "RTN";
+    const string WRITE = "WRITE";
+    const string READ = "READ";
+    const string iREF = "REF";
+    const string AEF = "AEF";
+    const string BF = "BF";
+    const string NEW = "NEW";
     const string SKIPIF = "SKIPIF";
     const string ELSE = "else";
     const string SKIPELSE = "SKIPELSE";
     const string BEGIN = "BEGIN";
     const string ENDWHILE = "ENDWHILE";
-    const string COMMA = ", ";
+    const string COMMA = ",";
     const string IO_ONE = "1";
     const string IO_TWO = "2";
     const string IO_POINT_SIZE = "POINT_SIZE";
@@ -106,6 +106,30 @@ class compiler {
     const string VARIABLE_ERROR = "Variable ";
     const string ARRAY_ERROR = "Array ";
     const string NOT_DEFINED = " not defined";
+    //tcode data ********************************************************************************************************************
+    fstream tcode;
+    string tcodeFile = "tcode.txt";
+    const string xINT = ".INT";
+    const string xBYT = ".BYT";
+    const string MAIN = "MAIN";
+    const int REG_SIZE = 14;
+    const string REG_0 = "R0";
+    const string REG_1 = "R1";
+    const string OUT_REG = "R3";
+    const string F = "FALSE";
+    const string T = "TRUE";
+    vector<string> registers[14];
+    const string TRP_INT = "1";
+    const string TRP_BYT = "3";
+    const string LDR = "LDR";
+    const string LDB = "LDB";
+    const string STR = "STR";
+    const string CMP = "CMP";
+    const string BRZ = "BRZ";
+    const string BNZ = "BNZ";
+    const string BLT = "BLT";
+    const string BGT = "BGT";
+    const string TRP = "TRP";
 public:
     compiler(){
         syntax = false;
@@ -180,6 +204,9 @@ public:
         //generate symid
         //takes a char and adds the symbol counter to it to create a unique symbol id
         string genSymID(char c){
+            if(c=='-'||c=='+'||c=='\''){
+                c = 'l';
+            }
             string s = "";
             s+=c;
             s+=(to_string(count++));
@@ -273,7 +300,7 @@ public:
                 cout << "\tParam: ";
                  
                 cout << "Size: " << s.second.size << endl;
-                /*for(auto p: s.second.data.param){
+                 for(auto p: s.second.data.param){
                     cout << p << " ";
                 }
                  
@@ -569,19 +596,19 @@ public:
     }
     //iCODE FUNCTIONS **************************************************************************************************************************
     void iCodeGen(string operation, string a_symid, string b_symid, string c_symid){
-        icode << "\t" << operation << a_symid << COMMA << b_symid << COMMA << c_symid << "\n";
+        icode << "\t" << operation + " " << a_symid << COMMA + " " << b_symid << COMMA + " "<< c_symid << "\n";
     }
     void iCodeGen(string operation, string a_symid, string b_symid){
-        icode << "\t" << operation << a_symid << COMMA << b_symid << "\n";
+        icode << "\t" << operation + " " << a_symid << COMMA + " " << b_symid << "\n";
     }
     void iCodeGen(string operation, string label){
-        icode << "\t" << operation << label << "\n";
+        icode << "\t" << operation + " " << label << "\n";
     }
     void iCodeGen(string label){
-        icode << "\n" << label << ":";
+        icode << "\n" << label << "    ";
     }
     string genLabel(string start){
-        string label = start + to_string(label_count++);
+        string label = start + to_string(st->count++);
         return label;
     }
     string pop_label_stack(){
@@ -2233,23 +2260,227 @@ public:
             genSynError(c, "valid type or class name");
     }
     //tCode ****************************************************************************************************************************************
+    void tCodeDeclare(string id, string type){
+        if(type == INT){
+            tcode << id + " " << xINT + " " << 0 << '\n';
+        }
+        else if(type == CHAR){
+            int c = int('a');
+            tcode << id + " " << xBYT + " " << c << '\n';
+        }
+    }
+    void tCodeDeclare(string id, string type, string value){
+        if(type == INT){
+            tcode << id + " " << xINT + " " << value << '\n';
+        }
+        else if(type == CHAR){
+            tcode << id + " " << xBYT + " " << value << '\n';
+        }
+    }
+    void tCodeGen(string operation, string a_symid, string b_symid, string c_symid){
+        tcode << operation + " " << a_symid << COMMA + " " << b_symid << COMMA + " "<< c_symid << "\n";
+    }
+    void tCodeGen(string operation, string a_symid, string b_symid){
+        tcode << operation + " " << a_symid << COMMA + " " << b_symid << "\n";
+    }
+    void tCodeGen(string operation, string label){
+        tcode << operation + " " << label << "\n";
+    }
+    void tCodeGen(string label){
+        tcode << label << "    ";
+    }
+    string getOP(string op){
+        if(op == EQ)
+            op = BRZ;
+        else if (op == LT || op == LE)
+            op = BLT;
+        else if (op == GT || op == GE)
+            op = BGT;
+        else if (op == NE)
+            op = BNZ;
+        return op;
+    }
+    int getIndex(string reg){
+        size_t pos = 1;
+        reg = reg.erase(0,pos);
+        int index = stoi(reg);
+        return index;
+    }
+    string getRegister(){
+        string reg = "R";
+        for(int i = 2; i < REG_SIZE; i++){
+            if(registers[i].empty()){
+                reg += to_string(i);
+                return reg;
+            }
+        }
+        return reg;
+    }
+    void setRegister(string reg,string symid){
+        int index = getIndex(reg);
+        registers[index].push_back(symid);
+    }
+    void clearRegister(string reg){
+        int index = getIndex(reg);
+        registers[index].clear();
+    }
     void declareVar(){
         //goes through symbol table and declares all the variables
         for(auto s: st->symtab){
-            if(s.second.data.type == INT){
-                if(s.second.kind == LVAR){
-                    workoign on initializing all the lvars and ivars and lits for the target code 
+            if(s.second.kind == LVAR || s.second.kind == IVAR || s.second.kind == INT + LITERAL || s.second.kind == CHAR + LITERAL){
+                tCodeDeclare(s.second.symid,s.second.data.type);
+            }
+            else if(s.second.kind == LITERAL){
+                if(s.second.data.type == CHAR){
+                    string temp = s.second.value;
+                    size_t pos = 0;
+                    pos = temp.find_last_of('\'');
+                    temp.erase(pos,temp.length());
+                    temp.erase(0,1);
+                    char t;
+                    if(temp == "\\n")
+                        t ='\n';
+                    else
+                        t = temp.at(0);
+                    int c = int(t);
+                    temp = to_string(c);
+                    tCodeDeclare(s.second.symid,s.second.data.type,temp);
                 }
-                else if(s.second.kind == LITERAL){
-                    
+                else
+                    tCodeDeclare(s.second.symid,s.second.data.type,s.second.value);
+            }
+        }
+        tCodeDeclare(T, INT, "1");
+        tCodeDeclare(F, INT, "0");
+    }
+    
+    void tcode_unit(){
+        string rega;
+        string regb;
+        string regc;
+        tCodeGen(MAIN);
+        tCodeGen(LDR, REG_0, F);
+        tCodeGen(LDR, REG_1, T);
+        while(curr.type != eof){
+            if(curr.lexeme == MOV){
+                getNextToken();//MOV a , b
+                rega = getRegister();
+                tCodeGen(LDR, rega, curr.lexeme);
+                getNextToken();//skip comma
+                getNextToken();
+                tCodeGen(STR, rega, curr.lexeme);
+            }
+            else if (curr.lexeme == ADD || curr.lexeme == SUB || curr.lexeme == MUL || curr.lexeme == DIV){
+                string op = curr.lexeme;
+                getNextToken();//ADD a , b , c
+                rega = getRegister();
+                tCodeGen(LDR, rega, curr.lexeme);
+                setRegister(rega, curr.lexeme);
+                getNextToken();
+                getNextToken();
+                regb=getRegister();
+                tCodeGen(LDR, regb, curr.lexeme);
+                setRegister(regb, curr.lexeme);
+                tCodeGen(op, rega, regb);
+                getNextToken();
+                getNextToken();
+                tCodeGen(STR, rega, curr.lexeme);
+                clearRegister(regb);
+                clearRegister(rega);
+            }
+            else if (curr.lexeme == EQ || curr.lexeme == NE || curr.lexeme == LT || curr.lexeme == GT){
+                string op = curr.lexeme;
+                getNextToken();//eq a , b , c
+                rega = getRegister();
+                setRegister(rega, curr.lexeme);
+                tCodeGen(LDR, rega, curr.lexeme);
+                getNextToken();
+                getNextToken();
+                regb = getRegister();
+                setRegister(regb, curr.lexeme);
+                tCodeGen(LDR, regb, curr.lexeme);
+                tCodeGen(CMP, rega, regb);
+                string l1 = genLabel("l");
+                string l2 = genLabel("l");
+                op = getOP(op);
+                tCodeGen(op, rega, l1);
+                tCodeGen(MOV, rega, REG_0);
+                tCodeGen(JMP, l2);
+                tCodeGen(l1);
+                tCodeGen(MOV, rega, REG_1);
+                tCodeGen(l2);
+                getNextToken();
+                getNextToken();
+                tCodeGen(STR, rega, curr.lexeme);
+                clearRegister(rega);
+                clearRegister(regb);
+            }
+            else if(curr.lexeme == GE || curr.lexeme == LE){
+                string op = curr.lexeme;
+                getNextToken();//GE a , b , c
+                rega = getRegister();
+                string a = curr.lexeme;
+                setRegister(rega, a);
+                tCodeGen(LDR, rega, a);
+                getNextToken();
+                getNextToken();
+                regb = getRegister();
+                string b = curr.lexeme;
+                setRegister(regb, b);
+                tCodeGen(LDR, regb, b);
+                tCodeGen(CMP, rega, regb);
+                string l1 = genLabel("l");
+                string l2 = genLabel("l");keep going with the examples for the target code
+                op = getOP(op);
+                tCodeGen(op, rega, l1);
+                tCodeGen(LDR, rega, a);
+                tCodeGen(CMP, rega, regb);
+                tCodeGen(BRZ, rega, l1);
+                tCodeGen(MOV, rega, REG_0);
+                tCodeGen(JMP, l2);
+                tCodeGen(l1);
+                tCodeGen(MOV, rega, REG_1);
+                tCodeGen(l2);
+                getNextToken();
+                getNextToken();
+                tCodeGen(STR, rega, curr.lexeme);
+                clearRegister(rega);
+                clearRegister(regb);
+            }
+            else if (curr.lexeme == BF){
+                getNextToken();//bf a , label
+                rega = getRegister();
+                setRegister(rega, curr.lexeme);
+                tCodeGen(LDR, rega, curr.lexeme);
+                getNextToken();
+                getNextToken();
+                tCodeGen(BRZ, rega, curr.lexeme);
+                clearRegister(rega);
+            }
+            else if (curr.lexeme == JMP){
+                getNextToken();
+                tCodeGen(JMP, curr.lexeme);
+            }
+            else if (curr.lexeme == WRITE){
+                getNextToken();//WRITE i, a
+                string i = curr.lexeme;
+                getNextToken();
+                getNextToken();
+                if(i == IO_ONE){
+                    tCodeGen(LDR, OUT_REG, curr.lexeme);
+                    tCodeGen(TRP, TRP_INT);
+                }
+                else{
+                    tCodeGen(LDB, OUT_REG, curr.lexeme);
+                    tCodeGen(TRP, TRP_BYT);
                 }
             }
-            else if(s.second.data.type == CHAR){
-                
+            else{
+                tCodeGen(curr.lexeme);//label
             }
-            else if(s.second.data.type == BOOL){
-                
-            }
+            getNextToken();
+            if(curr.type == eof)//double check that it is the end of the file. 
+                getNextToken();
         }
     }
     
@@ -2306,7 +2537,7 @@ public:
     }
     
     //iCode and tCode pass
-    void passThree(string filename){
+    string passThree(string filename){
         in.close();
         in.open(filename, ios::in);
         if(in.is_open()){
@@ -2318,11 +2549,14 @@ public:
             next = one;//saves first whole token to next
             getNextToken();//sets curr to next, gets next whole token
             //set all declared to zero
+            tcode.open(tcodeFile,ios::in|ios::out|ios::trunc);
             declareVar();
-            
+            tcode_unit();
+            tcode.close();
+            in.close();
         }
         else
             cout << "ICODE read error." << endl;
-           
+        return tcodeFile;
     }
 };

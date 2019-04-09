@@ -1,6 +1,20 @@
 void kxi2019 main(){
-    int j = -3;
-    int i = -5;
-    int y = j + i;
-    cout << y;
+int x = -12;
+int y = -11;
+char nl = '\n';
+int z = 0;
+if(y >= x){
+    if(3 == 4){
+        cout << nl;
+    }
+    else{
+        cout << 55;
+    }
+    cout << nl;
+}
+else{
+z = y + x;
+cout << z;
+cout << nl;
+}
 }

@@ -153,18 +153,19 @@ struct assembler {
         stringstream iss;
         string line;
         string temp;
+        string temp2;
         char c;
         
         while(getline(check,line)){
             iss << line;
             while(getline(iss,temp, ' ')){
-                if (temp == "")
-                    continue;
-                c = temp.at(0);
-                if (c != '#' && c != ';')
-                    tokens.push_back(temp);
-                else
-                    break;//discard whole line
+                    if (temp == "")
+                        continue;
+                    c = temp.at(0);
+                    if (c != '#' && c != ';')
+                        tokens.push_back(temp);
+                    else
+                        break;//discard whole line
             }
             iss.str(std::string());
             iss.clear();
