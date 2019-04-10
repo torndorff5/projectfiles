@@ -21,8 +21,8 @@
 using namespace std;
 
 //GLOBAL VARIABLES AND CONSTANTS
-const vector<string> OPS = {"JMP","JMR","BNZ","BGT","BLT","BRZ","MOV","LDA","STR","LDR","STB","LDB","ADD","ADI","SUB","MUL","DIV","CMP","TRP","STR1","LDR1","STB1","LDB1"};
-const vector<int> OPS_VALUE = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,20,21,22,23,24,25};//corresponds with OPS
+const vector<string> OPS = {"JMP","JMR","BNZ","BGT","BLT","BRZ","MOV","LDA","STR","LDR","STB","LDB","ADD","ADI","SUB","MUL","DIV","CMP","TRP","STR1","LDR1","STB1","LDB1","AND","OR"};
+const vector<int> OPS_VALUE = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,20,21,22,23,24,25,26,27};//corresponds with OPS
 const vector<string> DIR = {".INT",".BYT"};
 const int JMP = 1;
 const int JMR = 2;
@@ -47,6 +47,8 @@ const int STR1 = 22;
 const int LDR1 = 23;
 const int STB1 = 24;
 const int LDB1 = 25;
+const int AND = 26;
+const int OR = 27;
 const int LABEL = 30; // LABEL CODE
 const int APO = 39;//apostraphe char
 const int SL = 9;

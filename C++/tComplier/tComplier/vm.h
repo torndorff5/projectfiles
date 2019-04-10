@@ -69,13 +69,6 @@ struct vm {
                     //get trap code
                     data = fetch(pc);
                     switch (data){
-                        case 5:
-                            int inp;
-                            cin >> inp;
-                            reg[3] = inp;
-                            vincrement();
-                            vincrement();
-                            break;
                         case 4:
                             char input;
                             cin.get(input);
@@ -87,6 +80,13 @@ struct vm {
                             //print byte from contents of r3
                             byt = reg[3];
                             cout << byt;
+                            vincrement();
+                            vincrement();
+                            break;
+                        case 2:
+                            int inp;
+                            cin >> inp;
+                            reg[3] = inp;
                             vincrement();
                             vincrement();
                             break;
@@ -179,7 +179,6 @@ struct vm {
                     data = fetch(pc);//get address of label
                     vincrement();
                     storeChar(data, reg[ri]);
-                    
                     break;
                 case STB1:
                     vincrement();
@@ -189,7 +188,6 @@ struct vm {
                     vincrement();
                     data = reg[data];//get address in dst reg
                     storeChar(data, reg[ri]);//store byte at address
-                    
                     break;
                 case STR:
                     vincrement();
@@ -309,6 +307,32 @@ struct vm {
                         pc = data;
                     else
                         vincrement();
+                    break;
+                case AND:
+                    vincrement();
+                        //fetch two values
+                    data = fetch(pc);
+                    vincrement();
+                    ri = fetch(pc);
+                    vincrement();
+                    if(reg[ri] == 1 && reg[data] == 1){
+                        reg[data] = 1;
+                    }
+                    else
+                        reg[data] = 0;
+                    break;
+                case OR:
+                    vincrement();
+                        //fetch two values
+                    data = fetch(pc);
+                    vincrement();
+                    ri = fetch(pc);
+                    vincrement();
+                    if(reg[ri] == 1 || reg[data] == 1){
+                        reg[data] = 1;
+                    }
+                    else
+                        reg[data] = 0;
                     break;
             }
             //execute

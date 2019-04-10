@@ -25,7 +25,7 @@ static bool syntax;
 
 class compiler {
     //Class Level Variables****************************************************************************************************************************
-    string scope;
+    string scope; about to implement arrays,functions,and classes
     const string IVAR = "ivar";
     const string LVAR = "lvar";
     const string LITERAL = "lit";
@@ -88,6 +88,7 @@ class compiler {
     const string iREF = "REF";
     const string AEF = "AEF";
     const string BF = "BF";
+    const string BT = "BT";
     const string NEW = "NEW";
     const string SKIPIF = "SKIPIF";
     const string ELSE = "else";
@@ -124,6 +125,7 @@ class compiler {
     const string LDR = "LDR";
     const string LDB = "LDB";
     const string STR = "STR";
+    const string STB = "STB";
     const string CMP = "CMP";
     const string BRZ = "BRZ";
     const string BNZ = "BNZ";
@@ -2261,7 +2263,7 @@ public:
     }
     //tCode ****************************************************************************************************************************************
     void tCodeDeclare(string id, string type){
-        if(type == INT){
+        if(type == INT || type == BOOL){
             tcode << id + " " << xINT + " " << 0 << '\n';
         }
         else if(type == CHAR){
@@ -2275,6 +2277,13 @@ public:
         }
         else if(type == CHAR){
             tcode << id + " " << xBYT + " " << value << '\n';
+        }
+        else if (type == BOOL){
+            if(value == "false")
+                value = "0";
+            else
+                value = "1";
+            tcode << id + " " << xINT << " " << value << '\n';
         }
     }
     void tCodeGen(string operation, string a_symid, string b_symid, string c_symid){
@@ -2309,6 +2318,8 @@ public:
     string getRegister(){
         string reg = "R";
         for(int i = 2; i < REG_SIZE; i++){
+            if(i == 3)
+                continue;
             if(registers[i].empty()){
                 reg += to_string(i);
                 return reg;
@@ -2327,7 +2338,7 @@ public:
     void declareVar(){
         //goes through symbol table and declares all the variables
         for(auto s: st->symtab){
-            if(s.second.kind == LVAR || s.second.kind == IVAR || s.second.kind == INT + LITERAL || s.second.kind == CHAR + LITERAL){
+            if(s.second.kind == LVAR || s.second.kind == IVAR || s.second.kind == INT + LITERAL || s.second.kind == CHAR + LITERAL || s.second.kind == BOOL + LITERAL){
                 tCodeDeclare(s.second.symid,s.second.data.type);
             }
             else if(s.second.kind == LITERAL){
@@ -2388,12 +2399,13 @@ public:
                 clearRegister(regb);
                 clearRegister(rega);
             }
-            else if (curr.lexeme == EQ || curr.lexeme == NE || curr.lexeme == LT || curr.lexeme == GT){
+            else if (curr.lexeme == EQ || curr.lexeme == NE || curr.lexeme == LT || curr.lexeme == GT || curr.lexeme == GE || curr.lexeme == LE){
                 string op = curr.lexeme;
                 getNextToken();//eq a , b , c
                 rega = getRegister();
-                setRegister(rega, curr.lexeme);
-                tCodeGen(LDR, rega, curr.lexeme);
+                string a = curr.lexeme;
+                setRegister(rega, a);
+                tCodeGen(LDR, rega, a);
                 getNextToken();
                 getNextToken();
                 regb = getRegister();
@@ -2404,6 +2416,11 @@ public:
                 string l2 = genLabel("l");
                 op = getOP(op);
                 tCodeGen(op, rega, l1);
+                if(op == GE || op == LE){
+                    tCodeGen(LDR, rega, a);
+                    tCodeGen(CMP, rega, regb);
+                    tCodeGen(BRZ, rega, l1);
+                }
                 tCodeGen(MOV, rega, REG_0);
                 tCodeGen(JMP, l2);
                 tCodeGen(l1);
@@ -2415,64 +2432,69 @@ public:
                 clearRegister(rega);
                 clearRegister(regb);
             }
-            else if(curr.lexeme == GE || curr.lexeme == LE){
+            else if (curr.lexeme == AND || curr.lexeme == OR){
                 string op = curr.lexeme;
-                getNextToken();//GE a , b , c
+                getNextToken();
                 rega = getRegister();
-                string a = curr.lexeme;
-                setRegister(rega, a);
-                tCodeGen(LDR, rega, a);
+                setRegister(rega, curr.lexeme);
+                tCodeGen(LDR, rega, curr.lexeme);
                 getNextToken();
                 getNextToken();
                 regb = getRegister();
-                string b = curr.lexeme;
-                setRegister(regb, b);
-                tCodeGen(LDR, regb, b);
-                tCodeGen(CMP, rega, regb);
-                string l1 = genLabel("l");
-                string l2 = genLabel("l");keep going with the examples for the target code
-                op = getOP(op);
-                tCodeGen(op, rega, l1);
-                tCodeGen(LDR, rega, a);
-                tCodeGen(CMP, rega, regb);
-                tCodeGen(BRZ, rega, l1);
-                tCodeGen(MOV, rega, REG_0);
-                tCodeGen(JMP, l2);
-                tCodeGen(l1);
-                tCodeGen(MOV, rega, REG_1);
-                tCodeGen(l2);
+                setRegister(regb, curr.lexeme);
+                tCodeGen(LDR, regb, curr.lexeme);
+                tCodeGen(op, rega, regb);
                 getNextToken();
                 getNextToken();
                 tCodeGen(STR, rega, curr.lexeme);
                 clearRegister(rega);
                 clearRegister(regb);
             }
-            else if (curr.lexeme == BF){
+            else if (curr.lexeme == BF || curr.lexeme == BT){
+                string op = curr.lexeme;
                 getNextToken();//bf a , label
                 rega = getRegister();
                 setRegister(rega, curr.lexeme);
                 tCodeGen(LDR, rega, curr.lexeme);
                 getNextToken();
                 getNextToken();
-                tCodeGen(BRZ, rega, curr.lexeme);
+                if(op == BF)
+                    op = BRZ;
+                else
+                    op = BNZ;
+                tCodeGen(op, rega, curr.lexeme);
                 clearRegister(rega);
             }
             else if (curr.lexeme == JMP){
                 getNextToken();
                 tCodeGen(JMP, curr.lexeme);
             }
-            else if (curr.lexeme == WRITE){
+            else if (curr.lexeme == WRITE || curr.lexeme == READ){
+                string op = curr.lexeme;
                 getNextToken();//WRITE i, a
                 string i = curr.lexeme;
                 getNextToken();
                 getNextToken();
+                string trp;
                 if(i == IO_ONE){
                     tCodeGen(LDR, OUT_REG, curr.lexeme);
-                    tCodeGen(TRP, TRP_INT);
+                    if(op == WRITE)
+                        trp = TRP_INT;
+                    else
+                        trp = "2";
+                    tCodeGen(TRP, trp);
+                    if(op == READ)
+                        tCodeGen(STR, OUT_REG, curr.lexeme);
                 }
                 else{
                     tCodeGen(LDB, OUT_REG, curr.lexeme);
-                    tCodeGen(TRP, TRP_BYT);
+                    if(op == WRITE)
+                        trp = TRP_BYT;
+                    else
+                        trp = "4";
+                    tCodeGen(TRP, trp);
+                    if(op == READ)
+                        tCodeGen(STB, OUT_REG, curr.lexeme);
                 }
             }
             else{

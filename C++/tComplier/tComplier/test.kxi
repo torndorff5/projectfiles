@@ -1,20 +1,9 @@
 void kxi2019 main(){
-int x = -12;
-int y = -11;
-char nl = '\n';
-int z = 0;
-if(y >= x){
-    if(3 == 4){
-        cout << nl;
-    }
-    else{
-        cout << 55;
-    }
-    cout << nl;
-}
-else{
-z = y + x;
-cout << z;
-cout << nl;
+    int x = 1;
+    int y = 100000000;
+    while (x <= y){
+        cout << x;
+        cout << '\n';
+        x = x * 2;
 }
 }
