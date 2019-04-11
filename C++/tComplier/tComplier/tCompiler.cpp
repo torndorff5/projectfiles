@@ -25,7 +25,7 @@ static bool syntax;
 
 class compiler {
     //Class Level Variables****************************************************************************************************************************
-    string scope; about to implement arrays,functions,and classes
+    string scope;
     const string IVAR = "ivar";
     const string LVAR = "lvar";
     const string LITERAL = "lit";
@@ -122,16 +122,27 @@ class compiler {
     vector<string> registers[14];
     const string TRP_INT = "1";
     const string TRP_BYT = "3";
-    const string LDR = "LDR";
-    const string LDB = "LDB";
-    const string STR = "STR";
-    const string STB = "STB";
-    const string CMP = "CMP";
-    const string BRZ = "BRZ";
+    const string JMR = "JMR";
     const string BNZ = "BNZ";
-    const string BLT = "BLT";
     const string BGT = "BGT";
+    const string BLT = "BLT";
+    const string BRZ = "BRZ";
+    const string LDA = "LDA";
+    const string STR = "STR";
+    const string LDR = "LDR";
+    const string STB = "STB";
+    const string LDB = "LDB";
+    const string ADI = "ADI";
+    const string CMP = "CMP";
     const string TRP = "TRP";
+    const string SL = "SL";
+    const string SP = "SP";
+    const string FP = "FP";
+    const string SB = "SB";
+    const string PC = "PC";
+    const string OVERFLOW = "OVERFLOW";
+    const string UNDERFLOW = "UNDERFLOW";
+    const int DEFAULT_FRAME_SIZE = -8;
 public:
     compiler(){
         syntax = false;
@@ -2496,6 +2507,78 @@ public:
                     if(op == READ)
                         tCodeGen(STB, OUT_REG, curr.lexeme);
                 }
+            }
+            else if (curr.lexeme == FRAME){
+                //FRAME F, X
+                getNextToken();
+                //Test for overflow (SP < SL) using the space needed for the Frame
+                rega = getRegister();
+                setRegister(rega, SP);
+                tCodeGen(MOV, rega, SP);
+                sym s = st->fetchSymbol(curr.lexeme);
+                tCodeGen(ADI, rega, "-"+to_string(s.size));
+                tCodeGen(CMP, rega, SL);
+                tCodeGen(BLT, rega, OVERFLOW);
+                clearRegister(rega);
+                //SaveoffcurrentFPinaRegister,thiswillbe the PFP
+                rega = getRegister();
+                setRegister(rega, FP);
+                tCodeGen(MOV, rega, FP);
+                //PointatCurrentActivationRecord(FP=SP)
+                tCodeGen(MOV, FP, SP);
+                //AdjustStackPointerforReturnAddress
+                tCodeGen(ADI, SP, "-"+to_string(SIZEINT));
+                    //Not Stored Yet (See CALL F)
+                    //StorePFPtoTopofStack
+                tCodeGen(STR, rega, SP);
+                //AdjustStackPointerforPFP
+                tCodeGen(ADI, SP, "-"+to_string(SIZEINT));
+                //StorethispointertoTopofStack
+                getNextToken();
+                getNextToken();
+                //thispointer storage code goes here ************
+                //AdjustStackPointerforthis
+                tCodeGen(ADI, SP, "-"+to_string(SIZEINT));
+                clearRegister(rega);
+                
+            }
+            else if (curr.lexeme == iFUNC){
+                getNextToken();
+                sym s = st->fetchSymbol(curr.lexeme);
+                tCodeGen(ADI, SP, "-"+to_string(s.size));
+            }
+            else if (curr.lexeme == CALL){
+                //CALL F
+                getNextToken();
+                rega = getRegister();
+                tCodeGen(MOV, rega, PC);
+                tCodeGen(ADI, rega, "36");
+                tCodeGen(STR, rega, FP);
+                tCodeGen(JMP, curr.lexeme);
+            }
+            else if (curr.lexeme == RETURN){
+                //RETURN A
+                getNextToken();
+                rega =getRegister();
+                setRegister(rega, FP);
+                regb = getRegister();
+                setRegister(regb, SP);
+                tCodeGen(LDR, rega, FP);
+                tCodeGen(MOV, SP, FP);
+                tCodeGen(MOV, regb, SP);
+                tCodeGen(CMP, regb, SB);
+                tCodeGen(BLT, regb, UNDERFLOW);
+                tCodeGen(MOV, regb, FP);
+                tCodeGen(ADI, regb, "-"+to_string(SIZEINT));
+                regc = getRegister();
+                setRegister(regc, FP);
+                tCodeGen(LDR, regc, regb);
+                tCodeGen(MOV, FP, regc);
+                clearRegister(regb);
+                regb=getRegister();
+                tCodeGen(LDR, regb, curr.lexeme);
+                tCodeGen(STR, regb, SP);
+                tCodeGen(JMR, rega);need to test this code!!!!!
             }
             else{
                 tCodeGen(curr.lexeme);//label
