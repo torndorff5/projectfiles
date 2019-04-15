@@ -142,7 +142,7 @@ class compiler {
     const string PC = "PC";
     const string OVERFLOW = "OVERFLOW";
     const string UNDERFLOW = "UNDERFLOW";
-    const int DEFAULT_FRAME_SIZE = -8;
+    const int DEFAULT_FRAME_SIZE = -12;
 public:
     compiler(){
         syntax = false;
@@ -748,7 +748,10 @@ public:
             iCodeGen(PUSH, s);
         }
         iCodeGen(CALL, symid);
-        iCodeGen(PEEK, top_sar.value);
+        sym f = st->fetchSymbol(symid);
+        if(f.data.type!=VOID){
+            iCodeGen(PEEK, top_sar.value);
+        }
     }
     //Semantic Functions******************************************************************************************************************
     //precedence
@@ -1129,6 +1132,7 @@ public:
         }
         else{
             exp.data.type = VOID;
+            sar.ln = line_number;
         }
         //get current function with scope
         string name = pop_tail_scope(scope);
@@ -1636,6 +1640,8 @@ public:
         if(c.type != parenthc)
             genSynError(c, ")");
         getNextToken();
+        if(semantic)
+            iCodeGen(MAIN);
         method_body(c, n);
         pop_scope(scope);
     }
@@ -2380,9 +2386,9 @@ public:
         string rega;
         string regb;
         string regc;
-        tCodeGen(MAIN);
         tCodeGen(LDR, REG_0, F);
         tCodeGen(LDR, REG_1, T);
+        tCodeGen(JMP, MAIN);
         while(curr.type != eof){
             if(curr.lexeme == MOV){
                 getNextToken();//MOV a , b
@@ -2459,7 +2465,7 @@ public:
                 getNextToken();
                 tCodeGen(STR, rega, curr.lexeme);
                 clearRegister(rega);
-                clearRegister(regb);
+                clearRegister(regb);continue implementing functions into compiler!!
             }
             else if (curr.lexeme == BF || curr.lexeme == BT){
                 string op = curr.lexeme;
@@ -2545,7 +2551,7 @@ public:
             else if (curr.lexeme == iFUNC){
                 getNextToken();
                 sym s = st->fetchSymbol(curr.lexeme);
-                tCodeGen(ADI, SP, "-"+to_string(s.size));
+                tCodeGen(ADI, SP, "-"+to_string(s.size-DEFAULT_FUNC_SIZE));
             }
             else if (curr.lexeme == CALL){
                 //CALL F
@@ -2556,9 +2562,8 @@ public:
                 tCodeGen(STR, rega, FP);
                 tCodeGen(JMP, curr.lexeme);
             }
-            else if (curr.lexeme == RETURN){
+            else if (curr.lexeme == RETURN || curr.lexeme == RTN){
                 //RETURN A
-                getNextToken();
                 rega =getRegister();
                 setRegister(rega, FP);
                 regb = getRegister();
@@ -2574,11 +2579,34 @@ public:
                 setRegister(regc, FP);
                 tCodeGen(LDR, regc, regb);
                 tCodeGen(MOV, FP, regc);
+                if(curr.lexeme == RETURN){
+                    clearRegister(regb);
+                    regb=getRegister();
+                    getNextToken();
+                    tCodeGen(LDR, regb, curr.lexeme);
+                    tCodeGen(STR, regb, SP);
+                    tCodeGen(ADI, SP, "-"+to_string(SIZEINT));//move sp to top of stack
+                }
+                tCodeGen(JMR, rega);
+                clearRegister(rega);
                 clearRegister(regb);
-                regb=getRegister();
-                tCodeGen(LDR, regb, curr.lexeme);
-                tCodeGen(STR, regb, SP);
-                tCodeGen(JMR, rega);need to test this code!!!!!
+                clearRegister(regc);
+            }
+            else if (curr.lexeme == PEEK){
+                getNextToken();
+                rega = getRegister();
+                tCodeGen(MOV, rega, SP);
+                tCodeGen(ADI, rega, to_string(SIZEINT));
+                tCodeGen(LDR, rega, rega);
+                tCodeGen(STR, rega, curr.lexeme);
+                clearRegister(rega);
+            }
+            else if (curr.lexeme == PUSH){
+                getNextToken();
+                rega = getRegister();
+                tCodeGen(LDR, rega, curr.lexeme);
+                tCodeGen(STR,rega,SP);
+                tCodeGen(ADI,SP, "-"+to_string(SIZEINT));
             }
             else{
                 tCodeGen(curr.lexeme);//label

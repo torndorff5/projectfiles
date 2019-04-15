@@ -24,7 +24,7 @@ int main(int argc, const char * argv[]) {
         c.passTwo(filename);
         //call pass three for iCode to tCode
         filename = c.passThree(ICODE_FILENAME);
-        /*string buf = "";
+        string buf = "";
         fstream in;
         in.open(filename);
         while(!in.eof()){
@@ -36,7 +36,6 @@ int main(int argc, const char * argv[]) {
         assembler::passTwo(buf);
         p_end = pc;
         vm::execute(machinecode, p_start);
-         */
     }
     return 0;
 }

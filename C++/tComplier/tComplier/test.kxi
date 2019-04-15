@@ -1,9 +1,19 @@
 class c{
-    public int f(){
-        return 1;
+public int x;
+public int y;
+public int z;
+    public int f(int a){
+if(a<3){
+a = a * 2;
+}
+else{
+a = a/2;
+}
+return a +4;
     }
 }
 void kxi2019 main(){
     c a;
-    int x = a.f();
+    int x = a.f(3);
+    cout << x;
 }
