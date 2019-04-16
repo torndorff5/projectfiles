@@ -80,6 +80,7 @@ class compiler {
     const string FRAME = "FRAME";
     const string CALL = "CALL";
     const string PUSH = "PUSH";
+    const string POP = "POP";
     const string PEEK = "PEEK";
     const string RETURN = "RETURN";
     const string RTN = "RTN";
@@ -120,6 +121,8 @@ class compiler {
     const string F = "FALSE";
     const string T = "TRUE";
     vector<string> registers[14];
+    map<string,vector<string>> stack;
+    const string STACK = "STACK";
     const string TRP_INT = "1";
     const string TRP_BYT = "3";
     const string JMR = "JMR";
@@ -292,11 +295,11 @@ public:
         }
         //check to see if lexeme exists in current scope, or outer scope, returns symid
         string containsLexeme(string l, string currscope){
-            do{
+            while(currscope != "g"){
                 l = containsLexemeCurrScope(l, currscope);
                 pop_scope(currscope);
             }
-            while(currscope != "g");
+            l = containsLexemeCurrScope(l, currscope);
             return l;
         }
         void printST(){
@@ -618,7 +621,7 @@ public:
         icode << "\t" << operation + " " << label << "\n";
     }
     void iCodeGen(string label){
-        icode << "\n" << label << "    ";
+        icode << "\n" << label + ":";
     }
     string genLabel(string start){
         string label = start + to_string(st->count++);
@@ -1356,8 +1359,8 @@ public:
         return t;
     }
     void addTemp2ST(sym& temp, string type){
-        temp.kind = type + LITERAL;
-        temp.scope = GLOBAL;
+        temp.kind = TEMP;
+        temp.scope = scope;
         temp.data.accessMod = PUBLIC;
         temp.data.type = type;
         temp.symid = st->genSymID('t');
@@ -1497,7 +1500,7 @@ public:
         st->addSymbol(s);
     }
     int calcSize(sym& s){
-        if(s.kind == LVAR || s.kind == PARAM){
+        if(s.kind == LVAR || s.kind == PARAM || s.kind == TEMP){
             if(size_types.find(s.data.type)!= size_types.end()){
                 s.size = size_types[s.data.type];
             }
@@ -1537,7 +1540,8 @@ public:
         //store as size of class
         string objname = pop_tail_scope(currscope);
         string scope = pop_scope(currscope);
-        sym obj = st->fetchObj(objname,scope);
+        sym obj;
+        obj = st->fetchObj(objname,scope);
         st->removeSymbol(obj);
         if(obj.kind == METHOD || obj.kind == CONSTR){
             obj.size = sum + DEFAULT_FUNC_SIZE;
@@ -1632,6 +1636,10 @@ public:
         getNextToken();
         if(c.lexeme != "main")
             genSynError(c, "main");
+        if(semantic){
+            sym m = st->fetchSymbol(st->containsLexeme(c.lexeme, scope));
+            __declareFunc(m.symid);
+        }
         push_scope(scope,c.lexeme);
         getNextToken();
         if(c.type != parentho)
@@ -1640,9 +1648,24 @@ public:
         if(c.type != parenthc)
             genSynError(c, ")");
         getNextToken();
-        if(semantic)
-            iCodeGen(MAIN);
+        if(syntax){
+            sym m;
+            m.scope = GLOBAL;
+            m.kind = METHOD;
+            m.symid = st->genSymID('m');
+            m.value = "main";
+            m.data.type = VOID;
+            m.data.accessMod = PUBLIC;
+            addSymbol(m);
+        }
         method_body(c, n);
+        if(semantic){
+            iCodeGen(MAIN);
+            SAR temp;
+            sym m = st->fetchSymbol(st->containsLexeme("main", scope));
+            __func(m.symid, temp, GLOBAL);
+            calcObjSize(scope);
+        }
         pop_scope(scope);
     }
     void class_declaration(token&c, token&n){
@@ -1668,7 +1691,7 @@ public:
             genSynError(c, "}");
         getNextToken();
         //calculate class size
-        if(syntax){
+        if(semantic){
             calcObjSize(scope);
         }
         pop_scope(scope);
@@ -2348,6 +2371,44 @@ public:
         int index = getIndex(reg);
         registers[index].push_back(symid);
     }
+    void setStack(sym s){
+        //assign right offsets to each symbol that comes in
+        stack[s.scope].push_back(s.symid);
+    }
+    pair<string,int> getStack(sym s){
+        vector<string> temp = stack[s.scope];
+        int offset = DEFAULT_FUNC_SIZE;
+        pair<string,int> rv;
+        rv.first = "";
+        rv.second = -1;
+        if(!temp.empty()){
+            for(auto t:temp){
+                if(t == s.symid){
+                    rv.first = STACK;
+                    rv.second = offset;
+                    return rv;
+                }
+                else
+                    offset += SIZEINT;
+            }
+        }
+        return rv;
+    }
+    void clearStack(){
+        stack.clear();
+    }
+    void setHeap(){
+        
+    }
+    pair<string, int> getLocation(string symid){
+        sym s = st->fetchSymbol(symid);
+        pair<string,int> rv = getStack(s);
+        if(rv.second != -1)
+            return rv;
+        //check memory
+        //check heap
+        return rv;
+    }
     void clearRegister(string reg){
         int index = getIndex(reg);
         registers[index].clear();
@@ -2355,8 +2416,11 @@ public:
     void declareVar(){
         //goes through symbol table and declares all the variables
         for(auto s: st->symtab){
-            if(s.second.kind == LVAR || s.second.kind == IVAR || s.second.kind == INT + LITERAL || s.second.kind == CHAR + LITERAL || s.second.kind == BOOL + LITERAL){
+            if(s.second.kind == IVAR ){
                 tCodeDeclare(s.second.symid,s.second.data.type);
+            }
+            else if(s.second.kind == TEMP || s.second.kind == LVAR ){
+                setStack(s.second);
             }
             else if(s.second.kind == LITERAL){
                 if(s.second.data.type == CHAR){
@@ -2393,10 +2457,32 @@ public:
             if(curr.lexeme == MOV){
                 getNextToken();//MOV a , b
                 rega = getRegister();
-                tCodeGen(LDR, rega, curr.lexeme);
+                setRegister(rega, curr.lexeme);
+                //getlocation of  a and b
+                pair<string,int> rv = getLocation(curr.lexeme);
+                if(rv.second == -1){//in memory
+                    tCodeGen(LDR, rega, curr.lexeme);
+                }//if on stack, get a from on stack
+                else{
+                    tCodeGen(MOV, rega, FP);
+                    tCodeGen(ADI, rega, "-"+to_string(rv.second));
+                    tCodeGen(LDR, rega, rega);
+                }
                 getNextToken();//skip comma
                 getNextToken();
-                tCodeGen(STR, rega, curr.lexeme);
+                rv = getLocation(curr.lexeme);
+                regb = getRegister();
+                setRegister(regb, curr.lexeme);
+                if(rv.second == -1){//in memory
+                    tCodeGen(LDA, regb, curr.lexeme);
+                }//if on stack, get a from on stack
+                else{
+                    tCodeGen(MOV, regb, FP);
+                    tCodeGen(ADI, regb, "-"+to_string(rv.second));
+                }
+                tCodeGen(STR, rega, regb);
+                clearRegister(rega);
+                clearRegister(regb);
             }
             else if (curr.lexeme == ADD || curr.lexeme == SUB || curr.lexeme == MUL || curr.lexeme == DIV){
                 string op = curr.lexeme;
@@ -2465,7 +2551,7 @@ public:
                 getNextToken();
                 tCodeGen(STR, rega, curr.lexeme);
                 clearRegister(rega);
-                clearRegister(regb);continue implementing functions into compiler!!
+                clearRegister(regb);
             }
             else if (curr.lexeme == BF || curr.lexeme == BT){
                 string op = curr.lexeme;
@@ -2494,7 +2580,7 @@ public:
                 getNextToken();
                 string trp;
                 if(i == IO_ONE){
-                    tCodeGen(LDR, OUT_REG, curr.lexeme);
+                    tCodeGen(LDR, OUT_REG, curr.lexeme);working on writing from the runtime stack 
                     if(op == WRITE)
                         trp = TRP_INT;
                     else
@@ -2610,6 +2696,7 @@ public:
             }
             else{
                 tCodeGen(curr.lexeme);//label
+                getNextToken();
             }
             getNextToken();
             if(curr.type == eof)//double check that it is the end of the file. 
