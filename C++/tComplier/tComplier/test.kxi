@@ -1,6 +1,13 @@
-void kxi2019 main(){
-int x = 3;
-cout << x;
-cout << '\n';
+class Cat{
+    public int f(int x){
+        return x;
+    }
 }
+void kxi2019 main()
+{
+    Cat x;
+int y = x.f(3);
+cout << y;
+}
+
 

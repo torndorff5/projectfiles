@@ -1660,6 +1660,7 @@ public:
         }
         method_body(c, n);
         if(semantic){
+            iCodeGen(RTN,"");
             iCodeGen(MAIN);
             SAR temp;
             sym m = st->fetchSymbol(st->containsLexeme("main", scope));
@@ -2413,8 +2414,23 @@ public:
         int index = getIndex(reg);
         registers[index].clear();
     }
+    //finds location of symid and places its address into the register it returns.
+    string getOperand(string symid){
+        pair<string,int> rv = getLocation(symid);
+        string reg = getRegister();
+        setRegister(reg, symid);
+        if(rv.second == -1){//in memory
+            tCodeGen(LDA, reg, symid);
+        }//if on stack, get a from on stack
+        else{
+            tCodeGen(MOV, reg, FP);
+            tCodeGen(ADI, reg, "-"+to_string(rv.second));
+        }
+        return reg;
+    }
     void declareVar(){
         //goes through symbol table and declares all the variables
+        need to figure out how to place all parameters on stack in the right order 
         for(auto s: st->symtab){
             if(s.second.kind == IVAR ){
                 tCodeDeclare(s.second.symid,s.second.data.type);
@@ -2456,30 +2472,11 @@ public:
         while(curr.type != eof){
             if(curr.lexeme == MOV){
                 getNextToken();//MOV a , b
-                rega = getRegister();
-                setRegister(rega, curr.lexeme);
-                //getlocation of  a and b
-                pair<string,int> rv = getLocation(curr.lexeme);
-                if(rv.second == -1){//in memory
-                    tCodeGen(LDR, rega, curr.lexeme);
-                }//if on stack, get a from on stack
-                else{
-                    tCodeGen(MOV, rega, FP);
-                    tCodeGen(ADI, rega, "-"+to_string(rv.second));
-                    tCodeGen(LDR, rega, rega);
-                }
+                rega = getOperand(curr.lexeme);
+                tCodeGen(LDR, rega, rega);
                 getNextToken();//skip comma
                 getNextToken();
-                rv = getLocation(curr.lexeme);
-                regb = getRegister();
-                setRegister(regb, curr.lexeme);
-                if(rv.second == -1){//in memory
-                    tCodeGen(LDA, regb, curr.lexeme);
-                }//if on stack, get a from on stack
-                else{
-                    tCodeGen(MOV, regb, FP);
-                    tCodeGen(ADI, regb, "-"+to_string(rv.second));
-                }
+                regb = getOperand(curr.lexeme);
                 tCodeGen(STR, rega, regb);
                 clearRegister(rega);
                 clearRegister(regb);
@@ -2487,40 +2484,40 @@ public:
             else if (curr.lexeme == ADD || curr.lexeme == SUB || curr.lexeme == MUL || curr.lexeme == DIV){
                 string op = curr.lexeme;
                 getNextToken();//ADD a , b , c
-                rega = getRegister();
-                tCodeGen(LDR, rega, curr.lexeme);
-                setRegister(rega, curr.lexeme);
+                rega = getOperand(curr.lexeme);
+                tCodeGen(LDR, rega, rega);
                 getNextToken();
                 getNextToken();
-                regb=getRegister();
-                tCodeGen(LDR, regb, curr.lexeme);
-                setRegister(regb, curr.lexeme);
+                regb=getOperand(curr.lexeme);
+                tCodeGen(LDR, regb, regb);
                 tCodeGen(op, rega, regb);
                 getNextToken();
                 getNextToken();
-                tCodeGen(STR, rega, curr.lexeme);
+                regc = getOperand(curr.lexeme);
+                tCodeGen(STR, rega, regc);
                 clearRegister(regb);
                 clearRegister(rega);
+                clearRegister(regc);
             }
             else if (curr.lexeme == EQ || curr.lexeme == NE || curr.lexeme == LT || curr.lexeme == GT || curr.lexeme == GE || curr.lexeme == LE){
-                string op = curr.lexeme;
+                string operation = curr.lexeme;
                 getNextToken();//eq a , b , c
-                rega = getRegister();
+                rega = getOperand(curr.lexeme);
                 string a = curr.lexeme;
-                setRegister(rega, a);
-                tCodeGen(LDR, rega, a);
+                tCodeGen(LDR, rega, rega);
                 getNextToken();
                 getNextToken();
-                regb = getRegister();
-                setRegister(regb, curr.lexeme);
-                tCodeGen(LDR, regb, curr.lexeme);
+                regb = getOperand(curr.lexeme);
+                tCodeGen(LDR, regb, regb);
                 tCodeGen(CMP, rega, regb);
                 string l1 = genLabel("l");
                 string l2 = genLabel("l");
-                op = getOP(op);
+                string op = getOP(operation);
                 tCodeGen(op, rega, l1);
-                if(op == GE || op == LE){
-                    tCodeGen(LDR, rega, a);
+                if(operation == GE || operation == LE){
+                    clearRegister(rega);
+                    rega = getOperand(a);
+                    tCodeGen(LDR, rega, rega);
                     tCodeGen(CMP, rega, regb);
                     tCodeGen(BRZ, rega, l1);
                 }
@@ -2531,34 +2528,35 @@ public:
                 tCodeGen(l2);
                 getNextToken();
                 getNextToken();
-                tCodeGen(STR, rega, curr.lexeme);
+                clearRegister(regb);
+                regb=getOperand(curr.lexeme);
+                tCodeGen(STR, rega, regb);
                 clearRegister(rega);
                 clearRegister(regb);
             }
             else if (curr.lexeme == AND || curr.lexeme == OR){
                 string op = curr.lexeme;
                 getNextToken();
-                rega = getRegister();
-                setRegister(rega, curr.lexeme);
-                tCodeGen(LDR, rega, curr.lexeme);
+                rega = getOperand(curr.lexeme);
+                tCodeGen(LDR, rega, rega);
                 getNextToken();
                 getNextToken();
-                regb = getRegister();
-                setRegister(regb, curr.lexeme);
-                tCodeGen(LDR, regb, curr.lexeme);
+                regb = getOperand(curr.lexeme);
+                tCodeGen(LDR, regb, regb);
                 tCodeGen(op, rega, regb);
                 getNextToken();
                 getNextToken();
-                tCodeGen(STR, rega, curr.lexeme);
+                regc = getOperand(curr.lexeme);
+                tCodeGen(STR, rega, regc);
                 clearRegister(rega);
                 clearRegister(regb);
+                clearRegister(regc);
             }
             else if (curr.lexeme == BF || curr.lexeme == BT){
                 string op = curr.lexeme;
                 getNextToken();//bf a , label
-                rega = getRegister();
-                setRegister(rega, curr.lexeme);
-                tCodeGen(LDR, rega, curr.lexeme);
+                rega = getOperand(curr.lexeme);
+                tCodeGen(LDR, rega, rega);
                 getNextToken();
                 getNextToken();
                 if(op == BF)
@@ -2579,26 +2577,28 @@ public:
                 getNextToken();
                 getNextToken();
                 string trp;
+                rega = getOperand(curr.lexeme);
                 if(i == IO_ONE){
-                    tCodeGen(LDR, OUT_REG, curr.lexeme);working on writing from the runtime stack 
+                    tCodeGen(LDR, OUT_REG, rega);
                     if(op == WRITE)
                         trp = TRP_INT;
                     else
                         trp = "2";
                     tCodeGen(TRP, trp);
                     if(op == READ)
-                        tCodeGen(STR, OUT_REG, curr.lexeme);
+                        tCodeGen(STR, OUT_REG, rega);
                 }
                 else{
-                    tCodeGen(LDB, OUT_REG, curr.lexeme);
+                    tCodeGen(LDB, OUT_REG, rega);
                     if(op == WRITE)
                         trp = TRP_BYT;
                     else
                         trp = "4";
                     tCodeGen(TRP, trp);
                     if(op == READ)
-                        tCodeGen(STB, OUT_REG, curr.lexeme);
+                        tCodeGen(STB, OUT_REG, rega);
                 }
+                clearRegister(rega);
             }
             else if (curr.lexeme == FRAME){
                 //FRAME F, X
