@@ -229,12 +229,14 @@ public:
             return s;
         }
         //add global s variable to the table. also gen symid and clears s after
-        void addBaseSymbol(sym& s){
+        sym addBaseSymbol(sym& s){
             //generate symid
             s.symid = genSymID(s.value.at(0));
             sym* temp = new sym(s);
             symtab.insert(std::pair<string,sym>(s.symid,*temp));
+            //if method, add parameters to stack
             s.clear();//resets s
+            return *temp;
         }
         void removeSymbol(sym s){
             symtab.erase(s.symid);
@@ -1493,7 +1495,12 @@ public:
     //SYTNAX FUNCTIONS******************************************************************************************************************
     void addBaseSymbol(sym& s){
         calcSize(s);
-        st->addBaseSymbol(s);
+        sym temp = st->addBaseSymbol(s);
+        if(temp.kind == METHOD){
+            for(auto i = temp.data.param.rbegin();i != temp.data.param.rend(); ++i ){
+                setStack(st->fetchSymbol(*i));
+            }
+        }
     }
     void addSymbol(sym& s){
         calcSize(s);
@@ -1744,6 +1751,7 @@ public:
                 s.kind = METHOD;
                 string name = pop_tail_scope(s.scope);
                 addThis(scope, name);
+                //iterate through param and add to stack.
                 addBaseSymbol(s);
             }
             method_body(c, n);
@@ -2339,6 +2347,13 @@ public:
     void tCodeGen(string label){
         tcode << label << "    ";
     }
+    int getParamsize(vector<string> params){
+        int sum = 0;
+        for(auto p: params){
+            sum+=SIZEINT;
+        }
+        return sum;
+    }
     string getOP(string op){
         if(op == EQ)
             op = BRZ;
@@ -2430,7 +2445,6 @@ public:
     }
     void declareVar(){
         //goes through symbol table and declares all the variables
-        need to figure out how to place all parameters on stack in the right order 
         for(auto s: st->symtab){
             if(s.second.kind == IVAR ){
                 tCodeDeclare(s.second.symid,s.second.data.type);
@@ -2466,6 +2480,7 @@ public:
         string rega;
         string regb;
         string regc;
+        string regd;
         tCodeGen(LDR, REG_0, F);
         tCodeGen(LDR, REG_1, T);
         tCodeGen(JMP, MAIN);
@@ -2637,7 +2652,8 @@ public:
             else if (curr.lexeme == iFUNC){
                 getNextToken();
                 sym s = st->fetchSymbol(curr.lexeme);
-                tCodeGen(ADI, SP, "-"+to_string(s.size-DEFAULT_FUNC_SIZE));
+                int param_size = getParamsize(s.data.param);
+                tCodeGen(ADI, SP, "-"+to_string(s.size-DEFAULT_FUNC_SIZE-param_size));
             }
             else if (curr.lexeme == CALL){
                 //CALL F
@@ -2650,42 +2666,48 @@ public:
             }
             else if (curr.lexeme == RETURN || curr.lexeme == RTN){
                 //RETURN A
-                rega =getRegister();
-                setRegister(rega, FP);
-                regb = getRegister();
-                setRegister(regb, SP);
-                tCodeGen(LDR, rega, FP);
-                tCodeGen(MOV, SP, FP);
-                tCodeGen(MOV, regb, SP);
-                tCodeGen(CMP, regb, SB);
-                tCodeGen(BLT, regb, UNDERFLOW);
-                tCodeGen(MOV, regb, FP);
-                tCodeGen(ADI, regb, "-"+to_string(SIZEINT));
-                regc = getRegister();
+                string op = curr.lexeme;
+                regc =getRegister();
                 setRegister(regc, FP);
-                tCodeGen(LDR, regc, regb);
-                tCodeGen(MOV, FP, regc);
-                if(curr.lexeme == RETURN){
-                    clearRegister(regb);
-                    regb=getRegister();
+                tCodeGen(LDR, regc, FP);
+                if(op == RETURN){
                     getNextToken();
-                    tCodeGen(LDR, regb, curr.lexeme);
-                    tCodeGen(STR, regb, SP);
+                    regd = getOperand(curr.lexeme);
+                    tCodeGen(LDR, regd, regd);
+                }
+                rega = getRegister();
+                regb = getRegister();
+                setRegister(rega, SP);
+                setRegister(regb, SB);
+                tCodeGen(MOV, SP, FP);
+                tCodeGen(MOV, rega, SP);
+                tCodeGen(MOV, regb, SB);
+                tCodeGen(CMP, regb, rega);
+                tCodeGen(BLT, regb, UNDERFLOW);
+                tCodeGen(MOV, rega, FP);
+                tCodeGen(ADI, rega, "-"+to_string(SIZEINT));
+                tCodeGen(LDR, rega, rega);
+                tCodeGen(MOV, FP, rega);
+                if(op == RETURN){
+                    tCodeGen(STR, regd, SP);
                     tCodeGen(ADI, SP, "-"+to_string(SIZEINT));//move sp to top of stack
                 }
-                tCodeGen(JMR, rega);
+                tCodeGen(JMR, regc);
                 clearRegister(rega);
                 clearRegister(regb);
                 clearRegister(regc);
+                clearRegister(regd);
             }
             else if (curr.lexeme == PEEK){
                 getNextToken();
                 rega = getRegister();
+                regb = getOperand(curr.lexeme);
                 tCodeGen(MOV, rega, SP);
                 tCodeGen(ADI, rega, to_string(SIZEINT));
                 tCodeGen(LDR, rega, rega);
-                tCodeGen(STR, rega, curr.lexeme);
+                tCodeGen(STR, rega, regb);
                 clearRegister(rega);
+                clearRegister(regb);test to make sure that peek works 
             }
             else if (curr.lexeme == PUSH){
                 getNextToken();

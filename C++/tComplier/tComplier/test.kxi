@@ -1,13 +1,14 @@
 class Cat{
     public int f(int x){
-        return x;
+        int a = 3;
+        return x + a;
     }
 }
 void kxi2019 main()
 {
     Cat x;
-int y = x.f(3);
-cout << y;
+    int y = x.f(3);
+    cout << y;
 }
 
 
