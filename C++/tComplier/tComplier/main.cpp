@@ -23,7 +23,7 @@ int main(int argc, const char * argv[]) {
         //call pass two for semantic 
         c.passTwo(filename);
         //call pass three for iCode to tCode
-        filename = c.passThree(ICODE_FILENAME);
+        /*filename = c.passThree(ICODE_FILENAME);
         string buf = "";
         fstream in;
         in.open(filename);
@@ -35,7 +35,7 @@ int main(int argc, const char * argv[]) {
         tokens.clear();
         assembler::passTwo(buf);
         p_end = pc;
-        vm::execute(machinecode, p_start);
+        vm::execute(machinecode, p_start);*/
     }
     return 0;
 }

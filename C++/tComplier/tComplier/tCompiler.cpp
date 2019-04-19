@@ -937,6 +937,8 @@ public:
                 int i = int(top_sar.arg_list.size()-1);
                 int j = 0;
                 while(i >= 0){
+                    if(top_sar.arg_list.size() != var.data.param.size())
+                        genSemError(top_sar, top_sar.value, NOT_DEFINED);
                     sym param1 = st->fetchSymbol(top_sar.arg_list[i]);
                     sym param2 = st->fetchSymbol(var.data.param[j]);
                     if(param1.data.type != param2.data.type)
@@ -953,7 +955,13 @@ public:
             SAS.push_back(top_sar);
             //iCODE
             if(var.kind == METHOD){
+                //create temp to store return value in.
+                sym t;
+                addTemp2ST(t, var.data.type);
+                top_sar.value = t.symid;
                 __func(var.symid,top_sar,THIS);
+                popSAS();
+                SAS.push_back(top_sar);
             }
         }
         else{
@@ -980,7 +988,7 @@ public:
             t = st->fetchSymbol(top_sar.value);
             size_t pos = string::npos;
             pos = t.data.type.find("@");
-            if(pos != string::npos && t.data.accessMod == PUBLIC){//array
+            if(pos != string::npos && (t.data.accessMod == PUBLIC || tvalue == THIS)){//array
                 ref.scope = GLOBAL;
                 ref.kind = REF+ARRAY;
                 ref.value = t.value;
@@ -1019,7 +1027,7 @@ public:
                     top_sar.value = "";
                 }
                 ref.scope = GLOBAL;
-                ref.kind = REF;
+                ref.kind = TEMP;
                 ref.value = top_sar.value;
                 ref.data.accessMod = PUBLIC;
                 for(auto p: top_sar.arg_list){
@@ -1142,8 +1150,10 @@ public:
         //get current function with scope
         string name = pop_tail_scope(scope);
         sym func = st->fetchSymbol(st->containsLexeme(name, scope));
-        if(exp.data.type != func.data.type)//check to see if expression type is the same as function return type
-            genSemError("Function requires " + func.data.type + " returned " + exp.data.type,sar);
+        if(exp.data.type != func.data.type){//check to see if expression type is the same as function return type
+            if(!class_name(func.data.type) || exp.data.type != "null")
+                genSemError("Function requires " + func.data.type + " returned " + exp.data.type,sar);
+        }
         if(exp.data.type == VOID)
             iCodeGen(RTN, "");
         else
@@ -1196,11 +1206,15 @@ public:
             sym c = st->fetchSymbol(temp);
             if(c.data.param.size() == al_sar.arg_list.size()){
                 //check to see if types match up
-                for(int i = 0; i < c.data.param.size(); i++){
+                int i = int(al_sar.arg_list.size()-1);
+                int j = 0;
+                while(i>=0){
                     sym x = st->fetchSymbol(c.data.param[i]);
-                    sym y = st->fetchSymbol(al_sar.arg_list[i]);
+                    sym y = st->fetchSymbol(al_sar.arg_list[j]);
                     if(x.data.type != y.data.type)
                         genSemError("Constructor " + formatFunc(al_sar, type_sar.value) + " not defined",al_sar);
+                    i--;
+                    j++;
                 }
                 //create temp sym to represent instance of constructor
                 sym temp;
@@ -1209,7 +1223,6 @@ public:
                 temp.size = func_types[c.value];
                 temp.symid = st->genSymID('t');
                 temp.data.type = c.value;
-                temp.value = c.value;
                 temp.data.accessMod = PUBLIC;
                 temp.data.param = al_sar.arg_list;
                 st->addSymbol(temp);
@@ -1441,8 +1454,11 @@ public:
         //is x = y valid?
         if(x.kind == LITERAL)//is x a valid lValue?
             genSemError(x.data.type, x.value, y.data.type , y.value, t);
-        if(x.data.type != y.data.type)//do x and y share the same type
-            genSemError(x.data.type, x.value, y.data.type , y.value, t);
+        if(x.data.type != y.data.type){//do x and y share the same type
+            if(!class_name(x.data.type) || y.data.type != "null")
+                genSemError(x.data.type, x.value, y.data.type , y.value, t);
+        }
+        
         //iCode
         iCodeGen(MOV, y.symid, x.symid);
     }
@@ -2310,6 +2326,12 @@ public:
         else
             genSynError(c, "valid type or class name");
     }
+    bool class_name(string id){
+        if(id != "int" && id != "char" && id != "void" && id != "bool" && id != "sym")
+            return true;
+        else
+            return false;
+    }
     //tCode ****************************************************************************************************************************************
     void tCodeDeclare(string id, string type){
         if(type == INT || type == BOOL){
@@ -2417,8 +2439,14 @@ public:
         
     }
     pair<string, int> getLocation(string symid){
-        sym s = st->fetchSymbol(symid);
-        pair<string,int> rv = getStack(s);
+        pair<string,int> rv;
+        try{
+            sym s = st->fetchSymbol(symid);
+        }
+        catch(out_of_range e){
+            rv.second = -1;
+        }
+        rv = getStack(s);
         if(rv.second != -1)
             return rv;
         //check memory
@@ -2646,8 +2674,6 @@ public:
                 //thispointer storage code goes here ************
                 //AdjustStackPointerforthis
                 tCodeGen(ADI, SP, "-"+to_string(SIZEINT));
-                clearRegister(rega);
-                
             }
             else if (curr.lexeme == iFUNC){
                 getNextToken();
@@ -2676,8 +2702,8 @@ public:
                     tCodeGen(LDR, regd, regd);
                 }
                 rega = getRegister();
-                regb = getRegister();
                 setRegister(rega, SP);
+                regb = getRegister();
                 setRegister(regb, SB);
                 tCodeGen(MOV, SP, FP);
                 tCodeGen(MOV, rega, SP);
@@ -2701,20 +2727,33 @@ public:
             else if (curr.lexeme == PEEK){
                 getNextToken();
                 rega = getRegister();
+                setRegister(rega, SP);
                 regb = getOperand(curr.lexeme);
                 tCodeGen(MOV, rega, SP);
                 tCodeGen(ADI, rega, to_string(SIZEINT));
                 tCodeGen(LDR, rega, rega);
                 tCodeGen(STR, rega, regb);
                 clearRegister(rega);
-                clearRegister(regb);test to make sure that peek works 
+                clearRegister(regb);
             }
             else if (curr.lexeme == PUSH){
                 getNextToken();
-                rega = getRegister();
-                tCodeGen(LDR, rega, curr.lexeme);
+                pair<string,int> rv = getLocation(curr.lexeme);
+                if(rv.second == -1){
+                    rega = getOperand(curr.lexeme);
+                }
+                else{
+                    rega = getRegister();
+                    setRegister(rega, FP);
+                    tCodeGen(MOV, rega, FP);
+                    tCodeGen(ADI, rega, "-"+to_string(SIZEINT));
+                    tCodeGen(LDR, rega, rega);
+                    tCodeGen(ADI, rega, "-"+to_string(rv.second));
+                }
+                tCodeGen(LDR, rega, rega);
                 tCodeGen(STR,rega,SP);
                 tCodeGen(ADI,SP, "-"+to_string(SIZEINT));
+                clearRegister(rega);
             }
             else{
                 tCodeGen(curr.lexeme);//label
