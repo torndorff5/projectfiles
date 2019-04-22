@@ -122,7 +122,9 @@ class compiler {
     const string T = "TRUE";
     vector<string> registers[14];
     map<string,vector<string>> stack;
+    map<string,vector<string>> heap;
     const string STACK = "STACK";
+    const string HEAP = "HEAP";
     const string TRP_INT = "1";
     const string TRP_BYT = "3";
     const string JMR = "JMR";
@@ -297,9 +299,12 @@ public:
         }
         //check to see if lexeme exists in current scope, or outer scope, returns symid
         string containsLexeme(string l, string currscope){
+            string k = l;
             while(currscope != "g"){
-                l = containsLexemeCurrScope(l, currscope);
+                k = containsLexemeCurrScope(l, currscope);
                 pop_scope(currscope);
+                if(k!=l)
+                    return k;
             }
             l = containsLexemeCurrScope(l, currscope);
             return l;
@@ -1026,7 +1031,7 @@ public:
                     }
                     top_sar.value = "";
                 }
-                ref.scope = GLOBAL;
+                ref.scope = scope;
                 ref.kind = TEMP;
                 ref.value = top_sar.value;
                 ref.data.accessMod = PUBLIC;
@@ -1048,6 +1053,8 @@ public:
             if(t.kind == METHOD){//function
                 __func(t.symid,top_sar,next_sar.value);
             }
+            else if(tvalue == THIS)
+                iCodeGen(iREF, tvalue, t.symid, ref.symid);
             else//variable
                 iCodeGen(iREF, next_sar.value, t.symid, ref.symid);
             //Additional Array iCOde
@@ -1218,8 +1225,8 @@ public:
                 }
                 //create temp sym to represent instance of constructor
                 sym temp;
-                temp.kind = CONSTR + LITERAL;
-                temp.scope = GLOBAL;
+                temp.kind = TEMP;
+                temp.scope = scope;
                 temp.size = func_types[c.value];
                 temp.symid = st->genSymID('t');
                 temp.data.type = c.value;
@@ -1235,7 +1242,9 @@ public:
                 //NEWI SIZEOFCAT, NEWTEMP
                 sym t;
                 addTemp2ST(t, INT);
-                iCodeGen(NEWI, to_string(size_types[type_sar.value]), t.symid);
+                //get class symbol
+                string _class = st->containsLexeme(type_sar.value,GLOBAL);
+                iCodeGen(NEWI, _class, t.symid);
                 __func(c.symid, constructor_sar, t.symid);
                 return;
             }
@@ -1512,7 +1521,7 @@ public:
     void addBaseSymbol(sym& s){
         calcSize(s);
         sym temp = st->addBaseSymbol(s);
-        if(temp.kind == METHOD){
+        if(temp.kind == METHOD || temp.kind == CONSTR){
             for(auto i = temp.data.param.rbegin();i != temp.data.param.rend(); ++i ){
                 setStack(st->fetchSymbol(*i));
             }
@@ -1771,6 +1780,8 @@ public:
                 addBaseSymbol(s);
             }
             method_body(c, n);
+            if(semantic)
+                iCodeGen(RTN, "");
             pop_scope(scope);
         }
         else{
@@ -1832,6 +1843,8 @@ public:
             addBaseSymbol(s);
         }
         method_body(c, n);
+        if(semantic)
+            iCodeGen(RETURN, THIS);
         pop_scope(scope);
     }
     void method_body(token& c, token& n){
@@ -2393,6 +2406,15 @@ public:
         int index = stoi(reg);
         return index;
     }
+    int getSize(string symid){
+        try{
+            sym s = st->fetchSymbol(symid);
+            return s.size;
+        }
+        catch(out_of_range e){
+            return 0;
+        }
+    }
     string getRegister(){
         string reg = "R";
         for(int i = 2; i < REG_SIZE; i++){
@@ -2435,22 +2457,54 @@ public:
     void clearStack(){
         stack.clear();
     }
-    void setHeap(){
-        
+    void setHeap(sym s){
+        heap[s.scope].push_back(s.symid);
+    }
+    pair<string,int> getHeap(sym s){
+        vector<string> temp = heap[s.scope];
+        int offset = 0;
+        pair<string,int> rv;
+        rv.first = "";
+        rv.second = -1;
+        if(!temp.empty()){
+            for(auto t:temp){
+                if(t == s.symid){
+                    rv.first = HEAP;
+                    rv.second = offset;
+                    return rv;
+                }
+                else{
+                    offset += SIZEINT;
+                }
+            }
+        }
+        return rv;
+    }
+    void clearHeap(){
+        heap.clear();
     }
     pair<string, int> getLocation(string symid){
         pair<string,int> rv;
         try{
             sym s = st->fetchSymbol(symid);
+            rv = getStack(s);
+            if(rv.second != -1)
+                return rv;
         }
         catch(out_of_range e){
             rv.second = -1;
         }
-        rv = getStack(s);
-        if(rv.second != -1)
-            return rv;
         //check memory
         //check heap
+        try{
+            sym s = st->fetchSymbol(symid);
+            rv = getHeap(s);
+            if(rv.second != -1)
+                return rv;
+        }
+        catch(out_of_range e){
+            rv.second = -1;
+        }
         return rv;
     }
     void clearRegister(string reg){
@@ -2459,23 +2513,35 @@ public:
     }
     //finds location of symid and places its address into the register it returns.
     string getOperand(string symid){
-        pair<string,int> rv = getLocation(symid);
-        string reg = getRegister();
-        setRegister(reg, symid);
-        if(rv.second == -1){//in memory
-            tCodeGen(LDA, reg, symid);
-        }//if on stack, get a from on stack
-        else{
+        if(symid == THIS){
+            string reg = getRegister();
+            setRegister(reg, THIS);
             tCodeGen(MOV, reg, FP);
-            tCodeGen(ADI, reg, "-"+to_string(rv.second));
+            tCodeGen(ADI, reg, "-8");//this is always stored here on the stack
+            return reg;
         }
-        return reg;
+        else{
+            pair<string,int> rv = getLocation(symid);
+            string reg = getRegister();
+            setRegister(reg, symid);
+            if(rv.second == -1){//in memory
+                tCodeGen(LDA, reg, symid);
+            }//if on stack, get a from on stack
+            else if(rv.first == HEAP){
+
+            }
+            else{
+                tCodeGen(MOV, reg, FP);
+                tCodeGen(ADI, reg, "-"+to_string(rv.second));
+            }
+            return reg;
+        }
     }
     void declareVar(){
         //goes through symbol table and declares all the variables
         for(auto s: st->symtab){
             if(s.second.kind == IVAR ){
-                tCodeDeclare(s.second.symid,s.second.data.type);
+                setHeap(s.second);
             }
             else if(s.second.kind == TEMP || s.second.kind == LVAR ){
                 setStack(s.second);
@@ -2672,8 +2738,19 @@ public:
                 getNextToken();
                 getNextToken();
                 //thispointer storage code goes here ************
+                pair<string,int> rv = getLocation(curr.lexeme);
+                if(rv.second!= -1){
+                    regb = getRegister();
+                    setRegister(regb, curr.lexeme);
+                    tCodeGen(MOV, regb, rega);
+                    tCodeGen(ADI, regb, "-"+to_string(rv.second));
+                    tCodeGen(LDR, regb, regb);
+                    tCodeGen(STR, regb, SP);
+                    clearRegister(regb);
                 //AdjustStackPointerforthis
+                }
                 tCodeGen(ADI, SP, "-"+to_string(SIZEINT));
+                clearRegister(rega);
             }
             else if (curr.lexeme == iFUNC){
                 getNextToken();
@@ -2717,12 +2794,12 @@ public:
                 if(op == RETURN){
                     tCodeGen(STR, regd, SP);
                     tCodeGen(ADI, SP, "-"+to_string(SIZEINT));//move sp to top of stack
+                    clearRegister(regd);
                 }
                 tCodeGen(JMR, regc);
                 clearRegister(rega);
                 clearRegister(regb);
                 clearRegister(regc);
-                clearRegister(regd);
             }
             else if (curr.lexeme == PEEK){
                 getNextToken();
@@ -2754,6 +2831,36 @@ public:
                 tCodeGen(STR,rega,SP);
                 tCodeGen(ADI,SP, "-"+to_string(SIZEINT));
                 clearRegister(rega);
+            }
+            else if(curr.lexeme == NEWI){
+                int size = 0;
+                rega = getRegister();
+                setRegister(rega, SL);
+                tCodeGen(MOV, rega, SL);
+                getNextToken();
+                size = getSize(curr.lexeme);
+                tCodeGen(ADI, SL, to_string(size));
+                getNextToken();
+                getNextToken();
+                regb = getOperand(curr.lexeme);
+                tCodeGen(STR, rega, regb);
+                clearRegister(rega);
+                clearRegister(regb);
+            }
+            else if (curr.lexeme == iREF){
+                getNextToken();
+                rega = getOperand(curr.lexeme);
+                tCodeGen(LDR, rega, rega);
+                getNextToken();
+                getNextToken();
+                pair<string,int> offset = getLocation(curr.lexeme);
+                tCodeGen(ADI, rega, to_string(offset.second));
+                getNextToken();
+                getNextToken();
+                regb = getOperand(curr.lexeme);
+                tCodeGen(STR, rega, regb);
+                clearRegister(rega);
+                clearRegister(regb);
             }
             else{
                 tCodeGen(curr.lexeme);//label
@@ -2838,6 +2945,6 @@ public:
         }
         else
             cout << "ICODE read error." << endl;
-        return tcodeFile;
+        return tcodeFile; a19 didnt return what it was supposed to. Im thinking that perhaps c17 didnt acutally store the parameters on the heap. 
     }
 };
