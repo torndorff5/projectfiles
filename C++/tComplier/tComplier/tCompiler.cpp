@@ -180,11 +180,11 @@ public:
         string accessMod;
         vector<string> param;
         string size;
-        string asslit;
+        bool pointer;
         void clear(){
             type="";
             accessMod="";
-            asslit = "";
+            pointer = false;
             size = "";
             param.clear();
         }
@@ -1494,8 +1494,10 @@ public:
         sym y = st->fetchSymbol(popSAS().value);
         sym x = st->fetchSymbol(popSAS().value);
         //do x and y have same type?
-        if(x.data.type != y.data.type)
-            genSemError(x.data.type, x.value, y.data.type , y.value, t);
+        if(x.data.type != y.data.type){
+            if(!class_name(x.data.type) || y.data.type != "null")
+                genSemError(x.data.type, x.value, y.data.type , y.value, t);
+        }
         sym temp;
         SAR t_var;
         addTemp2ST(temp, BOOL);
@@ -2507,6 +2509,17 @@ public:
         }
         return rv;
     }
+    void setPointer(string symid){
+        try{
+            sym s = st->fetchSymbol(symid);
+            s.data.pointer = true;
+            st->removeSymbol(s);
+            st->addSymbol(s);
+        }
+        catch(out_of_range e){
+            return;
+        }
+    }
     void clearRegister(string reg){
         int index = getIndex(reg);
         registers[index].clear();
@@ -2521,6 +2534,7 @@ public:
             return reg;
         }
         else{
+            sym temp = st->fetchSymbol(symid);
             pair<string,int> rv = getLocation(symid);
             string reg = getRegister();
             setRegister(reg, symid);
@@ -2528,18 +2542,27 @@ public:
                 tCodeGen(LDA, reg, symid);
             }//if on stack, get a from on stack
             else if(rv.first == HEAP){
-
+                tCodeGen(MOV, reg, FP);
+                tCodeGen(ADI, reg, "-8");
+                tCodeGen(LDR, reg, reg);
+                tCodeGen(ADI, reg, to_string(rv.second));
             }
             else{
                 tCodeGen(MOV, reg, FP);
                 tCodeGen(ADI, reg, "-"+to_string(rv.second));
+                if(temp.data.pointer)
+                    tCodeGen(LDR, reg, reg);
             }
             return reg;
         }
     }
     void declareVar(){
         //goes through symbol table and declares all the variables
+        vector<string> pointers;
         for(auto s: st->symtab){
+            if(s.second.data.pointer){
+                pointers.push_back(s.second.symid);
+            }
             if(s.second.kind == IVAR ){
                 setHeap(s.second);
             }
@@ -2568,6 +2591,12 @@ public:
         }
         tCodeDeclare(T, INT, "1");
         tCodeDeclare(F, INT, "0");
+        for(auto p: pointers){
+            sym s = st->fetchSymbol(p);
+            st->removeSymbol(s);
+            s.data.pointer = false;
+            st->addSymbol(s);
+        }
     }
     
     void tcode_unit(){
@@ -2820,12 +2849,16 @@ public:
                     rega = getOperand(curr.lexeme);
                 }
                 else{
+                    sym s = st->fetchSymbol(curr.lexeme);
                     rega = getRegister();
                     setRegister(rega, FP);
                     tCodeGen(MOV, rega, FP);
                     tCodeGen(ADI, rega, "-"+to_string(SIZEINT));
                     tCodeGen(LDR, rega, rega);
                     tCodeGen(ADI, rega, "-"+to_string(rv.second));
+                    if(s.data.pointer)
+                        tCodeGen(LDR, rega, rega);
+                    
                 }
                 tCodeGen(LDR, rega, rega);
                 tCodeGen(STR,rega,SP);
@@ -2861,6 +2894,7 @@ public:
                 tCodeGen(STR, rega, regb);
                 clearRegister(rega);
                 clearRegister(regb);
+                setPointer(curr.lexeme);
             }
             else{
                 tCodeGen(curr.lexeme);//label
@@ -2945,6 +2979,6 @@ public:
         }
         else
             cout << "ICODE read error." << endl;
-        return tcodeFile; a19 didnt return what it was supposed to. Im thinking that perhaps c17 didnt acutally store the parameters on the heap. 
+        return tcodeFile;
     }
 };
