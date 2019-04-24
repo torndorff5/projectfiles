@@ -49,7 +49,10 @@ class compiler {
     const string CLASS = "class";
     const static int SIZEINT = 4;
     const static int SIZEBYT = 1;
+    const string BYT_SIZE = "BYT_SIZE";
+    const string INT_SIZE = "INT_SIZE";
     const int DEFAULT_FUNC_SIZE = 12;
+    vector<string> types;
     map<string,int> size_types;
     map<string,int> func_types;
     size_t line_number;
@@ -99,7 +102,6 @@ class compiler {
     const string COMMA = ",";
     const string IO_ONE = "1";
     const string IO_TWO = "2";
-    const string IO_POINT_SIZE = "POINT_SIZE";
     int label_count;
     vector<string> label_stack;
     //Semantic DATA********************************************************************************************************************
@@ -110,7 +112,7 @@ class compiler {
     const string NOT_DEFINED = " not defined";
     //tcode data ********************************************************************************************************************
     fstream tcode;
-    string tcodeFile = "tcode.txt";
+    string tcodeFile = "tcode.asm";
     const string xINT = ".INT";
     const string xBYT = ".BYT";
     const string MAIN = "MAIN";
@@ -125,6 +127,7 @@ class compiler {
     map<string,vector<string>> heap;
     const string STACK = "STACK";
     const string HEAP = "HEAP";
+    const string TYPE = "TYPE";
     const string TRP_INT = "1";
     const string TRP_BYT = "3";
     const string JMR = "JMR";
@@ -495,9 +498,11 @@ public:
     
     void lexicalAnalysis(token& c, token& n){
         if(c.type == eof){
-            return;
+            nextToken(c, n);
+            if(c.type == eof)
+                return;
         }
-        while (c.type == space || c.type == nl || c.lexeme == "\t")
+        while (c.type == space || c.type == nl || c.lexeme == "\t" || c.lexeme == "\r")
             nextToken(c,n);//disregard and get next token
         if(c.lexeme == "/"){//catch the comments
             if(n.lexeme == "/"){
@@ -1018,6 +1023,8 @@ public:
                 if(!t.data.param.empty()){//function
                     if(top_sar.arg_list.empty())//param is empty when it shouldnt be
                         genSemError(top_sar, t.value, NOT_DEFINED);
+                    if(top_sar.arg_list.size()!=t.data.param.size())
+                        genSemError(top_sar, t.value, NOT_DEFINED);
                     //check params
                     int i = int(top_sar.arg_list.size()-1);
                     int j = 0;
@@ -1124,6 +1131,11 @@ public:
     }
     //#if
     void _if(){
+        if(SAS.empty()){
+            SAR sar;
+            sar.ln = line_number;
+            genSemError("if requires bool",sar);
+        }
         SAR sar = popSAS();
         sym exp = st->fetchSymbol(sar.value);
         if(exp.data.type != BOOL)
@@ -1261,8 +1273,8 @@ public:
             new_sar.value = tExist(t);//is next type sar able to have an array made.
             sym x;
             x.value = new_sar.value;
-            x.kind = OBJECT;
-            x.scope = GLOBAL;
+            x.kind = TEMP;
+            x.scope = scope;
             x.data.type = new_sar.value + ARRAY;
             x.data.size = size.symid;
             x.data.accessMod = PUBLIC;
@@ -1276,7 +1288,7 @@ public:
             sym temp;
             addTemp2ST(temp, x.data.type);
             //mul sizeofpointer, top_sar.value, new temp variable
-            iCodeGen(MUL, IO_POINT_SIZE, top_sar.value, temp.symid);
+            iCodeGen(MUL, x.value, top_sar.value, temp.symid);
             //NEW, new temp variable, new new temp variable
             iCodeGen(NEW, temp.symid, x.symid);
         }
@@ -2408,6 +2420,10 @@ public:
         int index = stoi(reg);
         return index;
     }
+    int getTypeSize(string type){
+        int size = size_types[type];
+        return size;
+    }
     int getSize(string symid){
         try{
             sym s = st->fetchSymbol(symid);
@@ -2496,7 +2512,6 @@ public:
         catch(out_of_range e){
             rv.second = -1;
         }
-        //check memory
         //check heap
         try{
             sym s = st->fetchSymbol(symid);
@@ -2506,6 +2521,11 @@ public:
         }
         catch(out_of_range e){
             rv.second = -1;
+        }
+        //check to see if in types
+        if(size_types.find(symid)!= size_types.end()){
+            rv.first = TYPE;
+            rv.second = 0;
         }
         return rv;
     }
@@ -2526,21 +2546,21 @@ public:
     }
     //finds location of symid and places its address into the register it returns.
     string getOperand(string symid){
+        string reg = getRegister();
         if(symid == THIS){
-            string reg = getRegister();
             setRegister(reg, THIS);
             tCodeGen(MOV, reg, FP);
             tCodeGen(ADI, reg, "-8");//this is always stored here on the stack
-            return reg;
         }
         else{
-            sym temp = st->fetchSymbol(symid);
             pair<string,int> rv = getLocation(symid);
-            string reg = getRegister();
             setRegister(reg, symid);
             if(rv.second == -1){//in memory
-                tCodeGen(LDA, reg, symid);
+                    tCodeGen(LDA, reg, symid);
             }//if on stack, get a from on stack
+            else if(rv.first == TYPE){
+                tCodeGen(LDA, reg, symid);
+            }
             else if(rv.first == HEAP){
                 tCodeGen(MOV, reg, FP);
                 tCodeGen(ADI, reg, "-8");
@@ -2550,11 +2570,12 @@ public:
             else{
                 tCodeGen(MOV, reg, FP);
                 tCodeGen(ADI, reg, "-"+to_string(rv.second));
+                sym temp = st->fetchSymbol(symid);
                 if(temp.data.pointer)
                     tCodeGen(LDR, reg, reg);
             }
-            return reg;
         }
+        return reg;
     }
     void declareVar(){
         //goes through symbol table and declares all the variables
@@ -2596,6 +2617,9 @@ public:
             st->removeSymbol(s);
             s.data.pointer = false;
             st->addSymbol(s);
+        }
+        for(auto t: size_types){
+            tCodeDeclare(t.first, INT, to_string(t.second));
         }
     }
     
@@ -2880,6 +2904,22 @@ public:
                 clearRegister(rega);
                 clearRegister(regb);
             }
+            else if(curr.lexeme == NEW){
+                rega = getRegister();
+                setRegister(rega,SL);
+                tCodeGen(MOV, rega, SL);
+                getNextToken();
+                regb = getOperand(curr.lexeme);
+                tCodeGen(LDR, regb, regb);
+                tCodeGen(ADD, SL, regb);
+                clearRegister(regb);
+                getNextToken();
+                getNextToken();
+                regb = getOperand(curr.lexeme);
+                tCodeGen(STR, rega, regb);
+                clearRegister(rega);
+                clearRegister(regb);
+            }
             else if (curr.lexeme == iREF){
                 getNextToken();
                 rega = getOperand(curr.lexeme);
@@ -2895,6 +2935,34 @@ public:
                 clearRegister(rega);
                 clearRegister(regb);
                 setPointer(curr.lexeme);
+            }
+            else if(curr.lexeme == AEF){
+                getNextToken();
+                sym array = st->fetchSymbol(curr.lexeme);
+                rega=getOperand(curr.lexeme);
+                tCodeGen(LDR, rega, rega);
+                getNextToken();
+                getNextToken();
+                regb = getOperand(curr.lexeme);
+                tCodeGen(LDR, regb, regb);
+                string type = array.data.type;
+                size_t pos = type.find(":");
+                if(pos != string::npos){
+                    type = type.erase(pos,type.back());
+                }
+                regd=getOperand(type);
+                tCodeGen(LDR, regd, regd);
+                tCodeGen(MUL, regb, regd);
+                tCodeGen(ADD, rega, regb);
+                clearRegister(regd);
+                clearRegister(regb);
+                getNextToken();
+                getNextToken();
+                regb = getOperand(curr.lexeme);
+                tCodeGen(STR, rega, regb);
+                setPointer(curr.lexeme);
+                clearRegister(rega);
+                clearRegister(regb);
             }
             else{
                 tCodeGen(curr.lexeme);//label
@@ -2971,11 +3039,14 @@ public:
             next = one;//saves first whole token to next
             getNextToken();//sets curr to next, gets next whole token
             //set all declared to zero
+            size_types.insert(pair<string,int>(INT,4));
+            size_types.insert(pair<string,int>(CHAR,1));
+            size_types.insert(pair<string,int>(BOOL,4));
             tcode.open(tcodeFile,ios::in|ios::out|ios::trunc);
             declareVar();
             tcode_unit();
             tcode.close();
-            in.close();
+            in.close();get the message class working!! need allocate space for an array pointer in message the points to the space on the heap
         }
         else
             cout << "ICODE read error." << endl;

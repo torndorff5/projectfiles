@@ -1,29 +1,22 @@
 //
 //  main.cpp
-//  tComplier
+//  VirtualMachine
 //
-//  Created by codeslinger on 1/9/19.
+//  Created by codeslinger on 4/23/19.
 //  Copyright © 2019 codeslinger. All rights reserved.
 //
 
-#include "tCompiler.cpp"
+#include <iostream>
 #include "vm.h"
 
-const string ICODE_FILENAME = "icode.txt";
+
 
 int main(int argc, const char * argv[]) {
     if (argc < 2){//open and read file
         cout << "No file argument passed" << endl;
     }
     else{
-        string filename = "/Users/codeslinger/Desktop/FinalPassOff/DemoA.kxi";
-        //Call Lexical analysis on file read in.
-        compiler c;
-        c.passOne(filename);
-        //call pass two for semantic 
-        c.passTwo(filename);
-        //call pass three for iCode to tCode
-        filename = c.passThree(ICODE_FILENAME);
+        string filename = argv[1];
         string buf = "";
         fstream in;
         in.open(filename);
@@ -37,8 +30,4 @@ int main(int argc, const char * argv[]) {
         p_end = pc;
         vm::execute(machinecode, p_start);
     }
-    return 0;
 }
-
-
-
