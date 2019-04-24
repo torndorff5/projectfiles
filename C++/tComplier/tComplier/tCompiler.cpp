@@ -999,8 +999,8 @@ public:
             size_t pos = string::npos;
             pos = t.data.type.find("@");
             if(pos != string::npos && (t.data.accessMod == PUBLIC || tvalue == THIS)){//array
-                ref.scope = GLOBAL;
-                ref.kind = REF+ARRAY;
+                ref.scope = scope;
+                ref.kind = TEMP;
                 ref.value = t.value;
                 ref.data.accessMod = PUBLIC;
                 ref.data.type = t.data.type;
@@ -1554,7 +1554,7 @@ public:
                 s.size = SIZEINT;
         }
         else{
-            if(s.data.type == INT){
+            if(s.data.type == INT || (s.data.type.find(":")!= string::npos)){
                 s.size = SIZEINT;
             }
             else if (s.data.type == CHAR){
@@ -2504,10 +2504,17 @@ public:
     pair<string, int> getLocation(string symid){
         pair<string,int> rv;
         try{
-            sym s = st->fetchSymbol(symid);
-            rv = getStack(s);
-            if(rv.second != -1)
+            if(symid == THIS){
+                rv.second = 8;
+                rv.first = STACK;
                 return rv;
+            }
+            else{
+                sym s = st->fetchSymbol(symid);
+                rv = getStack(s);
+                if(rv.second != -1)
+                    return rv;
+            }
         }
         catch(out_of_range e){
             rv.second = -1;
@@ -2867,7 +2874,7 @@ public:
                 clearRegister(regb);
             }
             else if (curr.lexeme == PUSH){
-                getNextToken();
+                getNextToken(); this needs to be able to push objects on stack from memory, stack and heap 
                 pair<string,int> rv = getLocation(curr.lexeme);
                 if(rv.second == -1){
                     rega = getOperand(curr.lexeme);
@@ -3046,7 +3053,7 @@ public:
             declareVar();
             tcode_unit();
             tcode.close();
-            in.close();get the message class working!! need allocate space for an array pointer in message the points to the space on the heap
+            in.close();
         }
         else
             cout << "ICODE read error." << endl;

@@ -16,7 +16,7 @@ int main(int argc, const char * argv[]) {
         cout << "No file argument passed" << endl;
     }
     else{
-        string filename = "/Users/codeslinger/Desktop/FinalPassOff/DemoA.kxi";
+        string filename = "test.kxi";//"/Users/codeslinger/Desktop/FinalPassOff/DemoA.kxi";
         //Call Lexical analysis on file read in.
         compiler c;
         c.passOne(filename);
