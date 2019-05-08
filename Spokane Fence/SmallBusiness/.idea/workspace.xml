@@ -1,0 +1,867 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="b190e51c-e6fc-40ba-b98e-14766e3b0698" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/SpokaneAutomationCompany/Backend.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/SpokaneAutomationCompany/Customer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/SpokaneAutomationCompany/Estimate.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/SpokaneAutomationCompany/PhysicalAddress.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/SpokaneAutomationCompany/SmallBusiness.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/.vs/Lab_07_TCO_V1.1/v15/.suo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/.vs/Lab_07_TCO_V1.1/v15/sqlite3/storage.ide" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/.vs/Lab_07_TCO_V1.1/v15/.suo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/.vs/Lab_08_TCO_V1.0/v15/.suo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/App.config" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/BusinessRules.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/Contract.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/Course.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/Employee.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/Employee.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/FileIO.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/FrmMain.Designer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/FrmMain.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/FrmMain.resx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/Hourly.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/IFileAccess.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/Lab_08_TCO_V1.0.csproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/Lab_08_TCO_V1.0.sln" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/Program.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/Properties/AssemblyInfo.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/Properties/Resources.Designer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/Properties/Resources.resx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/Properties/Settings.Designer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/Properties/Settings.settings" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/Salary.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/Sales.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/bin/Debug/Lab_07_TCO_V1.0.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/bin/Debug/Lab_07_TCO_V1.0.exe.config" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/bin/Debug/Lab_07_TCO_V1.0.pdb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/obj/Debug/DesignTimeResolveAssemblyReferences.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/obj/Debug/Lab_03_TCO_V1._0.FrmMain.resources" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/obj/Debug/Lab_07_TCO_V1.0.csproj.CoreCompileInputs.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/obj/Debug/Lab_07_TCO_V1.0.csproj.FileListAbsolute.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/obj/Debug/Lab_07_TCO_V1.0.csproj.GenerateResource.Cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/obj/Debug/Lab_07_TCO_V1.0.csprojResolveAssemblyReference.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/obj/Debug/Lab_07_TCO_V1.0.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/obj/Debug/Lab_07_TCO_V1.0.pdb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/obj/Debug/Lab_07_TCO_V1.1.csproj.CoreCompileInputs.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/obj/Debug/Lab_07_TCO_V1._0.Properties.Resources.resources" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/obj/Debug/Lab_08_TCO_V1.0.csproj.CoreCompileInputs.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/obj/Debug/Lab_08_TCO_V1.0.csproj.FileListAbsolute.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/obj/Debug/Lab_08_TCO_V1.0.csproj.GenerateResource.Cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/obj/Debug/Lab_08_TCO_V1.0.csprojResolveAssemblyReference.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/obj/Debug/TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/obj/Debug/TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/Lab_07_TCO_V1.1/obj/Debug/TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/UnitTestLab_07_TCO_V1.0/.vs/ProjectSettings.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/UnitTestLab_07_TCO_V1.0/.vs/UnitTestLab_07_TCO_V1.0/v15/.suo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/UnitTestLab_07_TCO_V1.0/.vs/VSWorkspaceState.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/UnitTestLab_07_TCO_V1.0/.vs/slnx.sqlite" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/UnitTestLab_07_TCO_V1.0/Properties/AssemblyInfo.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/UnitTestLab_07_TCO_V1.0/UnitTestLab_07.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/UnitTestLab_07_TCO_V1.0/UnitTestLab_07_TCO_V1.0.csproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/UnitTestLab_07_TCO_V1.0/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/UnitTestLab_07_TCO_V1.0/obj/Debug/TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/UnitTestLab_07_TCO_V1.0/obj/Debug/TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/UnitTestLab_07_TCO_V1.0/obj/Debug/TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/UnitTestLab_07_TCO_V1.0/obj/Debug/UnitTestLab_07_TCO_V1.0.csproj.CoreCompileInputs.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/UnitTestLab_07_TCO_V1.0/obj/Debug/UnitTestLab_07_TCO_V1.0.csproj.FileListAbsolute.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/UnitTestLab_07_TCO_V1.0/obj/Debug/UnitTestLab_07_TCO_V1.0.csprojResolveAssemblyReference.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/UnitTestLab_07_TCO_V1.0/obj/Release/UnitTestLab_07_TCO_V1.0.csproj.CoreCompileInputs.cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/UnitTestLab_07_TCO_V1.0/packages.config" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/MSTest.TestAdapter.1.1.18.nupkg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/Microsoft.VisualStudio.TestPlatform.TestFramework.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/cs/Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/cs/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/cs/Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/de/Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/de/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/de/Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/es/Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/es/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/es/Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/fr/Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/fr/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/fr/Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/it/Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/it/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/it/Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/ja/Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/ja/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/ja/Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/ko/Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/ko/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/ko/Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/pl/Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/pl/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/pl/Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/pt/Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/pt/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/pt/Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/ru/Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/ru/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/ru/Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/tr/Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/tr/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/tr/Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/zh-Hans/Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/zh-Hans/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/zh-Hans/Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/zh-Hant/Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/zh-Hant/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/_common/zh-Hant/Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/net45/MSTest.TestAdapter.props" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/net45/MSTest.TestAdapter.targets" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/netcoreapp1.0/MSTest.TestAdapter.props" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/netcoreapp1.0/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/uap10.0/MSTest.TestAdapter.props" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/uap10.0/MSTest.TestAdapter.targets" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestAdapter.1.1.18/build/uap10.0/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/MSTest.TestFramework.1.1.18.nupkg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.XML" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/Microsoft.VisualStudio.TestPlatform.TestFramework.XML" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/Microsoft.VisualStudio.TestPlatform.TestFramework.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/cs/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/cs/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/de/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/de/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/es/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/es/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/fr/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/fr/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/it/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/it/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/ja/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/ja/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/ko/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/ko/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/pl/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/pl/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/pt/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/pt/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/ru/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/ru/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/tr/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/tr/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/zh-Hans/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/zh-Hans/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/zh-Hant/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/net45/zh-Hant/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.XML" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/Microsoft.VisualStudio.TestPlatform.TestFramework.XML" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/Microsoft.VisualStudio.TestPlatform.TestFramework.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/cs/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/cs/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/de/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/de/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/es/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/es/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/fr/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/fr/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/it/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/it/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/ja/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/ja/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/ko/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/ko/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/pl/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/pl/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/pt/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/pt/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/ru/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/ru/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/tr/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/tr/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/zh-Hans/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/zh-Hans/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/zh-Hant/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/zh-Hant/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.XML" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/Microsoft.VisualStudio.TestPlatform.TestFramework.XML" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/Microsoft.VisualStudio.TestPlatform.TestFramework.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/cs/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/cs/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/de/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/de/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/es/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/es/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/fr/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/fr/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/it/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/it/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/ja/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/ja/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/ko/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/ko/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/pl/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/pl/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/pt/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/pt/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/ru/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/ru/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/tr/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/tr/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/zh-Hans/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/zh-Hans/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/zh-Hant/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C#/Lab_08_TCO_V1.0/packages/MSTest.TestFramework.1.1.18/lib/uap10.0/zh-Hant/Microsoft.VisualStudio.TestPlatform.TestFramework.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/FinalPassOff/DemoA.kxi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/FinalPassOff/VirtualMachine" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/FinalPassOff/icode.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/FinalPassOff/tComplier" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/FinalPassOff/tcode.asm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Header.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Module 2/Module 2.xcodeproj/project.pbxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Module 2/Module 2.xcodeproj/project.xcworkspace/contents.xcworkspacedata" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Module 2/Module 2.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Module 2/Module 2.xcodeproj/project.xcworkspace/xcuserdata/codeslinger.xcuserdatad/UserInterfaceState.xcuserstate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Module 2/Module 2.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Module 2/Module 2.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcschemes/Module 2.xcscheme" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Module 2/Module 2.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcschemes/xcschememanagement.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Module 2/Module 2/Screen Shot 2018-10-05 at 1.19.23 PM.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Module 2/Module 2/main.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 5.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 5/Program 5.xcodeproj/project.pbxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 5/Program 5.xcodeproj/project.xcworkspace/contents.xcworkspacedata" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 5/Program 5.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 5/Program 5.xcodeproj/project.xcworkspace/xcuserdata/codeslinger.xcuserdatad/UserInterfaceState.xcuserstate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 5/Program 5.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 5/Program 5.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcschemes/xcschememanagement.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 5/Program 5/Xrefgen.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 5/Program 5/Xrefgen.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 5/Program 5/main.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 5/Program 5/string.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 7/Program 7.xcodeproj/project.pbxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 7/Program 7.xcodeproj/project.xcworkspace/contents.xcworkspacedata" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 7/Program 7.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 7/Program 7.xcodeproj/project.xcworkspace/xcuserdata/codeslinger.xcuserdatad/UserInterfaceState.xcuserstate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 7/Program 7.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcschemes/xcschememanagement.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 7/Program 7/a.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 7/Program 7/main.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 7/Program 7/output.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 7/Program 7/output0.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 7/Program 7/output1.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 7/Program 7/output2.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 7/Program 7/output3.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 7/Program 7/output4.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 7/Program 7/output5.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 7/Program 7/output6.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 7/Program 7/output7.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 7/Program 7/output8.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program 7/Program 7/output9.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_1/Program_1.xcodeproj/project.pbxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_1/Program_1.xcodeproj/project.xcworkspace/contents.xcworkspacedata" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_1/Program_1.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_1/Program_1.xcodeproj/project.xcworkspace/xcuserdata/codeslinger.xcuserdatad/UserInterfaceState.xcuserstate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_1/Program_1.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcschemes/xcschememanagement.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_1/Program_1/Character.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_1/Program_1/WeaponBehavior.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_1/Program_1/characters.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_1/Program_1/main.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_1/Program_1/weapons.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_6/Program_6.xcodeproj/project.pbxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_6/Program_6.xcodeproj/project.xcworkspace/contents.xcworkspacedata" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_6/Program_6.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_6/Program_6.xcodeproj/project.xcworkspace/xcuserdata/codeslinger.xcuserdatad/UserInterfaceState.xcuserstate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_6/Program_6.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_6/Program_6.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcschemes/xcschememanagement.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_6/Program_6.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_6/Program_6/Parser.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_6/Program_6/Program_6.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_6/Program_6/main.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Program_6/Program_6/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 1.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 1/a.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 1/appcast-x64.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 1/proj1.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 1/vm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 1/vm.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 2/Project 2.xcodeproj/project.pbxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 2/Project 2.xcodeproj/project.xcworkspace/contents.xcworkspacedata" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 2/Project 2.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 2/Project 2.xcodeproj/project.xcworkspace/xcuserdata/codeslinger.xcuserdatad/UserInterfaceState.xcuserstate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 2/Project 2.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 2/Project 2.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcschemes/Project 2.xcscheme" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 2/Project 2.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcschemes/xcschememanagement.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 2/Project 2/assembler.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 2/Project 2/proj2.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 2/Project 2/vm.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 2/Project 2/vm.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 3.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 3/assembler.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 3/proj3.asm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 3/vm.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 3/vm.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 4 2.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 4.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 4/assembler.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 4/proj4.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 4/vm.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project 4/vm.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project One/Project One.xcodeproj/project.pbxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project One/Project One.xcodeproj/project.xcworkspace/contents.xcworkspacedata" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project One/Project One.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project One/Project One.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project One/Project One.xcodeproj/project.xcworkspace/xcuserdata/codeslinger.xcuserdatad/UserInterfaceState.xcuserstate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project One/Project One.xcodeproj/project.xcworkspace/xcuserdata/codeslinger.xcuserdatad/WorkspaceSettings.xcsettings" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project One/Project One.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcschemes/xcschememanagement.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Project One/Project One/vm.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/Source.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/TannerOrndorff_p2.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/TannerOrndorff_p2/Project 2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/TannerOrndorff_p2/assembler.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/TannerOrndorff_p2/proj2.asm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/TannerOrndorff_p2/vm.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/TannerOrndorff_p2/vm.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/VirtualMachine/VirtualMachine.xcodeproj/project.pbxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/VirtualMachine/VirtualMachine.xcodeproj/project.xcworkspace/contents.xcworkspacedata" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/VirtualMachine/VirtualMachine.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/VirtualMachine/VirtualMachine.xcodeproj/project.xcworkspace/xcuserdata/codeslinger.xcuserdatad/UserInterfaceState.xcuserstate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/VirtualMachine/VirtualMachine.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcschemes/xcschememanagement.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/VirtualMachine/VirtualMachine/assembler.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/VirtualMachine/VirtualMachine/main.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/VirtualMachine/VirtualMachine/vm.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/interval_map/interval_map.xcodeproj/project.pbxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/interval_map/interval_map.xcodeproj/project.xcworkspace/contents.xcworkspacedata" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/interval_map/interval_map.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/interval_map/interval_map.xcodeproj/project.xcworkspace/xcuserdata/codeslinger.xcuserdatad/UserInterfaceState.xcuserstate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/interval_map/interval_map.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/interval_map/interval_map.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcschemes/xcschememanagement.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/interval_map/interval_map/interval_map.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj2.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj3.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj3/proj3.xcodeproj/project.pbxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj3/proj3.xcodeproj/project.xcworkspace/contents.xcworkspacedata" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj3/proj3.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj3/proj3.xcodeproj/project.xcworkspace/xcuserdata/codeslinger.xcuserdatad/UserInterfaceState.xcuserstate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj3/proj3.xcodeproj/xcshareddata/xcschemes/proj3.xcscheme" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj3/proj3.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj3/proj3.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcschemes/xcschememanagement.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj3/proj3/assembler.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj3/proj3/proj3.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj3/proj3/vm.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj3/proj3/vm.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj4.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj4/proj4.xcodeproj/project.pbxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj4/proj4.xcodeproj/project.xcworkspace/contents.xcworkspacedata" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj4/proj4.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj4/proj4.xcodeproj/project.xcworkspace/xcuserdata/codeslinger.xcuserdatad/UserInterfaceState.xcuserstate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj4/proj4.xcodeproj/xcshareddata/xcschemes/proj4.xcscheme" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj4/proj4.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj4/proj4.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcschemes/xcschememanagement.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj4/proj4/assembler.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj4/proj4/proj4.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj4/proj4/vm.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/proj4/proj4/vm.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/tComplier/tComplier.xcodeproj/project.pbxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/tComplier/tComplier.xcodeproj/project.xcworkspace/contents.xcworkspacedata" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/tComplier/tComplier.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/tComplier/tComplier.xcodeproj/project.xcworkspace/xcuserdata/codeslinger.xcuserdatad/UserInterfaceState.xcuserstate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/tComplier/tComplier.xcodeproj/xcshareddata/xcschemes/tComplier.xcscheme" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/tComplier/tComplier.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/tComplier/tComplier.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcschemes/xcschememanagement.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/tComplier/tComplier/VirtualMachine.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/tComplier/tComplier/assembler.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/tComplier/tComplier/icode.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/tComplier/tComplier/main.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/tComplier/tComplier/tCompiler.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/tComplier/tComplier/tcode.asm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/tComplier/tComplier/tcode.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/tComplier/tComplier/test.kxi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/tComplier/tComplier/test1.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/tComplier/tComplier/vm.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/test/test.xcodeproj/project.pbxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/test/test.xcodeproj/project.xcworkspace/contents.xcworkspacedata" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/test/test.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/test/test.xcodeproj/project.xcworkspace/xcuserdata/codeslinger.xcuserdatad/UserInterfaceState.xcuserstate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/test/test.xcodeproj/xcshareddata/xcschemes/test.xcscheme" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/test/test.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/test/test.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcschemes/xcschememanagement.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../C++/test/test/main.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../D/Module 6 .zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../D/Module 6 /Deque/deque.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../D/Module 6 /Deque/deque.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../D/Module 6 /Deque/dequetest.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../D/Module 6 /module_6.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../D/Module_9A.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../D/Module_9B.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../D/hello" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/.idea/description.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/.idea/project-template.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_06_TCO_V1.0/Adventure.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_06_TCO_V1.0/Adventure.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_06_TCO_V1.0/GameChar.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_06_TCO_V1.0/GameChar.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_06_TCO_V1.0/Map.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_06_TCO_V1.0/Map.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_06_TCO_V1.0/map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_09_TCO_V1.0.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_09_TCO_V1.0/ChatClient$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_09_TCO_V1.0/ChatClient$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_09_TCO_V1.0/ChatClient$Recv.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_09_TCO_V1.0/ChatClient.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_09_TCO_V1.0/ChatClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_09_TCO_V1.0/ChatServer/ChatClient$ChatReader.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_09_TCO_V1.0/ChatServer/ChatClient$KeyAction.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_09_TCO_V1.0/ChatServer/ChatClient.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_09_TCO_V1.0/ChatServer/ChatServer$ClientHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_09_TCO_V1.0/ChatServer/ChatServer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_09_TCO_V1.0/ChatServer/META-INF/MANIFEST.MF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_09_TCO_V1.0/ChatServer/chat2014.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_10_TCO_V1.0 2/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_10_TCO_V1.0 2/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_10_TCO_V1.0.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_10_TCO_V1.0/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_10_TCO_V1.0/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_11_TCO_V1.0.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_11_TCO_V1.0/IMG_0679.JPG" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_11_TCO_V1.0/IMG_0682.JPG" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_11_TCO_V1.0/IMG_0687.JPG" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_11_TCO_V1.0/IMG_0691.JPG" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_11_TCO_V1.0/JIMachine$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_11_TCO_V1.0/JIMachine$10.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_11_TCO_V1.0/JIMachine$11.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_11_TCO_V1.0/JIMachine$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_11_TCO_V1.0/JIMachine$3.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_11_TCO_V1.0/JIMachine$4.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_11_TCO_V1.0/JIMachine$5.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_11_TCO_V1.0/JIMachine$6.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_11_TCO_V1.0/JIMachine$7.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_11_TCO_V1.0/JIMachine$8.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_11_TCO_V1.0/JIMachine$9.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_11_TCO_V1.0/JIMachine.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Assignment_11_TCO_V1.0/JIMachine.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/CoffeeShop/.idea/description.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/CoffeeShop/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/CoffeeShop/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/CoffeeShop/.idea/project-template.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/CoffeeShop/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/CoffeeShop/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/CoffeeShop/CoffeeShop.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/CoffeeShop/out/production/CoffeeShop/com/company/Beverage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/CoffeeShop/out/production/CoffeeShop/com/company/CondimentDecorator.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/CoffeeShop/out/production/CoffeeShop/com/company/HotChocolate.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/CoffeeShop/out/production/CoffeeShop/com/company/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/CoffeeShop/out/production/CoffeeShop/com/company/Milk.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/CoffeeShop/src/com/company/Beverage.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/CoffeeShop/src/com/company/CondimentDecorator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/CoffeeShop/src/com/company/HotChocolate.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/CoffeeShop/src/com/company/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/CoffeeShop/src/com/company/Milk.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Java.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program9/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program9/src/com/company/Component.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program9/src/com/company/Directory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program9/src/com/company/File.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/.idea/description.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/.idea/project-template.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/Average.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/Change10.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/IMG_0340.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/Program_2.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/Selections.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/Ticker.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/out/production/Program_2/com/company/Average.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/out/production/Program_2/com/company/Change10.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/out/production/Program_2/com/company/LocalStocks.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/out/production/Program_2/com/company/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/out/production/Program_2/com/company/Observer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/out/production/Program_2/com/company/Selections.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/out/production/Program_2/com/company/Snapshot.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/out/production/Program_2/com/company/StockData.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/out/production/Program_2/com/company/Subject.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/src/com/company/Average.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/src/com/company/Change10.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/src/com/company/LocalStocks.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/src/com/company/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/src/com/company/Observer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/src/com/company/Selections.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/src/com/company/Snapshot.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/src/com/company/StockData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_2/src/com/company/Subject.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/.idea/description.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/IMG_0376.HEIC" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/Program_3.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/decorator.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/out/production/Program_3/FilterOutput.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/out/production/Program_3/LineOutput.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/out/production/Program_3/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/out/production/Program_3/NumberedOutput.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/out/production/Program_3/Output.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/out/production/Program_3/StreamOutput.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/out/production/Program_3/TeeOutput.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/src/FilterOutput.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/src/LineOutput.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/src/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/src/NumberedOutput.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/src/Output.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/src/Predicate.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/src/StreamDecorator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/src/StreamOutput.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/src/TeeOutput.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_3/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_4/src/Document.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_4/src/DrawPrint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_4/src/HighResDriver.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_4/src/LowResDriver.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_4/src/ResDriver.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_4/src/Widget.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_5/src/com/company/Policy.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_5/src/com/company/policyHolder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_7/src/com/company/CircleAdapter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_7/src/com/company/Line.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_7/src/com/company/Point.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_7/src/com/company/Rectangle.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_7/src/com/company/Shape.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/Program_7/src/com/company/XXCircle.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Java/src/com/company/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Lecture Series /Lecture_5_PresTuminez.doc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/Homework 2 .pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/Homework2.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/Homework3.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/Homework3.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/Homework4.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/Homework5.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/Homework5.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/LU.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/Manning.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/MatLabFundamentals.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/Matlab_01 fundamentals.pptx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/Matlab_02 programming.pptx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/ProgrammingWithMatLab.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/bisect.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/fpi.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/freefall.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/gausseidel.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/gaussian.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/jacobi.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/newtmult.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/newtons.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/secantm.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../MatlabIntro/test.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Screen Shot 2018-11-29 at 5.39.26 PM.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Screen Shot 2018-12-15 at 4.35.27 PM.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../a154ffbcec538a4161a406abf62f5b76-original.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/KXI_2019.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/Lexical Analysis Pass Off/tComplier" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/Lexical Analysis Pass Off/test.kxi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/Lexical Analysis.doc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/SYLLABUS2019.doc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/Semantic+Analysis.doc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/SemanticActions_2019/SemanticActions_2019.doc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/SemanticActions_2019/SemanticActions_2019.ppt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/SemanticActions_2019/infix2postfix.doc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/SemanticActions_2019/kxi_WithSA_2019.doc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/SymTableEx_2017.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/Syntax Analysis.doc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/Syntax Analysis.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/Syntax Passoff/syntax.kxi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/Syntax Passoff/tComplier" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/Testing.docx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/VM.doc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/test.kxi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/test2.kxi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../tCompiler Documents/test3.kxi" beforeDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/out/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FUSProjectUsageTrigger">
+    <session id="-354326312">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="1" />
+          <entry key="project.open.time.0" value="1" />
+          <entry key="project.opened" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="java" value="1112" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="JAVA" value="1112" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="java" value="6" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="JAVA" value="6" />
+        </counts>
+      </usages-collector>
+    </session>
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/SpokaneAutomationCompany/Main.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="5" column="41" selection-start-line="5" selection-start-column="41" selection-end-line="5" selection-end-column="41" />
+              <folding>
+                <element signature="e#103#104#0" expanded="true" />
+                <element signature="e#128#129#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/com/SpokaneAutomationCompany/Backend.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="195">
+              <caret line="13" column="8" selection-start-line="13" selection-start-column="8" selection-end-line="13" selection-end-column="8" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/SpokaneAutomationCompany/SmallBusiness.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="60">
+              <caret line="4" selection-start-line="4" selection-end-line="4" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/src/com/SpokaneAutomationCompany/Main.java" />
+        <option value="$PROJECT_DIR$/src/com/SpokaneAutomationCompany/SmallBusiness.java" />
+        <option value="$PROJECT_DIR$/src/com/SpokaneAutomationCompany/Customer.java" />
+        <option value="$PROJECT_DIR$/src/com/SpokaneAutomationCompany/PhysicalAddress.java" />
+        <option value="$PROJECT_DIR$/src/com/SpokaneAutomationCompany/Backend.java" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="ProjectFrameBounds" fullScreen="true">
+    <option name="width" value="1440" />
+    <option name="height" value="900" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="SmallBusiness" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SmallBusiness" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SmallBusiness" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SmallBusiness" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SmallBusiness" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SmallBusiness" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="SpokaneAutomationCompany" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1556820499840" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true">
+      <option name="MAIN_CLASS_NAME" value="com.SpokaneAutomationCompany.Main" />
+      <module name="SmallBusiness" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Main" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b190e51c-e6fc-40ba-b98e-14766e3b0698" name="Default Changelist" comment="" />
+      <created>1556817069405</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1556817069405</updated>
+      <workItem from="1556817070991" duration="1544000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="1544000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Image Layers" />
+      <window_info id="Designer" />
+      <window_info id="UI Designer" />
+      <window_info id="Capture Tool" />
+      <window_info id="Favorites" side_tool="true" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24964234" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Messages" />
+      <window_info anchor="bottom" id="Database Changes" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Terminal" />
+      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.27710843" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="right" id="Palette" />
+      <window_info anchor="right" id="Theme Preview" />
+      <window_info anchor="right" id="Capture Analysis" />
+      <window_info anchor="right" id="Palette&#9;" />
+      <window_info anchor="right" id="Database" />
+      <window_info anchor="right" id="Maven Projects" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/com/SpokaneAutomationCompany/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="41" selection-start-line="5" selection-start-column="41" selection-end-line="5" selection-end-column="41" />
+          <folding>
+            <element signature="e#103#104#0" expanded="true" />
+            <element signature="e#128#129#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/SpokaneAutomationCompany/SmallBusiness.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" selection-start-line="4" selection-end-line="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/SpokaneAutomationCompany/Estimate.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="21" selection-start-line="2" selection-start-column="21" selection-end-line="2" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/SpokaneAutomationCompany/PhysicalAddress.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="34" lean-forward="true" selection-start-line="9" selection-start-column="34" selection-end-line="9" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/SpokaneAutomationCompany/Customer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" selection-start-line="16" selection-end-line="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/SpokaneAutomationCompany/Backend.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="13" column="8" selection-start-line="13" selection-start-column="8" selection-end-line="13" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
