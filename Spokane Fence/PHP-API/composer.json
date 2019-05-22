@@ -1,0 +1,10 @@
+{
+    "require": {
+        "slim/slim": "^3.0",
+        "quickbooks/v3-php-sdk": "^5.0",
+        "guzzlehttp/guzzle": "^6.3",
+        "psr/log": "^1.1",
+        "curl/curl": "^2.2",
+        "illuminate/database": "^5.8"
+    }
+}
