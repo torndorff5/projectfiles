@@ -8,48 +8,75 @@
 
 import Foundation
 
-class Addr{
-    var line1, city, countrysubdiv, postal:String
-    init(l:String, c:String, csd:String,p:String){
-        line1 = l;
-        city = c;
-        countrysubdiv = csd;
-        postal = p;
+class Telephone : Codable {
+    var FreeFormNumber: String
+    init(f: String){
+        FreeFormNumber = f
     }
     init(dict: [String:Any]){
-        line1 = dict["Line1"] as? String ?? ""
-        city = dict["City"] as? String ?? ""
-        countrysubdiv = dict["CountrySubDivisionCode"] as? String ?? ""
-        postal = dict["PostalCode"] as? String ?? ""
+        FreeFormNumber = dict["FreeFormNumber"] as? String ?? ""
     }
 }
-class Customer {
+class EmailAddr : Codable {
+    var Address: String
+    init(a: String){
+        Address = a
+    }
+    init(dict: [String:Any]){
+        Address = dict["Address"] as? String ?? ""
+    }
+}
+
+class Addr : Codable {
+    var Line1, City, CountrySubDivisionCode, PostalCode:String
+    init(l:String, c:String, csd:String,p:String){
+        Line1 = l;
+        City = c;
+        CountrySubDivisionCode = csd;
+        PostalCode = p;
+    }
+    init(dict: [String:Any]){
+        Line1 = dict["Line1"] as? String ?? ""
+        City = dict["City"] as? String ?? ""
+        CountrySubDivisionCode = dict["CountrySubDivisionCode"] as? String ?? ""
+        PostalCode = dict["PostalCode"] as? String ?? ""
+    }
+}
+class Customer : Codable {
     
-    var firstname, middlename, lastname, suffix, email, phone, altphone: String
-    var address: Addr!
-    init(f:String,m:String, l:String, s:String, e:String, p:String, ap:String, addr:Addr){
-        firstname = f
-        middlename = m
-        lastname = l
-        suffix = s
-        email = e
-        phone = p
-        altphone = ap
-        address = addr;
+    var GivenName, MiddleName, FamilyName, Suffix, Id, Notes: String
+    var sparse:Bool?
+    let SyncToken = 0
+    var ShipAddr: Addr!
+    var PrimaryEmailAddr: EmailAddr
+    var PrimaryPhone,AlternatePhone:Telephone
+    init(f:String,m:String, l:String, s:String, e:EmailAddr, p:Telephone, ap:Telephone, addr: Addr, n: String){
+        GivenName = f
+        MiddleName = m
+        FamilyName = l
+        Suffix = s
+        PrimaryEmailAddr = e
+        PrimaryPhone = p
+        AlternatePhone = ap
+        ShipAddr = addr;
+        Id = ""
+        Notes = n
     }
     init(dict:[String:Any]){
-        firstname = dict["GivenName"] as? String ?? ""
-        middlename = dict["MiddleName"] as? String ?? ""
-        lastname = dict["FamilyName"] as? String ?? ""
-        suffix = dict["Suffix"] as? String ?? ""
+        GivenName = dict["GivenName"] as? String ?? ""
+        MiddleName = dict["MiddleName"] as? String ?? ""
+        FamilyName = dict["FamilyName"] as? String ?? ""
+        Suffix = dict["Suffix"] as? String ?? ""
+        Id = dict["Id"] as? String ?? ""
+        Notes = dict["Notes"] as? String ?? ""
         let addressdict = dict["ShipAddr"] as? [String:Any]
         let emaildict = dict["PrimaryEmailAddr"] as? [String:Any]
         let phonedict = dict["PrimaryPhone"] as? [String:Any]
         let altphonedict = dict["AlternatePhone"] as? [String:Any]
-        email = emaildict?["Address"] as? String ?? ""
-        phone = phonedict?["FreeFormNumber"] as? String ?? ""
-        altphone = altphonedict?["AlternatePhone"] as? String ?? ""
-        address = Addr.init(dict: addressdict ?? Dictionary.init())
+        PrimaryEmailAddr = EmailAddr.init(dict: emaildict ?? Dictionary.init())
+        PrimaryPhone = Telephone.init(dict: phonedict ?? Dictionary.init())
+        AlternatePhone = Telephone.init(dict: altphonedict ?? Dictionary.init())
+        ShipAddr = Addr.init(dict: addressdict ?? Dictionary.init())
     }
 }
 class AccessToken{
@@ -68,6 +95,7 @@ class AccessToken{
         let defaultDateFormat = "yyyy/MM/dd HH:mm:ss"
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = defaultDateFormat
+        dateFormatter.timeZone = TimeZone(identifier: "UTC")
         accessToken = dictionary[Backend.at_key] as! String
         refreshToken = dictionary[Backend.rt_key] as! String
         var datestring = dictionary[Backend.rtea_key] as! String
@@ -84,6 +112,7 @@ class Backend {
     static let JSON = "application/json"
     static let APPX = "application/x-www-form-urlencoded"
     static let AUTHORIZE_URL = "http://localhost:3000/authenticate"
+    static let BASE_API_URL = "http://localhost:3000"
     static let STATE = "state"
     static let CODE = "code"
     static let REALMID = "realmId"
@@ -121,6 +150,7 @@ class Backend {
     static func saveAccessToken(){
         do{
             dateFormatter.dateFormat = defaultDateFormat
+            dateFormatter.timeZone = TimeZone(identifier: "UTC")
             let atea_string = dateFormatter.string(from: accessToken.accessTokenExpiresAt)
             let rtea_string = dateFormatter.string(from: accessToken.refreshTokenExpiresAt)
             try keychain.set(string: accessToken.accessToken, forKey: at_key)
@@ -177,11 +207,61 @@ class Backend {
         })
         dataTask.resume()
     }
-    static func fetchCustomers(){
-        
-    }
     static func createCustomer(c:Customer!){
-        
+        //change customer to json
+        let encoder = JSONEncoder()
+        let jsonData = try! encoder.encode(c)
+        //set headers
+        let headers = [
+            at_key:accessToken.accessToken,
+            CONTENT:JSON
+        ]
+        //create request with headers
+        let request = createRequest(headers: headers, method: "POST", url: URL(string: BASE_API_URL + "/customers")!)
+        request.httpBody = jsonData
+        //create session
+        let session = URLSession.shared
+        //create datatask with session and request and completion handler
+        let dataTask = session.dataTask(with: request as URLRequest, completionHandler:{
+            (data, response, error) -> Void in
+            if (error != nil) {
+                //if error tell user there was an error
+                print(error!)
+            }
+            else{
+                //if not, say successful add
+                print("success")
+            }
+        })
+        //data tast resume
+        dataTask.resume()
+    }
+    static func updateCustomer(c:Customer){
+        c.sparse = true
+        let encoder = JSONEncoder()
+        let jsonData = try! encoder.encode(c)
+        let headers = [
+            at_key:accessToken.accessToken,
+            CONTENT:JSON
+        ]
+        //create request with headers
+        let request = createRequest(headers: headers, method: "POST", url: URL(string: BASE_API_URL + "/customers" + "/update")!)
+        request.httpBody = jsonData
+        //create session
+        let session = URLSession.shared
+        let dataTask = session.dataTask(with: request as URLRequest, completionHandler:{
+            (data, response, error) -> Void in
+            if (error != nil) {
+                //if error tell user there was an error
+                print(error!)
+            }
+            else{
+                //if not, say successful add
+                print("success")
+            }
+        })
+        //data tast resume
+        dataTask.resume()
     }
     static func deleteCustomer(){
     }

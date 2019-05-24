@@ -8,15 +8,20 @@
 
 import UIKit
 
-class ExistingCustomerViewController: UIViewController, UITableViewDataSource {
+class ExistingCustomerViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     @IBOutlet weak var tableView: UITableView!
     
     var data = [Customer]()
+    var current:Customer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         loadCustomers()
+        tableView.delegate = self
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        self.tableView.reloadData()
     }
     
     func loadCustomers(){
@@ -60,13 +65,23 @@ class ExistingCustomerViewController: UIViewController, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "customercell", for: indexPath) as! CustomerCellTableViewCell
         let cus = data[indexPath.row]
-        let addr = cus.address
-        cell.customerName.text = NSString(format:"%@ %@ %@",cus.firstname, cus.middlename, cus.lastname) as String
-        cell.customerAddress.text = NSString(format:"%@ %@, %@ %@",addr!.line1, addr!.city, addr!.countrysubdiv,addr!.postal) as String
-        cell.customerPhone.text = cus.phone
+        let addr = cus.ShipAddr
+        cell.customerName.text = cus.Id//NSString(format:"%@ %@ %@",cus.GivenName, cus.MiddleName, cus.FamilyName) as String
+        cell.customerAddress.text = NSString(format:"%@ %@, %@ %@",addr!.Line1, addr!.City, addr!.CountrySubDivisionCode,addr!.PostalCode) as String
+        cell.customerPhone.text = cus.PrimaryPhone.FreeFormNumber
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        current = data[indexPath.row]
+        performSegue(withIdentifier: "showDetailExisting", sender: nil)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let viewController = segue.destination as? CustomerDetailViewController {
+            viewController.customer = current
+        }
+    }
     
 }
 

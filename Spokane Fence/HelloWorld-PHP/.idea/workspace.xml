@@ -3,100 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="bd6add35-c251-44ca-8ab6-b8cf7e542df4" name="Default Changelist" comment="">
       <change afterPath="$PROJECT_DIR$/.htaccess" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PHP-API/.htaccess" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PHP-API/.idea/composerJson.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PHP-API/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PHP-API/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PHP-API/.idea/php.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PHP-API/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PHP-API/composer.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PHP-API/config.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PHP-API/index.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PHP-API/redirect.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PHP-API/src/QBO/Middleware/Logging.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PHP-API/src/QBO/Models/Models.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomation.xcodeproj/project.pbxproj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomation.xcodeproj/project.xcworkspace/contents.xcworkspacedata" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomation.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomation.xcodeproj/project.xcworkspace/xcuserdata/codeslinger.xcuserdatad/UserInterfaceState.xcuserstate" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomation.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomation.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcschemes/xcschememanagement.plist" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomation/AppDelegate.swift" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomation/Assets.xcassets/AppIcon.appiconset/Contents.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomation/Assets.xcassets/Contents.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomation/Backend Interface/Backend.swift" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomation/Base.lproj/LaunchScreen.storyboard" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomation/Base.lproj/Main.storyboard" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomation/Controllers/AuthViewController.swift" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomation/Controllers/CustomerViewController.swift" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomation/Controllers/ViewController.swift" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomation/Info.plist" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomationTests/EstimateAutomationTests.swift" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomationTests/Info.plist" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomationUITests/EstimateAutomationUITests.swift" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/EstimateAutomationUITests/Info.plist" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimateAutomation/Podfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../EstimationAutomation/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/.idea/gradle.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/.idea/runConfigurations.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/EstimateAutomation/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/EstimateAutomation/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/EstimateAutomation/src/main/java/EstimateAutomation/Main.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/EstimateAutomation/src/main/java/EstimateAutomation/ui/AppViewController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/EstimateAutomation/xcode/EstimateAutomation-Test/Info.plist" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/EstimateAutomation/xcode/EstimateAutomation-Test/main.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/EstimateAutomation/xcode/EstimateAutomation.xcodeproj/project.pbxproj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/EstimateAutomation/xcode/EstimateAutomation.xcodeproj/project.xcworkspace/contents.xcworkspacedata" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/EstimateAutomation/xcode/EstimateAutomation.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/EstimateAutomation/xcode/EstimateAutomation.xcodeproj/project.xcworkspace/xcuserdata/codeslinger.xcuserdatad/UserInterfaceState.xcuserstate" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/EstimateAutomation/xcode/EstimateAutomation.xcodeproj/xcuserdata/codeslinger.xcuserdatad/xcschemes/xcschememanagement.plist" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/EstimateAutomation/xcode/EstimateAutomation/Assets.xcassets/AppIcon.appiconset/Contents.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/EstimateAutomation/xcode/EstimateAutomation/Backend.swift" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/EstimateAutomation/xcode/EstimateAutomation/Base.lproj/LaunchScreen.storyboard" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/EstimateAutomation/xcode/EstimateAutomation/Base.lproj/Main.storyboard" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/EstimateAutomation/xcode/EstimateAutomation/CustomerViewController.swift" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/EstimateAutomation/xcode/EstimateAutomation/Info.plist" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/proguard-rules.pro" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/androidTest/java/com/example/estimationautomation/ExampleInstrumentedTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/AndroidManifest.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/java/com/example/estimationautomation/MainActivity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/res/drawable/ic_launcher_background.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/res/layout/activity_main.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/res/mipmap-hdpi/ic_launcher.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/res/mipmap-hdpi/ic_launcher_round.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/res/mipmap-mdpi/ic_launcher.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/res/mipmap-mdpi/ic_launcher_round.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/res/mipmap-xhdpi/ic_launcher.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/res/values/colors.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/res/values/strings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/main/res/values/styles.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/app/src/test/java/com/example/estimationautomation/ExampleUnitTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/common/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/common/build/classes/java/main/com/example/common/MyCommonClass.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/common/build/libs/common.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/common/build/tmp/jar/MANIFEST.MF" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/common/src/main/java/com/example/common/MyCommonClass.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/gradle.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/gradlew" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/gradlew.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EstimationAutomation/settings.gradle" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.php" beforeDir="false" afterPath="$PROJECT_DIR$/config.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/index.php" afterDir="false" />
@@ -206,7 +112,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -218,6 +123,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -255,16 +161,18 @@
       <workItem from="1558114008743" duration="1122000" />
       <workItem from="1558368695475" duration="1097000" />
       <workItem from="1558455823629" duration="444000" />
+      <workItem from="1558627449263" duration="13000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="13275000" />
+    <option name="totallyTimeSpent" value="13288000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="790" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.33333334" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.3383405" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />

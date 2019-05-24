@@ -3,8 +3,8 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use QuickBooksOnline\API\DataService\DataService;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2AccessToken;
+use QuickBooksOnline\API\Facades\Customer;
 //use \QBO\Middleware\Logging as Logger;
-use QBO\Models\Customer;
 
 require 'vendor/autoload.php';
 
@@ -110,20 +110,40 @@ $app->get('/customers', function (Request $request, Response $response, array $a
 $app->post('/customers', function (Request $request, Response $response, array $args) {
     //get all customers in QBO
     $cus = $request->getBody();
-    $customer = json_decode($cus,true);
-    /*$dataService = dataInit();
-    $headers = $request->getHeader('accessToken');
+    $resourceObj = Customer::create(json_decode($cus,true));
+    $dataService = dataInit();
+    $headers = $request->getHeader('access_token');
     $token = $headers[0];
     $accessTokenObject = initAccessToken($token);
     $dataService->updateOAuth2Token($accessTokenObject);
-    $resultingObj = $dataService->Add($customer);
+    $resultingObj = $dataService->Add($resourceObj);
     $error = $dataService->getLastError();
     if($error){
         print($error);
     }
     else{
         return $response->withJson($resultingObj,200);
-    }*/
+    }
+});
+$app->post('/customers/update', function (Request $request, Response $response, array $args) {
+    //get all customers in QBO
+    $cus = $request->getBody();
+    $resourceObj = Customer::create(json_decode($cus,true));
+    $dataService = dataInit();
+    $headers = $request->getHeader('access_token');
+    $token = $headers[0];
+    $accessTokenObject = initAccessToken($token);
+    $dataService->updateOAuth2Token($accessTokenObject);
+    $resultingObj = $dataService->Update($resourceObj);
+    $error = $dataService->getLastError();
+    if($error){
+        print("The Status code is: " . $error->getHttpStatusCode() . "\n");
+        print("The Helper message is: " . $error->getOAuthHelperError() . "\n");
+        print("The Response message is: " . $error->getResponseBody() . "\n");
+    }
+    else{
+        return $response->withJson($resultingObj,200);
+    }
 });
 
 $app->get('/customers/{id:[0-9]+}', function (Request $request, Response $response, array $args) {
