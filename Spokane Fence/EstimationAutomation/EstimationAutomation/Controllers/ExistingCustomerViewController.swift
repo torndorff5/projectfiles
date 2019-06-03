@@ -66,7 +66,7 @@ class ExistingCustomerViewController: UIViewController, UITableViewDataSource, U
         let cell = tableView.dequeueReusableCell(withIdentifier: "customercell", for: indexPath) as! CustomerCellTableViewCell
         let cus = data[indexPath.row]
         let addr = cus.ShipAddr
-        cell.customerName.text = cus.Id//NSString(format:"%@ %@ %@",cus.GivenName, cus.MiddleName, cus.FamilyName) as String
+        cell.customerName.text = NSString(format:"%@ %@ %@",cus.GivenName, cus.MiddleName, cus.FamilyName) as String
         cell.customerAddress.text = NSString(format:"%@ %@, %@ %@",addr!.Line1, addr!.City, addr!.CountrySubDivisionCode,addr!.PostalCode) as String
         cell.customerPhone.text = cus.PrimaryPhone.FreeFormNumber
         return cell

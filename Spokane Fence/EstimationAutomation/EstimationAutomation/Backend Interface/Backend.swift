@@ -8,6 +8,7 @@
 
 import Foundation
 
+
 class Telephone : Codable {
     var FreeFormNumber: String
     init(f: String){
@@ -43,10 +44,8 @@ class Addr : Codable {
     }
 }
 class Customer : Codable {
-    
-    var GivenName, MiddleName, FamilyName, Suffix, Id, Notes: String
+    var GivenName, MiddleName, FamilyName, Suffix, Id, SyncToken, Notes: String
     var sparse:Bool?
-    let SyncToken = 0
     var ShipAddr: Addr!
     var PrimaryEmailAddr: EmailAddr
     var PrimaryPhone,AlternatePhone:Telephone
@@ -61,6 +60,7 @@ class Customer : Codable {
         ShipAddr = addr;
         Id = ""
         Notes = n
+        SyncToken = ""
     }
     init(dict:[String:Any]){
         GivenName = dict["GivenName"] as? String ?? ""
@@ -69,6 +69,7 @@ class Customer : Codable {
         Suffix = dict["Suffix"] as? String ?? ""
         Id = dict["Id"] as? String ?? ""
         Notes = dict["Notes"] as? String ?? ""
+        SyncToken = dict["SyncToken"] as? String ?? ""
         let addressdict = dict["ShipAddr"] as? [String:Any]
         let emaildict = dict["PrimaryEmailAddr"] as? [String:Any]
         let phonedict = dict["PrimaryPhone"] as? [String:Any]
@@ -106,6 +107,7 @@ class AccessToken{
 }
 
 class Backend {
+    static var syncToken = 0
     static let defaultDateFormat = "yyyy/MM/dd HH:mm:ss"
     static let dateFormatter = DateFormatter()
     static let CONTENT = "Content-Type"
