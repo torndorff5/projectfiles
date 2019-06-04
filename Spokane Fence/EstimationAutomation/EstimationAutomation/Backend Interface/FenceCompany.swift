@@ -168,15 +168,43 @@ let RANCHRAIL_POST_PREMIUM_WHITE_4INX4INX24FT = 66.44
 let RANCHRAIL_POST_CAP_5INX5IN = 0.89
 let RANCHRAIL_POST_CAP_4INX4IN = 0.89
 
+protocol SalesItemLine{
+    var id:String? { get set }
+    var Amount:Double {get set}
+    var Description:String {get set}
+    var Location:String {get set}
+    var length:Double {get set}
+}
 
-class Line {
-    var numPosts, secLength, numCaps, numSections, numUChannel, numScrews, numRails, numPanels, length, postWidth, cost:Double
-    var type:Int
-    var heighth:Int
+class Gate : SalesItemLine {
+    var id: String?
+    var Description,Location,type: String
+    var length, heighth, Amount:Double
+    init(desc:String, loc: String, len:Double, hei:Double, t:String){
+        Description = desc
+        Location = loc
+        length = len
+        heighth = hei
+        type = t
+        Amount = 0.0
+        calcCost()
+    }
+    func calcCost(){
+        Amount = 0.0
+    }
+}
+
+
+class Line : SalesItemLine {
+    var id: String?
+    var Amount: Double
+    var Description, Location: String
+    var numPosts, secLength, numCaps, numSections, numUChannel, numScrews, numRails, numPanels, length, postWidth, heighth:Double
+    var type:String
     var bti,eti:Bool
     let sec_length = 8.0
     let panel_width = 18.0
-    init(l: Double, t:Int, pw:Double, h:Int,bti:Bool,eti:Bool) {
+    init(l: Double, t:String, pw:Double, h:Double,bti:Bool,eti:Bool, desc:String, loc:String) {
         type = t
         length = l
         numPosts = 0.0
@@ -185,11 +213,13 @@ class Line {
         numScrews = 0.0
         numRails = 0.0
         numPanels = 0.0
-        cost = 0.0
+        Amount = 0.0
         postWidth = pw
-        heighth = h     create fenceitemcell and populate with line or gate in create estimate view controller 
+        heighth = h    
         numCaps = 0.0 
         secLength = 0.0
+        Description = desc
+        Location = loc
         self.bti = bti
         self.eti = eti
         calcNPo()
@@ -232,7 +262,7 @@ class Line {
         numUChannel = numSections * 2
     }
     func calcCost(){
-        cost = 0.0
+        Amount = 0.0
     }
 }
 
