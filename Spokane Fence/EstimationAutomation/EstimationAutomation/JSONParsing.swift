@@ -51,3 +51,89 @@ func deserialize(_ data: Data) throws -> [JSONObject] {
 func decode<T>(_ jsonObject: JSONObject) throws -> T where T: JSONDecodable {
     return try T.init(JSONDecoderer(jsonObject))
 }
+
+
+/*    "CustomerRef": "60",
+ "BillAddr": {
+ "Id": 128,
+ "Line1": "411 S 2060 W",
+ "City": "Vineyard",
+ "CountrySubDivisionCode": "UT",
+ "PostalCode": "84059"
+ },
+ "ShipAddr": {
+ "Id": "129",
+ "Line1": "411 S 2060 W",
+ "City": "Vineyard",
+ "CountrySubDivisionCode": "UT",
+ "PostalCode": "84059"
+ },
+ "TotalAmt": "0",
+ "ApplyTaxAfterDiscount": "false",
+ "PrintStatus": "NeedToPrint",
+ "EmailStatus": "NotSet",
+ "BillEmail": {
+ "Address": "torndorff5@gmail.com"
+ },
+ "DocNumber": "1011",
+ "TxnDate": "2019-06-11",
+ "CurrencyRef": "USD",
+ "PrivateNote": "This guys just wants gates apparently.",
+ "TxnStatus": "Pending",
+ "Line": [
+ {
+ "Id": "1",
+ "LineNum": "1",
+ "Description": "Left Return: 6.0 ft x 2.0 ft Vinyl Gate with hardware",
+ "Amount": "0",
+ "DetailType": "SalesItemLineDetail",
+ "SalesItemLineDetail": {
+ "ItemRef": "1",
+ "UnitPrice": "0",
+ "Qty": "1",
+ "ItemAccountRef": "1"
+ }
+ },
+ {
+ "Id": "2",
+ "LineNum": "2",
+ "Description": "Left Return: 6.0 ft x 2.0 ft Vinyl Gate with hardware",
+ "Amount": "0",
+ "DetailType": "SalesItemLineDetail",
+ "SalesItemLineDetail": {
+ "ItemRef": "1",
+ "UnitPrice": "0",
+ "Qty": "1",
+ "ItemAccountRef": "1"
+ }
+ },
+ {
+ "Id": "3",
+ "LineNum": "3",
+ "Description": "Right Return: 6.0 ft x 4.0 ft Vinyl Gate with hardware",
+ "Amount": "0",
+ "DetailType": "SalesItemLineDetail",
+ "SalesItemLineDetail": {
+ "ItemRef": "1",
+ "UnitPrice": "0",
+ "Qty": "1",
+ "ItemAccountRef": "1"
+ }
+ },
+ {
+ "Id": "4",
+ "LineNum": "4",
+ "Description": "Left Return: 6.0 ft x 8.0 ft Vinyl Gate with hardware",
+ "Amount": "0",
+ "DetailType": "SalesItemLineDetail",
+ "SalesItemLineDetail": {
+ "ItemRef": "1",
+ "UnitPrice": "0",
+ "Qty": "1",
+ "ItemAccountRef": "1"
+ }
+ }
+ ],
+ "Id": "155",
+ "SyncToken": "0"
+ }*/

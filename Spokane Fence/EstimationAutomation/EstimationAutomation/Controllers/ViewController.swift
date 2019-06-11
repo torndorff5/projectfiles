@@ -42,6 +42,9 @@ class ViewController: UIViewController, SFSafariViewControllerDelegate {
             createEstDisplay()
         }
     }
+    @IBAction func unwindToHome(_ unwindSegue: UIStoryboardSegue) {
+        // Use data from the view controller which initiated the unwind segue
+    }
     
     @IBAction func connectToQBO(_ sender: Any) {
         let url = URL(string: Backend.AUTHORIZE_URL)

@@ -28,8 +28,8 @@ class ExistingCustomerViewController: UIViewController, UITableViewDataSource, U
         //get json objects
         let headers = [
             Backend.CONTENT : Backend.JSON,
-            Backend.ACCESSTOKEN : Backend.accessToken.accessToken,
-            Backend.REFRESHTOKEN : Backend.accessToken.refreshToken
+            Backend.at_key : Backend.accessToken.accessToken,
+            Backend.rt_key : Backend.accessToken.refreshToken
         ]
         let request = Backend.createRequest(headers: headers , method: "GET", url: URL(string:"http://localhost:3000/customers")!)
         let session = URLSession.shared

@@ -8,6 +8,59 @@
 
 import Foundation
 
+class ReferenceType : Codable {
+    var value:String
+    init(id:String) {
+        value = id
+    }
+    init(dict: [String:Any] ){
+        value = dict["value"] as? String ?? ""
+    }
+}
+
+/*class CurrencyRefType : Codable {
+    var value:String
+    init(id:String) {
+        value = id
+    }
+    init(dict: [String:Any]){
+        value = dict["value"] as? String ?? ""
+    }
+}*/
+
+/*class MemoRef : Codable{
+    var value:String
+    init(value:String) {
+        self.value = value
+    }
+    init(dict: [String:Any]){
+        value = dict["value"] as? String ?? ""
+    }
+}*/
+
+class SaleItemLineDetail : Codable {
+    var DiscountAmt:Double?
+    var DiscountRate:Double?
+    var ItemRef:String?
+    var Qty:Double
+    var UnitPrice:Double
+    init(q:Double, up: Double){
+        Qty = q
+        UnitPrice = up
+    }
+    required init(dict: [String:Any]){
+        var temp = dict["DiscountAmt"] as? String ?? "0.0"
+        DiscountAmt = Double(temp)
+        temp = dict["DiscountRate"] as? String ?? "0.0"
+        DiscountRate = Double(temp)
+        ItemRef = dict["ItemRef"] as? String ?? ""
+        temp = dict["Qty"] as? String ?? "0.0"
+        Qty = Double(temp) ?? 0.0
+        temp = dict["UnitPrice"] as? String ?? "0.0"
+        UnitPrice = Double(temp) ?? 0.0
+    }
+}
+
 
 class Telephone : Codable {
     var FreeFormNumber: String
@@ -44,7 +97,9 @@ class Addr : Codable {
     }
 }
 class Customer : Codable {
-    var GivenName, MiddleName, FamilyName, Suffix, Id, SyncToken, Notes: String
+    var DisplayName:String?
+    var Id:String?
+    var GivenName, MiddleName, FamilyName, Suffix, SyncToken, Notes: String
     var sparse:Bool?
     var ShipAddr: Addr!
     var PrimaryEmailAddr: EmailAddr
@@ -58,18 +113,18 @@ class Customer : Codable {
         PrimaryPhone = p
         AlternatePhone = ap
         ShipAddr = addr;
-        Id = ""
         Notes = n
-        SyncToken = ""
+        SyncToken = "0"
     }
     init(dict:[String:Any]){
+        DisplayName = dict["DisplayName"] as? String ?? ""
         GivenName = dict["GivenName"] as? String ?? ""
         MiddleName = dict["MiddleName"] as? String ?? ""
         FamilyName = dict["FamilyName"] as? String ?? ""
         Suffix = dict["Suffix"] as? String ?? ""
         Id = dict["Id"] as? String ?? ""
         Notes = dict["Notes"] as? String ?? ""
-        SyncToken = dict["SyncToken"] as? String ?? ""
+        SyncToken = dict["SyncToken"] as? String ?? "0"
         let addressdict = dict["ShipAddr"] as? [String:Any]
         let emaildict = dict["PrimaryEmailAddr"] as? [String:Any]
         let phonedict = dict["PrimaryPhone"] as? [String:Any]
@@ -80,6 +135,79 @@ class Customer : Codable {
         ShipAddr = Addr.init(dict: addressdict ?? Dictionary.init())
     }
 }
+
+class Estimate : Codable {
+    var Id:String?
+    var CustomerRef:String?
+    var SyncToken:String?
+    var CurrencyRef:String?
+    var TotalAmt:Double?
+    var PrivateNote:String?
+    var Line:[Lines]?
+    var CustomerMemo:String?
+    var EmailStatus:String?
+    var AcceptedBy:String?
+    var ShipAddr:Addr?
+    var BillAddr:Addr?
+    var BillEmail:EmailAddr?
+    init() {
+        SyncToken = "0"
+        CurrencyRef =  "USD"
+    }
+    init(dict: [String:Any]) {
+        Id = dict["Id"] as? String ?? ""
+        CustomerRef = dict["CustomerRef"] as? String ?? ""
+        SyncToken = dict["SyncToken"] as? String ?? "0"
+        CurrencyRef = dict["CurrencyRef"] as? String ?? "USD"
+        let temp = dict["TotalAmt"] as? String ?? "0.0"
+        TotalAmt = Double(temp) ?? 0.0
+        PrivateNote = dict["PrivateNote"] as? String ?? ""
+        CustomerMemo = dict["CustomerMemo"] as? String ?? ""
+        EmailStatus = dict["EmailStatus"] as? String ?? ""
+        AcceptedBy = dict ["AcceptedBy"] as? String ?? ""
+        let shipaddrdict = dict["ShipAddr"] as? [String:Any]
+        let billaddrdict = dict["BillAddr"] as? [String:Any]
+        let billemaildict = dict["BillEmail"] as? [String:Any]
+        ShipAddr = Addr.init(dict: shipaddrdict ?? Dictionary.init())
+        BillAddr = Addr.init(dict: billaddrdict ?? Dictionary.init())
+        BillEmail = EmailAddr.init(dict: billemaildict ?? Dictionary.init())
+        let linearray = dict["Line"] as? [[String:Any]] ?? [[String:Any]]()
+        Line = [Lines]()
+        for l in linearray {
+            if l["DetailType"] as? String ?? "" == "SalesItemLineDetail" {
+                Line?.append(Lines.init(dict: l))
+            }
+        }
+    }
+}
+
+class Lines : Codable {
+    var Id:String?
+    var DetailType:String
+    var SalesItemLineDetail:SaleItemLineDetail
+    var Amount:Double
+    var Description:String
+    var LineNum:Int
+    init(item:SaleItemLineDetail,d:String, ln:Int) {
+        DetailType = "SalesItemLineDetail"
+        Description = d
+        LineNum = ln
+        SalesItemLineDetail = item
+        Amount = SalesItemLineDetail.UnitPrice * SalesItemLineDetail.Qty
+    }
+    init(dict:[String:Any]) {
+        Id = dict["Id"] as? String ?? ""
+        DetailType = dict["DetailType"] as? String ?? ""
+        let salesdict = dict["SalesItemLineDetail"] as? [String:Any]
+        SalesItemLineDetail = SaleItemLineDetail.init(dict: salesdict ?? Dictionary.init())
+        let temp = dict["Amount"] as? String ?? "0.0"
+        Amount = Double(temp) ?? 0.0
+        Description = dict["Description"] as? String ?? ""
+        let inttemp = dict["LineNum"] as? String ?? "0"
+        LineNum = Int(inttemp) ?? 0
+    }
+}
+
 class AccessToken{
     let decode_error = "Error decoding AccessToken from peristent memory."
     var accessToken:String
@@ -120,8 +248,8 @@ class Backend {
     static let REALMID = "realmId"
     static let ACCESSTOKEN = "accessToken"
     static let REFRESHTOKEN = "refreshToken"
-    static let username = "Q0TQ6lCBvimkFOSwfhUJtgUhTG2jTdS4eK7F2BxndS0VQYqNqy"
-    static let password = "fSpYAppFDSo3Bv65caMDj4UM2WFuyKDkBwECMVHx"
+    static let username = "Q0TQ6lCBvimkFOSwfhUJtgUhTG2jTdS4eK7F2BxndS0VQYqNqy"//client id
+    static let password = "fSpYAppFDSo3Bv65caMDj4UM2WFuyKDkBwECMVHx"//client secret 
     static let at_key = "access_token"
     static let rt_key = "refresh_token"
     static let atea_key = "expires_in"
@@ -129,6 +257,7 @@ class Backend {
     static var accessToken:AccessToken!
     static var customers:[Customer]!
     static var keychain = KeychainFacade()
+    static var returnEst:Estimate?
     static func accessTokenIsValid() -> Bool {
         if (accessToken == nil){
             return false
@@ -209,34 +338,49 @@ class Backend {
         })
         dataTask.resume()
     }
-    static func createCustomer(c:Customer!){
-        //change customer to json
-        let encoder = JSONEncoder()
-        let jsonData = try! encoder.encode(c)
-        //set headers
-        let headers = [
-            at_key:accessToken.accessToken,
-            CONTENT:JSON
-        ]
-        //create request with headers
-        let request = createRequest(headers: headers, method: "POST", url: URL(string: BASE_API_URL + "/customers")!)
-        request.httpBody = jsonData
-        //create session
-        let session = URLSession.shared
-        //create datatask with session and request and completion handler
-        let dataTask = session.dataTask(with: request as URLRequest, completionHandler:{
-            (data, response, error) -> Void in
-            if (error != nil) {
-                //if error tell user there was an error
-                print(error!)
-            }
-            else{
-                //if not, say successful add
-                print("success")
-            }
-        })
-        //data tast resume
-        dataTask.resume()
+    static func createCustomer(c:Customer!) -> Customer{
+        var cus:Customer?
+        DispatchQueue.global(qos: .userInitiated).sync {
+            let group = DispatchGroup()
+            //change customer to json
+            let encoder = JSONEncoder()
+            let jsonData = try! encoder.encode(c)
+            //set headers
+            let headers = [
+                at_key:accessToken.accessToken,
+                CONTENT:JSON
+            ]
+            print(String(data: jsonData, encoding: .utf8)!)
+            //create request with headers
+            let request = createRequest(headers: headers, method: "POST", url: URL(string: BASE_API_URL + "/customers")!)
+            request.httpBody = jsonData
+            //create session
+            let session = URLSession.shared
+            //create datatask with session and request and completion handler
+            group.enter()
+            let dataTask = session.dataTask(with: request as URLRequest, completionHandler:{
+                (data, response, error) -> Void in
+                guard let dataResponse = data,
+                    error == nil else {
+                        print(error?.localizedDescription ?? "Response Error")
+                        return }
+                do{
+                    //here dataResponse received from a network request
+                    print(String(data: dataResponse, encoding: .utf8)!)
+                    let jsonResponse = try JSONSerialization.jsonObject(with:
+                        dataResponse, options: [])
+                    let jsonArray = jsonResponse as! [String: Any]
+                    cus = Customer.init(dict: jsonArray)
+                    group.leave()
+                } catch let parsingError {
+                    print("Error", parsingError)
+                }
+            })
+            //data tast resume
+            dataTask.resume()
+            group.wait()
+        }
+        return cus!
     }
     static func updateCustomer(c:Customer){
         c.sparse = true
@@ -269,17 +413,97 @@ class Backend {
     }
     static func fetchEstimate(){
     }
-    static func createEstimate(){
+    static func createEstimate(est:Estimate) -> Estimate{
+        DispatchQueue.global(qos: .userInitiated).sync {
+            let downloadgroup = DispatchGroup()
+            
+            let encoder = JSONEncoder()
+            let jsonData = try! encoder.encode(est)
+            //set headers
+            let headers = [
+                at_key:accessToken.accessToken,
+                CONTENT:JSON
+            ]
+            //create request with headers
+            let request = createRequest(headers: headers, method: "POST", url: URL(string: BASE_API_URL + "/estimates")!)
+            request.httpBody = jsonData
+            //create session
+            let session = URLSession.shared
+            //create datatask with session and request and completion handler
+            downloadgroup.enter()
+            let dataTask = session.dataTask(with: request as URLRequest, completionHandler:{
+                (data, response, error) -> Void in
+                guard let dataResponse = data,
+                    error == nil else {
+                        print(error?.localizedDescription ?? "Response Error")
+                        return }
+                do{
+                    //here dataResponse received from a network request
+                    print(String(data: dataResponse, encoding: .utf8)!)
+                    let jsonResponse = try JSONSerialization.jsonObject(with:
+                        dataResponse, options: [])
+                    let jsonArray = jsonResponse as! [String: Any]
+                    returnEst = Estimate.init(dict: jsonArray)
+                    downloadgroup.leave()
+                } catch let parsingError {
+                    print("Error", parsingError)
+                }
+            })
+            //data tast resume
+            dataTask.resume()
+            downloadgroup.wait()
+        }
+        return returnEst!
     }
     static func deleteEstimate(){
     }
-    static func sendEstimate(){
+    static func sendEstimate(est: Estimate){
+        DispatchQueue.global(qos: .userInitiated).sync {
+            let downloadgroup = DispatchGroup()
+            
+            let encoder = JSONEncoder()
+            let jsonData = try! encoder.encode(est)
+            //set headers
+            let headers = [
+                at_key:accessToken.accessToken,
+                CONTENT:JSON
+            ]
+            print(String(data: jsonData, encoding: .utf8)!)
+            //create request with headers
+            let request = createRequest(headers: headers, method: "POST", url: URL(string: BASE_API_URL + "/estimates/send")!)
+            request.httpBody = jsonData
+            //create session
+            let session = URLSession.shared
+            //create datatask with session and request and completion handler
+            downloadgroup.enter()
+            let dataTask = session.dataTask(with: request as URLRequest, completionHandler:{
+                (data, response, error) -> Void in
+                guard let dataResponse = data,
+                    error == nil else {
+                        print(error?.localizedDescription ?? "Response Error")
+                        return }
+                do{
+                    //here dataResponse received from a network request
+                    print(String(data: dataResponse, encoding: .utf8)!)
+                    let jsonResponse = try JSONSerialization.jsonObject(with:
+                        dataResponse, options: [])
+                    let jsonArray = jsonResponse as! [String: Any]
+                    returnEst = Estimate.init(dict: jsonArray)
+                    downloadgroup.leave()
+                } catch let parsingError {
+                    print("Error", parsingError)
+                }
+            })
+            //data tast resume
+            dataTask.resume()
+            downloadgroup.wait()
+        }
     }
     static func randomString(length: Int) -> String {
         let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         return String((0..<length).map{ _ in letters.randomElement()! })
     }
-    static func makeAPICall(){
-        
-    }
 }
+
+
+

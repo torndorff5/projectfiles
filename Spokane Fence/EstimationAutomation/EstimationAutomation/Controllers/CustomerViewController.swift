@@ -10,6 +10,7 @@ import UIKit
 
 class CustomerViewController: UIViewController {
     
+    var customer:Customer?
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -35,7 +36,7 @@ class CustomerViewController: UIViewController {
         let phoneobj = Telephone.init(f: phone.text ?? "")
         let altphoneobj = Telephone.init(f: altphone.text ?? "")
         let emailobj = EmailAddr.init(a: email.text ?? "")
-        let customer = Customer.init(f: firstname.text ?? "", m: middlename.text ?? "", l: lastname.text ?? "", s: suffix.text ?? "", e: emailobj, p: phoneobj, ap: altphoneobj, addr: physAddr, n: notes.text ?? "");
+        customer = Customer.init(f: firstname.text ?? "", m: middlename.text ?? "", l: lastname.text ?? "", s: suffix.text ?? "", e: emailobj, p: phoneobj, ap: altphoneobj, addr: physAddr, n: notes.text ?? "");
         
         firstname.text=""
         middlename.text=""
@@ -55,9 +56,15 @@ class CustomerViewController: UIViewController {
             //reauth
             print("invalid access token")
         }
-        Backend.createCustomer(c: customer)
+        customer = Backend.createCustomer(c: customer)
+        performSegue(withIdentifier: "showCreateEstimate", sender: nil)
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let destVC = segue.destination as? CreateEstimateViewController{
+            destVC.cus = customer!
+        }
+    }
     
 }
 

@@ -3,7 +3,7 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use QuickBooksOnline\API\DataService\DataService;
 use QuickBooksOnline\API\Core\OAuth\OAuth2\OAuth2AccessToken;
-use QuickBooksOnline\API\Facades\Customer;
+use QuickBooksOnline\API\Facades;
 //use \QBO\Middleware\Logging as Logger;
 
 require 'vendor/autoload.php';
@@ -34,6 +34,7 @@ function getAccessTokenJson(){
         return null;
     else{
         $accessTokenJson = unserialize(file_get_contents($jsonFile));
+        file_put_contents($jsonFile,"");
         return $accessTokenJson;
     }
 }
@@ -100,7 +101,7 @@ $app->post('/authenticate/{username}/{password}', function (Request $request, Re
 $app->get('/customers', function (Request $request, Response $response, array $args) {
     //get all customers in QBO
     $dataService = dataInit();
-    $headers = $request->getHeader('accessToken');
+    $headers = $request->getHeader('access_token');
     $token = $headers[0];
     $accessTokenObject = initAccessToken($token);
     $dataService->updateOAuth2Token($accessTokenObject);
@@ -110,7 +111,7 @@ $app->get('/customers', function (Request $request, Response $response, array $a
 $app->post('/customers', function (Request $request, Response $response, array $args) {
     //get all customers in QBO
     $cus = $request->getBody();
-    $resourceObj = Customer::create(json_decode($cus,true));
+    $resourceObj = Facades\Customer::create(json_decode($cus,true));
     $dataService = dataInit();
     $headers = $request->getHeader('access_token');
     $token = $headers[0];
@@ -119,7 +120,9 @@ $app->post('/customers', function (Request $request, Response $response, array $
     $resultingObj = $dataService->Add($resourceObj);
     $error = $dataService->getLastError();
     if($error){
-        print($error);
+        print("The Status code is: " . $error->getHttpStatusCode() . "\n");
+        print("The Helper message is: " . $error->getOAuthHelperError() . "\n");
+        print("The Response message is: " . $error->getResponseBody() . "\n");
     }
     else{
         return $response->withJson($resultingObj,200);
@@ -128,7 +131,7 @@ $app->post('/customers', function (Request $request, Response $response, array $
 $app->post('/customers/update', function (Request $request, Response $response, array $args) {
     //get all customers in QBO
     $cus = $request->getBody();
-    $resourceObj = Customer::create(json_decode($cus,true));
+    $resourceObj = Facades\Customer::create(json_decode($cus,true));
     $dataService = dataInit();
     $headers = $request->getHeader('access_token');
     $token = $headers[0];
@@ -163,5 +166,52 @@ $app->get('/customers/{lastname}', function (Request $request, Response $respons
     }
     else
         return $response->getBody()->write("No access token.");
+});
+$app->get('/estimates', function (Request $request, Response $response, array $args){
+    $dataService = dataInit();
+    $headers = $request->getHeader('access_token');
+    $token = $headers[0];
+    $accessTokenObject = initAccessToken($token);
+    $dataService->updateOAuth2Token($accessTokenObject);
+    $estimates = $dataService->Query("SELECT * FROM estimate");
+    return $response->withJson($estimates, 201);
+});
+$app->post('/estimates', function (Request $request, Response $response, array $args){
+    $est = $request->getBody();
+    $resourceObj = Facades\Estimate::create(json_decode($est,true));
+    $dataService = dataInit();
+    $headers = $request->getHeader('access_token');
+    $token = $headers[0];
+    $accessTokenObject = initAccessToken($token);
+    $dataService->updateOAuth2Token($accessTokenObject);
+    $resultingObj = $dataService->Add($resourceObj);
+    $error = $dataService->getLastError();
+    if($error){
+        echo "The Status code is: " . $error->getHttpStatusCode() . "\n";
+        echo "The Helper message is: " . $error->getOAuthHelperError() . "\n";
+        echo "The Response message is: " . $error->getResponseBody() . "\n";
+    }
+    else{
+        return $response->withJson($resultingObj,200);
+    }
+});
+$app->post('/estimates/send', function (Request $request, Response $response, array $args){
+    $est = $request->getBody();
+    $resourceObj = Facades\Estimate::create(json_decode($est,true));
+    $dataService = dataInit();
+    $headers = $request->getHeader('access_token');
+    $token = $headers[0];
+    $accessTokenObject = initAccessToken($token);
+    $dataService->updateOAuth2Token($accessTokenObject);
+    $resultingObj = $dataService->SendEmail($resourceObj);
+    $error = $dataService->getLastError();
+    if($error){
+        echo "The Status code is: " . $error->getHttpStatusCode() . "\n";
+        echo "The Helper message is: " . $error->getOAuthHelperError() . "\n";
+        echo "The Response message is: " . $error->getResponseBody() . "\n";
+    }
+    else{
+        return $response->withJson($resultingObj,200);
+    }
 });
 $app->run();
