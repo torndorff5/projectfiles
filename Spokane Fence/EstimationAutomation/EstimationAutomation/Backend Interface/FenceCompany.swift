@@ -8,6 +8,8 @@
 
 import Foundation
 
+let taxationRate = 0.086
+
 protocol FenceComponent {
     var cost:Double { get set }
     var qty:Double {get set }
@@ -87,6 +89,8 @@ class FenceLine : SaleItemLineDetail, Fence {
         calcNPa()
         calcNUC()
         calcNSCR()
+        calcNConc()
+        calcCost()
     }
     required init(from decoder: Decoder) throws {
         fatalError("init(from:) has not been implemented")
@@ -124,62 +128,6 @@ class FenceLine : SaleItemLineDetail, Fence {
     }
     func calcNConc(){
         numConc = ceil(numPosts * 1.5)
-    }
-}
-
-class Base: FenceComponent {
-    var qty: Double = 1
-    var cost: Double = 0.0 // this changes the base price before material
-    func calcCost() -> Double {
-        return cost
-    }
-}
-
-class Gate : SaleItemLineDetail{
-    var comp:FenceComponent
-    var cost: Double
-    var Id: String?
-    var type,Location: String
-    var length, heighth:Double
-    init(loc:String, len:Double, hei:Double, t:String, q:Double){
-        length = len
-        heighth = hei
-        type = t
-        Location = loc
-        cost = 0.0
-        self.comp = Base.init()
-        super.init(q: 1, up: 0.0)
-        calcCost()
-    }
-    required init(from decoder: Decoder) throws {
-        fatalError("init(from:) has not been implemented")
-    }
-    func calcCost(){
-        //calc cost of gate here
-        switch (length){
-            case 4:
-                comp = WHITE_VINYL_GATE_T_G_4X6(comp: comp,qty: 1)
-                comp = INSERT_TWO_SIDED_4INX8FT(comp: comp,qty: 1)
-                break;
-            case 5:
-                comp = WHITE_VINYL_GATE_T_G_5X6(comp: comp,qty: 1)
-                comp = INSERT_TWO_SIDED_4INX8FT(comp: comp,qty: 1)
-                break;
-        default:
-            comp = WHITE_VINYL_GATE_T_G_4X6(comp: comp,qty: 1)
-            comp = INSERT_TWO_SIDED_4INX8FT(comp: comp,qty: 1)
-        }
-        UnitPrice = comp.calcCost()
-    }
-}
-
-class WHITE_4in_6_FenceLine : FenceLine {
-    init(length: Double, bti:Bool,eti:Bool, loc:String) {
-        super.init(l: length, bti: bti, eti: eti, loc: loc)
-        calcCost()
-    }
-    required init(from decoder: Decoder) throws {
-        fatalError("init(from:) has not been implemented")
     }
     func postWrapper( c: FenceComponent) -> FenceComponent {
         var fc = c
@@ -236,6 +184,85 @@ class WHITE_4in_6_FenceLine : FenceLine {
         comp = postWrapper(c: comp)
         print("Post cost: \(numPosts) posts at \(postWidth) inches wide = \(comp.calcCost())")
         UnitPrice = (comp.calcCost() / length)
+    }
+}
+
+class Base: FenceComponent {
+    var qty: Double = 1
+    var cost: Double = 0.0 // this changes the base price before material
+    func calcCost() -> Double {
+        return cost
+    }
+}
+
+class Gate : SaleItemLineDetail{
+    var comp:FenceComponent
+    var cost: Double
+    var Id: String?
+    var Location: String
+    var length:Double
+    init(loc:String, len:Double, q:Double){
+        length = len
+        Location = loc
+        cost = 0.0
+        self.comp = Base.init()
+        super.init(q: 1, up: 0.0)
+        calcCost()
+    }
+    required init(from decoder: Decoder) throws {
+        fatalError("init(from:) has not been implemented")
+    }
+    func calcCost(){
+        //calc cost of gate here
+        comp = WHITE_VINYL_GATE_T_G_4X6(comp: comp,qty: 1)
+        comp = INSERT_TWO_SIDED_4INX8FT(comp: comp,qty: 1)
+        UnitPrice = comp.calcCost()
+    }
+}
+
+class GATE_WHITE_4_6 : Gate {
+    override init(loc: String, len: Double, q: Double) {
+        super.init(loc: loc, len: len, q: q)
+    }
+    required init(from decoder: Decoder) throws {
+        fatalError("init(from:) has not been implemented")
+    }
+
+}
+class GATE_WHITE_5_6 : Gate {
+    override init(loc: String, len: Double, q: Double) {
+        super.init(loc: loc, len: len, q: q)
+    }
+    required init(from decoder: Decoder) throws {
+        fatalError("init(from:) has not been implemented")
+    }
+    override func calcCost() {
+        comp = WHITE_VINYL_GATE_T_G_5X6(comp: comp,qty: 1)
+        comp = INSERT_TWO_SIDED_4INX8FT(comp: comp,qty: 1)
+        UnitPrice = comp.calcCost()
+    }
+}
+
+class WHITE_5in_6_FenceLine : FenceLine {
+    override init(l: Double, bti:Bool,eti:Bool, loc:String) {
+        super.init(l: l, bti: bti, eti: eti, loc: loc)
+    }
+    required init(from decoder: Decoder) throws {
+        fatalError("init(from:) has not been implemented")
+    }
+    override func postWrapper( c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = WHITE_POST_ECONO_5INX5INX8FT(comp: fc, qty: numPosts)
+        return fc
+    }
+}
+
+class WHITE_4in_6_FenceLine : FenceLine {
+    override init(l: Double, bti:Bool,eti:Bool, loc:String) {
+        super.init(l: l, bti: bti, eti: eti, loc: loc)
+    }
+    required init(from decoder: Decoder) throws {
+        fatalError("init(from:) has not been implemented")
     }
 }
 
