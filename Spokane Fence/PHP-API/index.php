@@ -98,6 +98,29 @@ $app->post('/authenticate/{username}/{password}', function (Request $request, Re
     else
         return $response->withJson($accessTokenJson,201);
 });
+$app->post('/authenticate/refresh', function (Request $request, Response $response, array $args) {
+    $config = include('config.php');
+    $dataService = dataInit();
+    //get refresh token from headers
+    $headers = $request->getHeader('refresh_token');
+    $refresh = $headers[0];
+    //setup login helper with client_id and client_secret
+    $loginHelper = $dataService->getOAuth2LoginHelper();
+    //ask for new access token
+    $accessTokenObj = $loginHelper->refreshAccessTokenWithRefreshToken($refresh);
+    $accessToken = initAccessTokenJson($accessTokenObj);
+    //return to request
+    $error = $dataService->getLastError();
+    if($error){
+        print("The Status code is: " . $error->getHttpStatusCode() . "\n");
+        print("The Helper message is: " . $error->getOAuthHelperError() . "\n");
+        print("The Response message is: " . $error->getResponseBody() . "\n");
+    }
+    else{
+        return $response->withJson($accessToken,200);
+    }
+
+});
 $app->get('/customers', function (Request $request, Response $response, array $args) {
     //get all customers in QBO
     $dataService = dataInit();
@@ -147,6 +170,30 @@ $app->post('/customers/update', function (Request $request, Response $response, 
     else{
         return $response->withJson($resultingObj,200);
     }
+});
+$app->post('/customers/delete/{id}', function (Request $request, Response $response, array $args) {
+    //get all customers in QBO
+    $dataService = dataInit();
+    $headers = $request->getHeader('access_token');
+    $token = $headers[0];
+    $accessTokenObject = initAccessToken($token);
+    $dataService->updateOAuth2Token($accessTokenObject);
+    $customer = $dataService->FindById('customer',$args['id']);
+    $theResourceObj = Facades\Customer::update($customer  , [
+        "Active" => false
+    ]);
+    $resultingObj = $dataService->Update($theResourceObj);
+    $error = $dataService->getLastError();
+    if ($error) {
+        echo "The Status code is: " . $error->getHttpStatusCode() . "\n";
+        echo "The Helper message is: " . $error->getOAuthHelperError() . "\n";
+        echo "The Response message is: " . $error->getResponseBody() . "\n";
+    }
+    else {
+        return $response->withJson($resultingObj, 200);
+    }
+    return $response->withJson($customer, 200);
+
 });
 
 $app->get('/customers/{id:[0-9]+}', function (Request $request, Response $response, array $args) {

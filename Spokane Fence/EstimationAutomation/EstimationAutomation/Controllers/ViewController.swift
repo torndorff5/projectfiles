@@ -12,7 +12,8 @@ import SafariServices
 class ViewController: UIViewController, SFSafariViewControllerDelegate {
     @IBOutlet weak var connectToQBO: UIButton!
     @IBOutlet weak var createEstimate: UIButton!
-    
+    @IBOutlet weak var activity: UIActivityIndicatorView!
+
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         Backend.getAccessToken();
         //display create estimate button
@@ -20,10 +21,12 @@ class ViewController: UIViewController, SFSafariViewControllerDelegate {
     }
     
     func createEstDisplay(){
+        activity.stopAnimating()
         connectToQBO.isHidden = true
         createEstimate.isHidden = false
     }
     func connectQBDisplay(){
+        activity.stopAnimating()
         createEstimate.isHidden = true
         connectToQBO.isHidden = false
     }
@@ -33,13 +36,20 @@ class ViewController: UIViewController, SFSafariViewControllerDelegate {
         // Do any additional setup after loading the view, typically from a nib.
         //load access token
         //if we have an access token, display create estimate
-        if(!Backend.accessTokenIsValid()){
-            //display connect to QB
-            connectQBDisplay()
-        }
-        else{
-            //display create estimate button
+        if Backend.accessTokenIsValid() {
             createEstDisplay()
+        }
+        else if Backend.refreshTokenIsValid() {
+            let at = Backend.refreshToken()
+            if at {
+                createEstDisplay()
+            }
+            else {
+                connectQBDisplay()
+            }
+        }
+        else {
+            connectQBDisplay()
         }
     }
     @IBAction func unwindToHome(_ unwindSegue: UIStoryboardSegue) {
@@ -47,8 +57,7 @@ class ViewController: UIViewController, SFSafariViewControllerDelegate {
     }
     
     @IBAction func connectToQBO(_ sender: Any) {
-        let url = URL(string: Backend.AUTHORIZE_URL)
-        let safariVC = SFSafariViewController(url: url!)
+        let safariVC = Backend.safariVCinit()
         safariVC.delegate = self
         self.present(safariVC, animated: true, completion: nil)
     }

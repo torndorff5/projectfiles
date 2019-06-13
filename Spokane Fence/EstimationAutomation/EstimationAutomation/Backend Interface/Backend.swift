@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SafariServices
 
 class ReferenceType : Codable {
     var value:String
@@ -48,7 +49,7 @@ class SaleItemLineDetail : Codable {
         Qty = q
         UnitPrice = up
     }
-    required init(dict: [String:Any]){
+    init(dict: [String:Any]){
         var temp = dict["DiscountAmt"] as? String ?? "0.0"
         DiscountAmt = Double(temp)
         temp = dict["DiscountRate"] as? String ?? "0.0"
@@ -242,6 +243,7 @@ class Backend {
     static let JSON = "application/json"
     static let APPX = "application/x-www-form-urlencoded"
     static let AUTHORIZE_URL = "http://localhost:3000/authenticate"
+    static let REFRESH = "refresh"
     static let BASE_API_URL = "http://localhost:3000"
     static let STATE = "state"
     static let CODE = "code"
@@ -265,12 +267,91 @@ class Backend {
         else if(accessToken.accessTokenExpiresAt <= Date()){
             return false
         }
-        else if(accessToken.refreshTokenExpiresAt <= Date()){
+        else{
+            return true
+        }
+    }
+    static func refreshTokenIsValid() -> Bool {
+        if(accessToken == nil){
+            return false
+        }
+        else if (accessToken.refreshTokenExpiresAt <= Date()){
             return false
         }
         else{
             return true
         }
+    }
+    static func validateToken() -> Bool{
+        if(!Backend.accessTokenIsValid()){
+            //reauth, if fails, display connect to quickbooks screen 
+            if !Backend.refreshToken() {
+                //display connect to quickbooks screen
+                return false
+            }
+        }
+        return true
+    }
+    static func safariVCinit() -> SFSafariViewController {
+        let url = URL(string: AUTHORIZE_URL)
+        let safariVC = SFSafariViewController(url: url!)
+        return safariVC
+    }
+    /*static func processDataResponse<T>(data:Data?) -> T {
+        guard let dataResponse = data,
+            error == nil else {
+                print(error?.localizedDescription ?? "Response Error")
+                return }
+        do{
+            //here dataResponse received from a network request
+            let jsonResponse = try JSONSerialization.jsonObject(with:
+                dataResponse, options: [])
+            let jsonArray = jsonResponse as! [String: Any]
+            accessToken = AccessToken.init(dictionary: jsonArray)
+        }
+        catch let parsingError {
+            print("Error", parsingError)
+        }
+    }*/
+    static func refreshToken() -> Bool{
+        var status = false
+        DispatchQueue.global(qos: .userInitiated).sync {
+            if refreshTokenIsValid() {
+                let group = DispatchGroup()
+                let headers = [
+                    CONTENT : JSON,
+                    rt_key  : accessToken.refreshToken
+                ]
+                let request = createRequest(headers: headers , method: "POST", url: URL(string:"\(AUTHORIZE_URL)/\(REFRESH)")!)
+                let session = URLSession.shared
+                group.enter()
+                let dataTask = session.dataTask(with: request as URLRequest) { (data, response, error) in
+                    guard let dataResponse = data,
+                        error == nil else {
+                            print(error?.localizedDescription ?? "Response Error")
+                            status = false
+                            group.leave()
+                            return }
+                    do{
+                        //here dataResponse received from a network request
+                        let jsonResponse = try JSONSerialization.jsonObject(with:
+                            dataResponse, options: [])
+                        let jsonArray = jsonResponse as! [String: Any]
+                        accessToken = AccessToken.init(dictionary: jsonArray)
+                        status = true
+                        group.leave()
+                    }
+                    catch let parsingError {
+                        print("Error", parsingError)
+                        status = false
+                        group.leave()
+                    }
+                }
+                dataTask.resume()
+                group.wait()
+            }
+        }
+        return status
     }
     static func createRequest(headers:[String:String],method:String,url:URL) -> NSMutableURLRequest {
         let request = NSMutableURLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 10.0)
@@ -338,7 +419,7 @@ class Backend {
         })
         dataTask.resume()
     }
-    static func createCustomer(c:Customer!) -> Customer{
+    static func createCustomer(c:Customer!) -> Customer?{
         var cus:Customer?
         DispatchQueue.global(qos: .userInitiated).sync {
             let group = DispatchGroup()
@@ -350,7 +431,6 @@ class Backend {
                 at_key:accessToken.accessToken,
                 CONTENT:JSON
             ]
-            print(String(data: jsonData, encoding: .utf8)!)
             //create request with headers
             let request = createRequest(headers: headers, method: "POST", url: URL(string: BASE_API_URL + "/customers")!)
             request.httpBody = jsonData
@@ -363,6 +443,7 @@ class Backend {
                 guard let dataResponse = data,
                     error == nil else {
                         print(error?.localizedDescription ?? "Response Error")
+                        group.leave()
                         return }
                 do{
                     //here dataResponse received from a network request
@@ -374,13 +455,14 @@ class Backend {
                     group.leave()
                 } catch let parsingError {
                     print("Error", parsingError)
+                    group.leave()
                 }
             })
             //data tast resume
             dataTask.resume()
             group.wait()
         }
-        return cus!
+        return cus
     }
     static func updateCustomer(c:Customer){
         c.sparse = true
@@ -409,7 +491,44 @@ class Backend {
         //data tast resume
         dataTask.resume()
     }
-    static func deleteCustomer(){
+    static func deleteCustomer(cus: Customer) -> Bool{
+        var status = false
+        DispatchQueue.global(qos: .userInitiated).sync {
+            if refreshTokenIsValid() {
+                let group = DispatchGroup()
+                let headers = [
+                    CONTENT : JSON,
+                    at_key  : accessToken.accessToken
+                ]
+                let request = createRequest(headers: headers , method: "POST", url: URL(string:"\(BASE_API_URL)/customers/delete/\(cus.Id ?? "")")!)
+                let session = URLSession.shared
+                group.enter()
+                let dataTask = session.dataTask(with: request as URLRequest) { (data, response, error) in
+                    guard let dataResponse = data,
+                        error == nil else {
+                            print(error?.localizedDescription ?? "Response Error")
+                            status = false
+                            group.leave()
+                            return }
+                    do{
+                        //here dataResponse received from a network request
+                        let jsonResponse = try JSONSerialization.jsonObject(with:
+                            dataResponse, options: [])
+                        _ = jsonResponse as! [String: Any]
+                        status = true
+                        group.leave()
+                    }
+                    catch let parsingError {
+                        print("Error", parsingError)
+                        status = false
+                        group.leave()
+                    }
+                }
+                dataTask.resume()
+                group.wait()
+            }
+        }
+        return status
     }
     static func fetchEstimate(){
     }
@@ -502,6 +621,64 @@ class Backend {
     static func randomString(length: Int) -> String {
         let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         return String((0..<length).map{ _ in letters.randomElement()! })
+    }
+}
+//validatedFirstname, validatedLastname, validatedEmail, validatedPhone, validatedAddress, validatedState, validatedZip
+class Validation {
+    static func isFirstNameValid(_ value: String) -> Bool {
+        if value == ""{
+            return false
+        }
+        return true
+    }
+    static func isLastNameValid(_ value: String) -> Bool {
+        if value == ""{
+            return false
+        }
+        return true
+    }
+    static func isPhoneValid(_ value: String) -> Bool {
+        do {
+            if try NSRegularExpression(pattern: "^\\D?(\\d{3})\\D?\\D?(\\d{3})\\D?(\\d{4})$", options: .caseInsensitive).firstMatch(in: value, options: [], range: NSRange(location: 0, length: value.count)) == nil {
+                return false
+            }
+        }
+        catch {
+            return false
+        }
+        return true
+    }
+    static func isStateValid(_ value: String) -> Bool {
+        do {
+            if try NSRegularExpression(pattern: "^((AL)|(AK)|(AS)|(AZ)|(AR)|(CA)|(CO)|(CT)|(DE)|(DC)|(FM)|(FL)|(GA)|(GU)|(HI)|(ID)|(IL)|(IN)|(IA)|(KS)|(KY)|(LA)|(ME)|(MH)|(MD)|(MA)|(MI)|(MN)|(MS)|(MO)|(MT)|(NE)|(NV)|(NH)|(NJ)|(NM)|(NY)|(NC)|(ND)|(MP)|(OH)|(OK)|(OR)|(PW)|(PA)|(PR)|(RI)|(SC)|(SD)|(TN)|(TX)|(UT)|(VT)|(VI)|(VA)|(WA)|(WV)|(WI)|(WY))$", options: .caseInsensitive).firstMatch(in: value, options: [], range: NSRange(location: 0, length: value.count)) == nil {
+                return false
+            }
+        }
+        catch {
+            return false
+        }
+        return true
+    }
+    static func isZipValid(_ value: String) -> Bool {
+        do {
+            if try NSRegularExpression(pattern: "^\\d{5}$|^\\d{5}-\\d{4}$", options: .caseInsensitive).firstMatch(in: value, options: [], range: NSRange(location: 0, length: value.count)) == nil {
+                return false
+            }
+        }
+        catch {
+            return false
+        }
+        return true
+    }
+    static func isEmailValid(_ value: String) -> Bool {
+        do {
+            if try NSRegularExpression(pattern: "^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}$", options: .caseInsensitive).firstMatch(in: value, options: [], range: NSRange(location: 0, length: value.count)) == nil {
+                return false
+            }
+        } catch {
+            return false
+        }
+        return true
     }
 }
 

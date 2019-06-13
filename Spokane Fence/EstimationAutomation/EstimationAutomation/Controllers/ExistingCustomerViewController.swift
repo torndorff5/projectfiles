@@ -7,24 +7,38 @@
 //
 
 import UIKit
+import SafariServices
 
-class ExistingCustomerViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class ExistingCustomerViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SFSafariViewControllerDelegate {
     
     @IBOutlet weak var tableView: UITableView!
-    
+    @IBOutlet weak var activity: UIActivityIndicatorView!
+
     var data = [Customer]()
     var current:Customer?
     
     override func viewDidLoad() {
+        tableView.isHidden = true
         super.viewDidLoad()
         loadCustomers()
         tableView.delegate = self
+        activity.stopAnimating()
+        tableView.isHidden = false
     }
     override func viewDidAppear(_ animated: Bool) {
         self.tableView.reloadData()
     }
+
+    func getNewToken(){
+        let safariVC = Backend.safariVCinit()
+        safariVC.delegate = self
+        safariVC.present(self, animated: true, completion: nil)
+    }
     
     func loadCustomers(){
+        if !Backend.validateToken() {
+            getNewToken()
+        }
         //get json objects
         let headers = [
             Backend.CONTENT : Backend.JSON,
@@ -76,13 +90,52 @@ class ExistingCustomerViewController: UIViewController, UITableViewDataSource, U
         current = data[indexPath.row]
         performSegue(withIdentifier: "showDetailExisting", sender: nil)
     }
+
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let alert = UIAlertController(title: "QuickBooks Online Message", message: "Are you sure you want to delete this customer? Its data will also be removed from your QuickBoooks account.", preferredStyle: .alert)
+            let yes = UIAlertAction(title: "Yes", style: .destructive) { (action) in
+                self.activity.startAnimating()
+                self.activity.isHidden = false
+                let cus = self.data[indexPath.row]
+                self.data.remove(at: indexPath.row)
+                self.tableView.reloadData()
+                self.deleteCustomer(cus: cus)
+            }
+            let no = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            alert.addAction(yes)
+            alert.addAction(no)
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+
+    func deleteCustomer (cus: Customer) {
+        //remove from QBO
+        if Backend.deleteCustomer(cus: cus) {
+            activity.stopAnimating()
+            showAlert(message: "Customer successfully deleted.")
+        }
+        else {
+            activity.stopAnimating()
+            showAlert(message: "Failed to delete customer: Unknown Network Error")
+        }
+    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let viewController = segue.destination as? CustomerDetailViewController {
             viewController.customer = current
         }
     }
-    
+
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        Backend.getAccessToken();
+    }
+
+    func showAlert(message: String) {
+        let alert = UIAlertController(title: "QuickBooks Online Message", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
 }
 
 
