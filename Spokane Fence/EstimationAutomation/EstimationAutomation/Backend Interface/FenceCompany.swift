@@ -61,7 +61,7 @@ class FenceLine : SaleItemLineDetail, Fence {
     var length: Double
     var sec_length = 8.0
     var panel_width = 11.0
-    var postWidth = 4.0 //inches
+    var postWidth = 5.0 //inches
     var heighth = 6.0
     var eti: Bool
     var bti: Bool
@@ -164,25 +164,25 @@ class FenceLine : SaleItemLineDetail, Fence {
         fc = CONCRETE_PRE_MIX_80LBS(comp: fc, qty: numConc)
         return fc
     }
+    func capWrapper(c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = WHITE_POST_CAP_5INX5IN(comp: fc, qty: numCaps)
+        return fc
+    }
     func calcCost() {
         //concrete
         comp = concWrapper(c: comp)
-        print("Concrete cost: \(numConc) bags = \(comp.calcCost())")
         //screws
         comp = screwWrapper(c: comp)
-        print("Screw cost: \(numScrews) screws = \(comp.calcCost())")
         //u channel
         comp = uchannelWrapper(c: comp)
-        print("U Channel cost: \(numUChannel) channels = \(comp.calcCost())")
         //rails
         comp = railWrapper(c: comp)
-        print("Rail cost: \(numRails) rails = \(comp.calcCost())")
         //panels
         comp = panelWrapper(c: comp)
-        print("Panel cost: \(numPanels) panels at \(panel_width) inches wide = \(comp.calcCost())")
         //posts
         comp = postWrapper(c: comp)
-        print("Post cost: \(numPosts) posts at \(postWidth) inches wide = \(comp.calcCost())")
+        comp = capWrapper(c: comp)
         UnitPrice = (comp.calcCost() / length)
     }
 }
@@ -243,7 +243,7 @@ class GATE_WHITE_5_6 : Gate {
     }
 }
 
-class WHITE_5in_6_FenceLine : FenceLine {
+class WHITE_GREENPOST_6_FenceLine : FenceLine {
     override init(l: Double, bti:Bool,eti:Bool, loc:String) {
         super.init(l: l, bti: bti, eti: eti, loc: loc)
     }
@@ -252,19 +252,148 @@ class WHITE_5in_6_FenceLine : FenceLine {
     }
     override func postWrapper( c: FenceComponent) -> FenceComponent {
         var fc = c
-        fc = WHITE_POST_ECONO_5INX5INX8FT(comp: fc, qty: numPosts)
+        fc = WHITE_POST_GREEN_5INX5INX8FT(comp: fc, qty: numPosts)
         return fc
     }
 }
 
-class WHITE_4in_6_FenceLine : FenceLine {
+class WHITE_ECONOPOST_6_FenceLine : FenceLine {
     override init(l: Double, bti:Bool,eti:Bool, loc:String) {
         super.init(l: l, bti: bti, eti: eti, loc: loc)
     }
     required init(from decoder: Decoder) throws {
         fatalError("init(from:) has not been implemented")
     }
+    override func postWrapper(c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = WHITE_POST_ECONO_5INX5INX8FT(comp: fc, qty: numPosts)
+        return fc
+    }
 }
+
+class WHITE_PREMPOST_6_FenceLine : FenceLine {
+    override init(l: Double, bti:Bool,eti:Bool, loc:String) {
+        super.init(l: l, bti: bti, eti: eti, loc: loc)
+    }
+    required init(from decoder: Decoder) throws {
+        fatalError("init(from:) has not been implemented")
+    }
+    override func postWrapper(c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = WHITE_POST_PREMIUM_5INX5INX8FT(comp: fc, qty: numPosts)
+        return fc
+    }
+}
+
+class TAN_GREENPOST_6_Fenceline : FenceLine {
+    override init(l: Double, bti:Bool,eti:Bool, loc:String) {
+        super.init(l: l, bti: bti, eti: eti, loc: loc)
+    }
+    required init(from decoder: Decoder) throws {
+        fatalError("init(from:) has not been implemented")
+    }
+    override func postWrapper(c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = TAN_POST_GREEN_5INX5INX8FT(comp: fc, qty: numPosts)
+        return fc
+    }
+    override func capWrapper(c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = TAN_POST_CAP_5INX5IN(comp: fc, qty: numCaps)
+        return fc
+    }
+    override func panelWrapper(c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = TAN_PRIVACY_T_G_11INX62IN(comp: fc, qty: numPanels)
+        return fc
+    }
+    override func railWrapper(c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = TAN_PRIVACY_RAIL_STD_1X5X8(comp: fc, qty: numRails)
+        return fc
+    }
+    override func uchannelWrapper(c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = TAN_PRIVACY_U_CHANNEL_6(comp: fc, qty: numUChannel)
+        return fc
+    }
+}
+class TAN_ECONOPOST_6_Fenceline : FenceLine {
+    override init(l: Double, bti:Bool,eti:Bool, loc:String) {
+        super.init(l: l, bti: bti, eti: eti, loc: loc)
+    }
+    required init(from decoder: Decoder) throws {
+        fatalError("init(from:) has not been implemented")
+    }
+    override func postWrapper(c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = TAN_POST_ECONO_5INX5INX8FT(comp: fc, qty: numPosts)
+        return fc
+    }
+    override func capWrapper(c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = TAN_POST_CAP_5INX5IN(comp: fc, qty: numCaps)
+        return fc
+    }
+    override func panelWrapper(c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = TAN_PRIVACY_T_G_11INX62IN(comp: fc, qty: numPanels)
+        return fc
+    }
+    override func railWrapper(c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = TAN_PRIVACY_RAIL_STD_1X5X8(comp: fc, qty: numRails)
+        return fc
+    }
+    override func uchannelWrapper(c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = TAN_PRIVACY_U_CHANNEL_6(comp: fc, qty: numUChannel)
+        return fc
+    }
+}
+class TAN_PREMPOST_6_Fenceline : FenceLine {
+    override init(l: Double, bti:Bool,eti:Bool, loc:String) {
+        super.init(l: l, bti: bti, eti: eti, loc: loc)
+    }
+    required init(from decoder: Decoder) throws {
+        fatalError("init(from:) has not been implemented")
+    }
+    override func postWrapper(c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = TAN_POST_PREMIUM_5INX5INX8FT(comp: fc, qty: numPosts)
+        return fc
+    }
+    override func capWrapper(c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = TAN_POST_CAP_5INX5IN(comp: fc, qty: numCaps)
+        return fc
+    }
+    override func panelWrapper(c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = TAN_PRIVACY_T_G_11INX62IN(comp: fc, qty: numPanels)
+        return fc
+    }
+    override func railWrapper(c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = TAN_PRIVACY_RAIL_STD_1X5X8(comp: fc, qty: numRails)
+        return fc
+    }
+    override func uchannelWrapper(c: FenceComponent) -> FenceComponent {
+        var fc = c
+        fc = TAN_PRIVACY_U_CHANNEL_6(comp: fc, qty: numUChannel)
+        return fc
+    }
+}
+
+
+
+
+
+
+
+
+
+///FENCE COMPONENTS ********************************************************************************************************************
 
 class EVERBILT_HEX_1_5 : FenceDecorator {
     var component: FenceComponent
@@ -353,7 +482,7 @@ class INSERT_GATE_ALUM_5INX8FT : FenceDecorator {
 class CONCRETE_PRE_MIX_80LBS : FenceDecorator {
     var qty: Double
     var component: FenceComponent
-    var cost: Double = 4.15
+    var cost: Double = 4.25
     init(comp: FenceComponent, qty: Double) {
         self.component = comp
         self.qty = qty
@@ -1086,10 +1215,11 @@ class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
         return component.calcCost() + (cost * qty)
     }
 }
-let TAN_PRIVACY_RAIL_STD_1X5X8 = 12.85
-class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
+ */
+class TAN_PRIVACY_RAIL_STD_1X5X8 : FenceDecorator {
+    var qty: Double
     var component: FenceComponent
-    var cost: Double = 50
+    var cost: Double = 12.85
     init(comp: FenceComponent, qty: Double) {
         self.component = comp
         self.qty = qty
@@ -1098,6 +1228,7 @@ class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
         return component.calcCost() + (cost * qty)
     }
 }
+/*
 let TAN_PRIVACY_RAIL_STD_1X5X12 = 19.28
 class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
     var component: FenceComponent
@@ -1134,10 +1265,11 @@ class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
         return component.calcCost() + (cost * qty)
     }
 }
-let TAN_PRIVACY_T_G_11INX62IN = 7.55
-class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
+ */
+class TAN_PRIVACY_T_G_11INX62IN : FenceDecorator {
+    var qty: Double
     var component: FenceComponent
-    var cost: Double = 50
+    var cost: Double = 7.55
     init(comp: FenceComponent, qty: Double) {
         self.component = comp
         self.qty = qty
@@ -1146,6 +1278,7 @@ class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
         return component.calcCost() + (cost * qty)
     }
 }
+/*
 let TAN_PRIVACY_T_G_11INX16FT = 23.28
 class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
     var component: FenceComponent
@@ -1170,10 +1303,11 @@ class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
         return component.calcCost() + (cost * qty)
     }
 }
-let TAN_PRIVACY_U_CHANNEL_6 = 2.1
-class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
+ */
+class TAN_PRIVACY_U_CHANNEL_6 : FenceDecorator {
+    var qty: Double
     var component: FenceComponent
-    var cost: Double = 50
+    var cost: Double = 2.1
     init(comp: FenceComponent, qty: Double) {
         self.component = comp
         self.qty = qty
@@ -1182,6 +1316,7 @@ class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
         return component.calcCost() + (cost * qty)
     }
 }
+/*
 let TAN_PRIVACY_U_CHANNEL_16 = 5.6
 class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
     var component: FenceComponent
@@ -1266,10 +1401,12 @@ class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
         return component.calcCost() + (cost * qty)
     }
 }
-let TAN_POST_GREEN_5INX5INX8FT = 14.73
-class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
+*/
+
+class TAN_POST_GREEN_5INX5INX8FT : FenceDecorator {
+    var qty: Double
     var component: FenceComponent
-    var cost: Double = 50
+    var cost: Double = 14.73
     init(comp: FenceComponent, qty: Double) {
         self.component = comp
         self.qty = qty
@@ -1278,6 +1415,8 @@ class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
         return component.calcCost() + (cost * qty)
     }
 }
+
+/*
 let TAN_POST_GREEN_LINE_5INX5INX8FT = 14.73
 class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
     var component: FenceComponent
@@ -1326,10 +1465,11 @@ class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
         return component.calcCost() + (cost * qty)
     }
 }
-let TAN_POST_ECONO_5INX5INX8FT = 18.13
-class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
+*/
+class TAN_POST_ECONO_5INX5INX8FT : FenceDecorator {
+    var qty: Double
     var component: FenceComponent
-    var cost: Double = 50
+    var cost: Double = 18.13
     init(comp: FenceComponent, qty: Double) {
         self.component = comp
         self.qty = qty
@@ -1338,6 +1478,7 @@ class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
         return component.calcCost() + (cost * qty)
     }
 }
+/*
 let TAN_POST_PREMIUM_5INX5INX7FT = 18.57
 class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
     var component: FenceComponent
@@ -1350,10 +1491,11 @@ class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
         return component.calcCost() + (cost * qty)
     }
 }
-let TAN_POST_PREMIUM_5INX5INX8FT = 21.23
-class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
+*/
+class TAN_POST_PREMIUM_5INX5INX8FT : FenceDecorator {
+    var qty: Double
     var component: FenceComponent
-    var cost: Double = 50
+    var cost: Double = 21.23
     init(comp: FenceComponent, qty: Double) {
         self.component = comp
         self.qty = qty
@@ -1362,6 +1504,7 @@ class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
         return component.calcCost() + (cost * qty)
     }
 }
+/*
 let TAN_POST_PREMIUM_5INX5INX9FT = 23.88
 class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
     var component: FenceComponent
@@ -1446,10 +1589,11 @@ class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
         return component.calcCost() + (cost * qty)
     }
 }
-let TAN_POST_CAP_5INX5IN = 0.99
-class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
+*/
+class TAN_POST_CAP_5INX5IN : FenceDecorator {
+    var qty: Double
     var component: FenceComponent
-    var cost: Double = 50
+    var cost: Double = 0.99
     init(comp: FenceComponent, qty: Double) {
         self.component = comp
         self.qty = qty
@@ -1458,6 +1602,7 @@ class INSERT_THREE_SIDED_5INX8FT : FenceDecorator {
         return component.calcCost() + (cost * qty)
     }
 }
+/*
 ///////////////////////////////////////////////////////
 //CLAY AND STONE PRICES
 let CLAY_OR_STONE_PRIVACY_PANEL_4X6  = 66.4
